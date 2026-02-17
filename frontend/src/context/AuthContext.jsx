@@ -16,7 +16,8 @@ export const AuthProvider = ({ children }) => {
             setLoading(true);
             try {
                 const response = await axios.get('/api/auth/me', {
-                    headers: { 'Authorization': `Bearer ${tk}` }
+                    headers: { 'Authorization': `Bearer ${tk}` },
+                    timeout: 5000 // 5 second timeout
                 });
                 setUser(response.data);
             } catch (err) {
@@ -105,7 +106,12 @@ export const AuthProvider = ({ children }) => {
 
     return (
         <AuthContext.Provider value={{ user, token, login, register, logout, updateProfile, loading }}>
-            {!loading && children}
+            {!loading ? children : (
+                <div className="flex h-screen items-center justify-center bg-slate-900 text-white flex-col gap-4">
+                    <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+                    <p className="text-lg font-medium animate-pulse">Loading CareerSense...</p>
+                </div>
+            )}
         </AuthContext.Provider>
     );
 };

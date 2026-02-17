@@ -9,6 +9,8 @@ import Navbar from './components/Navbar';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Settings from './pages/Settings';
+import PhaseDetail from './pages/PhaseDetail';
+import FullRoadmap from './pages/FullRoadmap';
 
 const ProtectedRoute = ({ children }) => {
     const { user, loading } = useAuth();
@@ -72,6 +74,26 @@ function AppContent() {
                     <ProtectedRoute>
                         <Layout>
                             <Settings />
+                        </Layout>
+                    </ProtectedRoute>
+                }
+            />
+            <Route
+                path="/roadmap/full"
+                element={
+                    <ProtectedRoute>
+                        <Layout>
+                            <FullRoadmap />
+                        </Layout>
+                    </ProtectedRoute>
+                }
+            />
+            <Route
+                path="/roadmap/:phaseId"
+                element={
+                    <ProtectedRoute>
+                        <Layout>
+                            <PhaseDetail />
                         </Layout>
                     </ProtectedRoute>
                 }

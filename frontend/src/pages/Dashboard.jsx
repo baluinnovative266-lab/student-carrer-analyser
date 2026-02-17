@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
     RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar
 } from 'recharts';
-import { CheckCircle, XCircle, TrendingUp, BookOpen, Target, Award, BarChart3, X, ChevronDown, ChevronUp, ShieldCheck, Sparkles, Layout, Info } from 'lucide-react';
+import { CheckCircle, XCircle, TrendingUp, BookOpen, Target, Award, BarChart3, X, ChevronDown, ChevronUp, ShieldCheck, Sparkles, Layout, Info, ChevronRight } from 'lucide-react';
 import ChatBot from '../components/ChatBot';
 import FAQSection from '../components/FAQSection';
 
@@ -28,6 +28,7 @@ const StatCard = ({ title, value, icon, color, bg, onClick }) => (
 
 const Dashboard = () => {
     const location = useLocation();
+    const navigate = useNavigate();
     const [stats, setStats] = useState(null);
     const [loading, setLoading] = useState(true);
     const [selectedStat, setSelectedStat] = useState(null); // For General Stats Modal
@@ -62,6 +63,17 @@ const Dashboard = () => {
 
             if (data) {
                 setStats(data);
+                // Persist for deep-link pages
+                if (data.recommended_roadmap) {
+                    localStorage.setItem('current_roadmap', JSON.stringify(data.recommended_roadmap));
+                }
+            } else {
+                // Try to load from persistence if state is lost on refresh
+                const cachedRoadmap = localStorage.getItem('current_roadmap');
+                if (cachedRoadmap && !stats) {
+                    // We don't have full stats but we have roadmap, enough for some fallback
+                    // This is a safety net
+                }
             }
         } catch (err) {
             console.error("Dashboard mount error:", err);
@@ -228,12 +240,22 @@ const Dashboard = () => {
                         {/* Decorative background element */}
                         <div className="absolute -top-10 -right-10 w-40 h-40 bg-indigo-50 rounded-full blur-3xl opacity-50" />
 
-                        <h3 className="text-2xl font-black text-gray-900 mb-10 flex items-center gap-3" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-                            <div className="p-2 bg-indigo-600 rounded-lg text-white">
-                                <TrendingUp size={24} />
-                            </div>
-                            Personalized Success Journey
-                        </h3>
+                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10 relative z-10">
+                            <h3 className="text-2xl font-black text-gray-900 flex items-center gap-3" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+                                <div className="p-2 bg-indigo-600 rounded-lg text-white">
+                                    <TrendingUp size={24} />
+                                </div>
+                                Personalized Success Journey
+                            </h3>
+                            <Link
+                                to="/roadmap/full"
+                                state={{ roadmap: stats.recommended_roadmap }}
+                                className="flex items-center gap-2 text-sm font-bold text-indigo-600 hover:text-indigo-800 transition-colors group"
+                            >
+                                View Full Journey
+                                <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                            </Link>
+                        </div>
 
                         <div className="space-y-12 relative">
                             {/* The vertical connection line */}
@@ -254,15 +276,31 @@ const Dashboard = () => {
                                 return normalizedRoadmap.map((phase, pIndex) => (
                                     <div key={pIndex} className="relative pl-16">
                                         {/* Phase Header */}
-                                        <div className="absolute left-0 top-0 w-14 h-14 bg-white border-4 border-indigo-500 rounded-2xl flex items-center justify-center shadow-lg z-10 transition-transform hover:rotate-3">
-                                            <span className="text-xl font-black text-indigo-600">{pIndex + 1}</span>
-                                        </div>
+                                        <Link
+                                            to={`/roadmap/phase-${pIndex + 1}`}
+                                            state={{ roadmap: normalizedRoadmap }}
+                                            className="absolute left-0 top-0 w-14 h-14 bg-white border-4 border-indigo-500 rounded-2xl flex items-center justify-center shadow-lg z-10 transition-all hover:scale-110 hover:rotate-3 cursor-pointer group"
+                                        >
+                                            <span className="text-xl font-black text-indigo-600 group-hover:text-blue-600">{pIndex + 1}</span>
+                                            <div className="absolute -top-1 -right-1 w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                                <ChevronRight className="w-3 h-3 text-white" />
+                                            </div>
+                                        </Link>
 
-                                        <div className="mb-6">
-                                            <h4 className="text-lg font-black text-gray-900 mb-2 uppercase tracking-tight" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-                                                {phase.phase}
-                                            </h4>
-                                            <div className="h-1 w-20 bg-indigo-500 rounded-full" />
+                                        <div className="mb-6 flex items-center justify-between pr-4">
+                                            <div>
+                                                <h4 className="text-lg font-black text-gray-900 mb-2 uppercase tracking-tight" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+                                                    {phase.phase}
+                                                </h4>
+                                                <div className="h-1 w-20 bg-indigo-500 rounded-full" />
+                                            </div>
+                                            <Link
+                                                to={`/roadmap/phase-${pIndex + 1}`}
+                                                state={{ roadmap: normalizedRoadmap }}
+                                                className="text-xs font-bold text-indigo-400 hover:text-indigo-600 uppercase tracking-widest hidden md:block"
+                                            >
+                                                Learn More
+                                            </Link>
                                         </div>
 
                                         <div className="grid gap-4">
