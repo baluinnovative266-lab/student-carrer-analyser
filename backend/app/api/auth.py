@@ -5,12 +5,12 @@ from app.core.database import get_db
 from app.models.user import User
 from app.services.auth_service import verify_password, get_password_hash, create_access_token
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, List, Any
 
 router = APIRouter()
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/auth/login")
-oauth2_scheme_optional = OAuth2PasswordBearer(tokenUrl="api/auth/login", auto_error=False)
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")
+oauth2_scheme_optional = OAuth2PasswordBearer(tokenUrl="/api/auth/login", auto_error=False)
 
 def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
     from jose import jwt, JWTError
@@ -111,8 +111,6 @@ def update_profile(data: ProfileUpdate, current_user: User = Depends(get_current
 @router.get("/avatar-recommendations")
 def get_avatar_recommendations(current_user: User = Depends(get_current_user)):
     career = current_user.predicted_career or "Student"
-    
-    # Map career to asset folders
     mapping = {
         "Software Engineer": "software",
         "Web Developer": "software",
@@ -121,11 +119,4 @@ def get_avatar_recommendations(current_user: User = Depends(get_current_user)):
         "Product Manager": "management"
     }
     folder = mapping.get(career, "student")
-    
-    # Return 4 professional recommendations
-    return [
-        f"/avatars/{folder}/1.svg",
-        f"/avatars/{folder}/2.svg",
-        f"/avatars/{folder}/3.svg",
-        f"/avatars/{folder}/4.svg"
-    ]
+    return [f"/avatars/{folder}/{i}.svg" for i in range(1, 5)]

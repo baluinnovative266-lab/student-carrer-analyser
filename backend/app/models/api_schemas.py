@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import List, Optional
+from typing import List, Optional, Any
 
 class StudentProfile(BaseModel):
     name: str
@@ -18,11 +18,16 @@ class CareerProbability(BaseModel):
     name: str
     prob: float
 
+class SkillMetadata(BaseModel):
+    name: str
+    category: str
+    description: str
+
 class CareerPredictionResponse(BaseModel):
     predicted_career: str
     confidence: Optional[float] = None
     probabilities: List[CareerProbability] = []
-    extracted_skills: List[str] = []
+    extracted_skills: List[SkillMetadata] = []
     missing_skills: List[str] = []
     recommended_roadmap: List[dict] = []
     radar_data: List[dict] = []
@@ -32,7 +37,7 @@ class CareerPredictionResponse(BaseModel):
     skill_comparison_data: List[dict] = []
 
 class SkillGapResponse(BaseModel):
-    extracted_skills: List[str]
+    extracted_skills: List[SkillMetadata]
     missing_skills: List[str]
     recommended_roadmap: List[dict]
     radar_data: List[dict] = []

@@ -151,8 +151,8 @@ const ChatBot = ({ career, skills }) => {
                                                 {msg.role === 'user' ? <User size={16} /> : <Bot size={16} />}
                                             </div>
                                             <div className={`p-4 rounded-3xl text-sm leading-relaxed ${msg.role === 'user'
-                                                    ? 'bg-indigo-600 text-white rounded-tr-none shadow-lg shadow-indigo-200'
-                                                    : 'bg-white text-gray-800 border border-gray-100 shadow-md rounded-tl-none'
+                                                ? 'bg-indigo-600 text-white rounded-tr-none shadow-lg shadow-indigo-200'
+                                                : 'bg-white text-gray-800 border border-gray-100 shadow-md rounded-tl-none'
                                                 }`}>
                                                 {msg.content}
                                             </div>
@@ -163,58 +163,56 @@ const ChatBot = ({ career, skills }) => {
                             ))}
 
                             {isLoading && (
-                                <div className="flex justify-start">
-                                    <div className="flex flex-col gap-1 items-start">
-                                        <div className="flex gap-2">
-                                            <div className="w-8 h-8 rounded-2xl bg-white border border-pink-100 text-pink-600 flex items-center justify-center shadow-sm">
-                                                <Bot size={16} />
-                                            </div>
-                                            <div className="p-4 bg-white border border-gray-100 shadow-md rounded-3xl rounded-tl-none flex items-center gap-2">
-                                                <span className="text-xs text-gray-400 animate-pulse font-medium">Assistant is typing</span>
-                                                <Loader2 size={12} className="animate-spin text-pink-500" />
-                                            </div>
+                                <motion.div
+                                    initial={{ opacity: 0, scale: 0.8 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    className="flex justify-start"
+                                >
+                                    <div className="bg-white border border-pink-100 p-4 rounded-3xl shadow-sm flex items-center gap-2">
+                                        <div className="flex gap-1">
+                                            <motion.div animate={{ y: [0, -5, 0] }} transition={{ repeat: Infinity, duration: 0.6, delay: 0 }} className="w-1.5 h-1.5 bg-pink-500 rounded-full" />
+                                            <motion.div animate={{ y: [0, -5, 0] }} transition={{ repeat: Infinity, duration: 0.6, delay: 0.2 }} className="w-1.5 h-1.5 bg-indigo-500 rounded-full" />
+                                            <motion.div animate={{ y: [0, -5, 0] }} transition={{ repeat: Infinity, duration: 0.6, delay: 0.4 }} className="w-1.5 h-1.5 bg-emerald-500 rounded-full" />
                                         </div>
+                                        <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">AI is thinking</span>
                                     </div>
-                                </div>
+                                </motion.div>
                             )}
                             <div ref={messagesEndRef} />
                         </div>
 
-                        {/* Suggestions */}
-                        {!isLoading && messages.length < 5 && (
-                            <div className="px-4 py-2 flex flex-wrap gap-2 bg-gray-50/30">
-                                {suggestions.map((s, i) => (
-                                    <motion.button
-                                        key={i}
-                                        whileHover={{ scale: 1.05, backgroundColor: '#f3f4f6' }}
-                                        whileTap={{ scale: 0.95 }}
-                                        onClick={() => handleSend(s)}
-                                        className="text-[11px] font-bold text-indigo-600 bg-white border border-indigo-100 px-3 py-1.5 rounded-full shadow-sm"
-                                    >
-                                        {s}
-                                    </motion.button>
-                                ))}
-                            </div>
-                        )}
+                        {/* Suggestions Area */}
+                        <div className="px-4 py-2 flex flex-wrap gap-2 border-t border-gray-50 bg-white">
+                            {suggestions.map((suggest, sIdx) => (
+                                <motion.button
+                                    key={sIdx}
+                                    whileHover={{ scale: 1.05, backgroundColor: '#fdf2f8' }}
+                                    whileTap={{ scale: 0.95 }}
+                                    onClick={() => handleSend(suggest)}
+                                    className="px-3 py-1.5 bg-gray-50 text-indigo-600 rounded-full text-xs font-bold border border-indigo-50 transition-colors hover:border-pink-200"
+                                >
+                                    {suggest}
+                                </motion.button>
+                            ))}
+                        </div>
 
-                        {/* Input Area */}
+                        {/* Input Form */}
                         <form
                             onSubmit={(e) => { e.preventDefault(); handleSend(); }}
-                            className="p-6 border-t border-gray-100 bg-white"
+                            className="p-6 bg-white border-t border-gray-100"
                         >
                             <div className="relative">
                                 <input
                                     type="text"
                                     value={input}
                                     onChange={(e) => setInput(e.target.value)}
-                                    placeholder="Type your question here..."
-                                    className="w-full bg-gray-50 border border-gray-200 rounded-[2rem] py-4 pl-6 pr-14 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all font-medium"
-                                    disabled={isLoading}
+                                    placeholder="Ask your career AI..."
+                                    className="w-full pl-5 pr-14 py-4 bg-gray-50 border-2 border-transparent focus:border-indigo-500 focus:bg-white rounded-2xl text-sm font-medium transition-all outline-none"
                                 />
                                 <button
                                     type="submit"
                                     disabled={!input.trim() || isLoading}
-                                    className="absolute right-2 top-1/2 -translate-y-1/2 w-11 h-11 bg-gradient-to-br from-pink-500 to-indigo-600 text-white rounded-full flex items-center justify-center disabled:opacity-50 disabled:grayscale transition-all shadow-lg active:scale-90"
+                                    className="absolute right-2 top-2 w-10 h-10 bg-indigo-600 text-white rounded-xl flex items-center justify-center hover:bg-pink-600 disabled:bg-gray-200 disabled:cursor-not-allowed transition-all shadow-lg shadow-indigo-200"
                                 >
                                     <Send size={18} />
                                 </button>

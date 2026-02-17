@@ -5,21 +5,41 @@ import {
     BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
     RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar
 } from 'recharts';
-import { CheckCircle, XCircle, TrendingUp, BookOpen, Target, Award, BarChart3, X, ChevronDown, ChevronUp } from 'lucide-react';
+import { CheckCircle, XCircle, TrendingUp, BookOpen, Target, Award, BarChart3, X, ChevronDown, ChevronUp, ShieldCheck, Sparkles, Layout, Info } from 'lucide-react';
 import ChatBot from '../components/ChatBot';
+import FAQSection from '../components/FAQSection';
+
+const StatCard = ({ title, value, icon, color, bg, onClick }) => (
+    <motion.div
+        whileHover={{ y: -5, scale: 1.02 }}
+        whileTap={{ scale: 0.98 }}
+        className={`bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4 cursor-pointer hover:shadow-md transition-all group`}
+        onClick={onClick}
+    >
+        <div className={`w-12 h-12 rounded-full flex items-center justify-center ${bg} ${color} group-hover:scale-110 transition-transform`}>
+            {icon}
+        </div>
+        <div>
+            <p className="text-gray-500 text-sm font-medium">{title}</p>
+            <p className="text-2xl font-bold text-gray-900 group-hover:text-pink-600 transition-colors">{value}</p>
+        </div>
+    </motion.div>
+);
 
 const Dashboard = () => {
     const location = useLocation();
     const [stats, setStats] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [selectedStat, setSelectedStat] = useState(null); // For Modal
+    const [selectedStat, setSelectedStat] = useState(null); // For General Stats Modal
+    const [selectedSkill, setSelectedSkill] = useState(null); // For Skill Matter Modal
     const [expandedSteps, setExpandedSteps] = useState({}); // For Roadmap
 
     const Counter = ({ target, duration = 1.5 }) => {
         const [count, setCount] = useState(0);
         useEffect(() => {
+            if (!target) return;
             let start = 0;
-            const end = parseInt(target);
+            const end = parseInt(target) || 0;
             if (start === end) return;
             let timer = setInterval(() => {
                 start += Math.ceil(end / 40);
@@ -36,14 +56,16 @@ const Dashboard = () => {
     };
 
     useEffect(() => {
-        // Mock data or data passed from ResumeAnalysis
-        const data = location.state?.resumeResults || location.state?.predictionResults;
+        try {
+            // Mock data or data passed from ResumeAnalysis
+            const data = location.state?.resumeResults || location.state?.predictionResults;
 
-        if (data) {
-            setStats(data);
-            setLoading(false);
-        } else {
-            // No data passed, stop loading to show "Get Started"
+            if (data) {
+                setStats(data);
+            }
+        } catch (err) {
+            console.error("Dashboard mount error:", err);
+        } finally {
             setLoading(false);
         }
     }, [location.state]);
@@ -56,7 +78,7 @@ const Dashboard = () => {
         return (
             <div className="min-h-screen pt-20 flex items-center justify-center bg-gray-50">
                 <div className="flex flex-col items-center gap-4">
-                    <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+                    <div className="w-16 h-16 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
                     <p className="text-gray-500 font-medium">Loading your career insights...</p>
                 </div>
             </div>
@@ -112,23 +134,23 @@ const Dashboard = () => {
                         icon={<Target />}
                         color="text-primary"
                         bg="bg-red-50"
-                        onClick={() => setSelectedStat({ type: 'match', title: 'Match Score Breakdown', data: stats.radar_data })}
+                        onClick={() => setSelectedStat({ type: 'match', title: 'Match Score Breakdown', data: stats.radar_data || [] })}
                     />
                     <StatCard
                         title="Skills Found"
-                        value={stats.extracted_skills.length}
+                        value={(stats.extracted_skills || []).length}
                         icon={<CheckCircle />}
                         color="text-green-600"
                         bg="bg-green-50"
-                        onClick={() => setSelectedStat({ type: 'skills_found', title: 'Verified Skills', data: stats.extracted_skills })}
+                        onClick={() => setSelectedStat({ type: 'skills_found', title: 'Verified Skills', data: stats.extracted_skills || [] })}
                     />
                     <StatCard
                         title="Skills Gap"
-                        value={stats.missing_skills.length}
+                        value={(stats.missing_skills || []).length}
                         icon={<XCircle />}
                         color="text-orange-600"
                         bg="bg-orange-50"
-                        onClick={() => setSelectedStat({ type: 'skills_gap', title: 'Missing Skills', data: stats.missing_skills })}
+                        onClick={() => setSelectedStat({ type: 'skills_gap', title: 'Missing Skills', data: stats.missing_skills || [] })}
                     />
                     <StatCard
                         title="Next Goal"
@@ -173,7 +195,7 @@ const Dashboard = () => {
                         {/* Animated Skill Bars Section */}
                         <div className="mt-8 pt-8 border-t border-gray-100 space-y-5">
                             <h4 className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-4">Mastery Breakdown</h4>
-                            {stats.radar_data.map((skill, i) => (
+                            {(stats.radar_data || []).map((skill, i) => (
                                 <div key={i} className="space-y-2">
                                     <div className="flex justify-between items-center text-sm">
                                         <span className="font-bold text-gray-700">{skill.subject}</span>
@@ -184,7 +206,7 @@ const Dashboard = () => {
                                     <div className="relative w-full h-3 bg-gray-100 rounded-full overflow-hidden shadow-inner">
                                         <motion.div
                                             initial={{ width: 0 }}
-                                            animate={{ width: `${skill.A}%` }}
+                                            animate={{ width: `${skill.A || 0}%` }}
                                             transition={{ duration: 1.5, ease: "easeOut", delay: i * 0.1 }}
                                             className="absolute top-0 left-0 h-full bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-600 rounded-full"
                                         >
@@ -196,102 +218,104 @@ const Dashboard = () => {
                         </div>
                     </motion.div>
 
-                    {/* Flow-Path Roadmap */}
+                    {/* 4-Phase Flow-Path Roadmap */}
                     <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.1 }}
-                        className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 lg:col-span-2"
+                        initial={{ opacity: 0, scale: 0.98 }}
+                        whileInView={{ opacity: 1, scale: 1 }}
+                        viewport={{ once: true }}
+                        className="bg-white p-8 rounded-3xl shadow-xl border border-gray-100 lg:col-span-2 relative overflow-hidden"
                     >
-                        <h3 className="text-lg font-bold text-gray-800 mb-8 flex items-center gap-2" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-                            <BookOpen className="text-indigo-600" size={20} /> Your Career Roadmap
-                        </h3>
-                        <div className="relative">
-                            {stats.recommended_roadmap.map((step, index) => {
-                                const isLast = index === stats.recommended_roadmap.length - 1;
-                                const colors = [
-                                    { bg: 'bg-indigo-500', ring: 'ring-indigo-100', accent: 'border-indigo-200', lightBg: 'bg-indigo-50' },
-                                    { bg: 'bg-violet-500', ring: 'ring-violet-100', accent: 'border-violet-200', lightBg: 'bg-violet-50' },
-                                    { bg: 'bg-blue-500', ring: 'ring-blue-100', accent: 'border-blue-200', lightBg: 'bg-blue-50' },
-                                    { bg: 'bg-cyan-500', ring: 'ring-cyan-100', accent: 'border-cyan-200', lightBg: 'bg-cyan-50' },
-                                    { bg: 'bg-emerald-500', ring: 'ring-emerald-100', accent: 'border-emerald-200', lightBg: 'bg-emerald-50' },
-                                ];
-                                const c = colors[index % colors.length];
-                                const durations = ['2-3 weeks', '3-4 weeks', '2 weeks', '4 weeks', '3 weeks'];
+                        {/* Decorative background element */}
+                        <div className="absolute -top-10 -right-10 w-40 h-40 bg-indigo-50 rounded-full blur-3xl opacity-50" />
 
-                                // Handle both old string format and new dict format
-                                const stepTitle = typeof step === 'string' ? step : step.title;
-                                const stepDesc = typeof step === 'string' ? '' : step.description;
-                                const isExpanded = expandedSteps[index];
-
-                                return (
-                                    <motion.div
-                                        key={index}
-                                        initial={{ opacity: 0, x: -20 }}
-                                        animate={{ opacity: 1, x: 0 }}
-                                        transition={{ delay: 0.15 * index }}
-                                        className="flex items-start gap-5 mb-0"
-                                    >
-                                        {/* Flow node + connector */}
-                                        <div className="flex flex-col items-center">
-                                            <div
-                                                className={`w-10 h-10 rounded-full ${c.bg} ring-4 ${c.ring} text-white flex items-center justify-center font-bold text-sm shadow-lg z-10 flex-shrink-0 cursor-pointer transition-transform hover:scale-110`}
-                                                onClick={() => toggleStep(index)}
-                                            >
-                                                {index + 1}
-                                            </div>
-                                            {!isLast && (
-                                                <div className="w-0.5 h-full bg-gradient-to-b from-gray-300 to-gray-200 min-h-[4rem]" />
-                                            )}
-                                        </div>
-
-                                        {/* Content */}
-                                        <div className={`flex-1 pb-8 ${isLast ? '' : ''}`}>
-                                            <div
-                                                className={`p-5 rounded-xl ${c.lightBg} border ${c.accent} hover:shadow-md transition-all cursor-pointer`}
-                                                onClick={() => toggleStep(index)}
-                                            >
-                                                <div className="flex justify-between items-center mb-2">
-                                                    <p className="text-gray-900 font-bold text-base" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-                                                        {stepTitle}
-                                                    </p>
-                                                    {isExpanded ? <ChevronUp size={18} className="text-gray-400" /> : <ChevronDown size={18} className="text-gray-400" />}
-                                                </div>
-
-                                                <AnimatePresence>
-                                                    {isExpanded && stepDesc && (
-                                                        <motion.div
-                                                            initial={{ height: 0, opacity: 0 }}
-                                                            animate={{ height: 'auto', opacity: 1 }}
-                                                            exit={{ height: 0, opacity: 0 }}
-                                                            transition={{ duration: 0.2 }}
-                                                            className="overflow-hidden"
-                                                        >
-                                                            <p className="text-gray-600 text-sm mb-3 leading-relaxed" style={{ fontFamily: "'Inter', sans-serif" }}>
-                                                                {stepDesc}
-                                                            </p>
-                                                        </motion.div>
-                                                    )}
-                                                </AnimatePresence>
-
-                                                <div className="flex items-center gap-2 mt-1">
-                                                    <div className={`h-1.5 w-1.5 rounded-full ${c.bg}`}></div>
-                                                    <p className="text-xs text-gray-400 font-medium uppercase tracking-wider" style={{ fontFamily: "'Inter', sans-serif" }}>
-                                                        Estimated: {durations[index % durations.length]}
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </motion.div>
-                                );
-                            })}
-                            {/* Final checkpoint */}
-                            <div className="flex items-center gap-5 ml-0 pt-2">
-                                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-400 to-green-500 ring-4 ring-green-100 text-white flex items-center justify-center shadow-lg">
-                                    <CheckCircle size={20} />
-                                </div>
-                                <p className="text-lg font-bold text-emerald-600" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>Career Ready! 🎯</p>
+                        <h3 className="text-2xl font-black text-gray-900 mb-10 flex items-center gap-3" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+                            <div className="p-2 bg-indigo-600 rounded-lg text-white">
+                                <TrendingUp size={24} />
                             </div>
+                            Personalized Success Journey
+                        </h3>
+
+                        <div className="space-y-12 relative">
+                            {/* The vertical connection line */}
+                            <div className="absolute left-[27px] top-4 bottom-4 w-1 bg-gradient-to-b from-indigo-500 via-purple-500 to-emerald-500 rounded-full opacity-20" />
+
+                            {(() => {
+                                // Backward compatibility check for roadmap format
+                                const roadmap = Array.isArray(stats.recommended_roadmap) ? stats.recommended_roadmap : [];
+                                const isNewFormat = roadmap.length > 0 && typeof roadmap[0] === 'object' && roadmap[0].phase;
+
+                                const normalizedRoadmap = isNewFormat ? roadmap : [
+                                    {
+                                        phase: "Career Path Steps",
+                                        steps: roadmap.map(step => (typeof step === 'string' ? { title: step, skill: 'General', duration: '2-3 weeks', outcome: 'Mastery' } : step))
+                                    }
+                                ];
+
+                                return normalizedRoadmap.map((phase, pIndex) => (
+                                    <div key={pIndex} className="relative pl-16">
+                                        {/* Phase Header */}
+                                        <div className="absolute left-0 top-0 w-14 h-14 bg-white border-4 border-indigo-500 rounded-2xl flex items-center justify-center shadow-lg z-10 transition-transform hover:rotate-3">
+                                            <span className="text-xl font-black text-indigo-600">{pIndex + 1}</span>
+                                        </div>
+
+                                        <div className="mb-6">
+                                            <h4 className="text-lg font-black text-gray-900 mb-2 uppercase tracking-tight" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+                                                {phase.phase}
+                                            </h4>
+                                            <div className="h-1 w-20 bg-indigo-500 rounded-full" />
+                                        </div>
+
+                                        <div className="grid gap-4">
+                                            {Array.isArray(phase.steps) && phase.steps.map((step, sIndex) => {
+                                                const statusColors = {
+                                                    completed: "bg-emerald-50 border-emerald-200 text-emerald-700",
+                                                    critical: "bg-rose-50 border-rose-200 text-rose-700",
+                                                    'fast-track': "bg-amber-50 border-amber-200 text-amber-700",
+                                                    upcoming: "bg-gray-50 border-gray-100 text-gray-600"
+                                                };
+                                                const currentStatus = step.status || 'upcoming';
+
+                                                return (
+                                                    <motion.div
+                                                        key={sIndex}
+                                                        whileHover={{ x: 10, backgroundColor: '#f8fafc' }}
+                                                        className={`p-5 rounded-2xl border-2 transition-all cursor-pointer ${statusColors[currentStatus] || statusColors.upcoming}`}
+                                                        onClick={() => setExpandedSteps(prev => ({ ...prev, [`${pIndex}-${sIndex}`]: !prev[`${pIndex}-${sIndex}`] }))}
+                                                    >
+                                                        <div className="flex justify-between items-start gap-4">
+                                                            <div>
+                                                                <div className="flex items-center gap-2 mb-1">
+                                                                    <span className="text-xs font-black uppercase tracking-widest opacity-60">{step.skill}</span>
+                                                                    {currentStatus === 'completed' && <CheckCircle size={14} className="text-emerald-500" />}
+                                                                    {currentStatus === 'critical' && <Sparkles size={14} className="text-rose-500" />}
+                                                                </div>
+                                                                <p className="font-bold text-gray-900 leading-tight mb-1">{step.title}</p>
+                                                                <p className="text-xs font-medium opacity-80">Duration: {step.duration}</p>
+                                                            </div>
+                                                            <ChevronDown className={`transition-transform duration-300 ${expandedSteps[`${pIndex}-${sIndex}`] ? 'rotate-180' : ''}`} size={18} />
+                                                        </div>
+
+                                                        <AnimatePresence>
+                                                            {expandedSteps[`${pIndex}-${sIndex}`] && (
+                                                                <motion.div
+                                                                    initial={{ height: 0, opacity: 0 }}
+                                                                    animate={{ height: 'auto', opacity: 1 }}
+                                                                    exit={{ height: 0, opacity: 0 }}
+                                                                    className="overflow-hidden mt-3 pt-3 border-t border-black/5"
+                                                                >
+                                                                    <p className="text-sm font-medium leading-relaxed">
+                                                                        {step.custom_description || step.outcome}
+                                                                    </p>
+                                                                </motion.div>
+                                                            )}
+                                                        </AnimatePresence>
+                                                    </motion.div>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                ));
+                            })()}
                         </div>
                     </motion.div>
                 </div>
@@ -356,26 +380,124 @@ const Dashboard = () => {
                     )}
                 </div>
 
-                {/* Extracted Skills Tags */}
+                {/* Enhanced Categorized Verified Skills Section */}
                 <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.2 }}
-                    className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100"
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    className="bg-white p-10 rounded-3xl shadow-xl border border-gray-100 mb-10 overflow-hidden relative"
                 >
-                    <h3 className="text-lg font-bold text-gray-800 mb-6">Verified Skills</h3>
-                    <div className="flex flex-wrap gap-3">
-                        {stats.extracted_skills.map((skill, index) => (
-                            <span
-                                key={index}
-                                className="px-4 py-2 bg-green-50 text-green-700 rounded-lg text-sm font-semibold border border-green-100"
-                            >
-                                {skill}
-                            </span>
-                        ))}
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-50 rounded-full blur-[100px] -mr-32 -mt-32 pointer-events-none" />
+
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12 relative z-10">
+                        <div>
+                            <h3 className="text-2xl font-black text-gray-900 mb-2" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>Verified Career Competencies</h3>
+                            <p className="text-gray-500 font-medium">Click any skill to reveal expert insights and mastery details.</p>
+                        </div>
+                        <div className="flex items-center gap-2 px-4 py-2 bg-emerald-50 text-emerald-700 rounded-full font-bold text-sm border border-emerald-100 animate-pulse">
+                            <ShieldCheck size={18} /> Verified by AI
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10">
+                        {['Technical', 'Soft Skills', 'Tools'].map((category) => {
+                            const skillsInCategory = stats.extracted_skills.filter(s => s.category === category || (category === 'Tools' && s.category === 'Tools & Frameworks'));
+                            const iconMap = {
+                                'Technical': <Layout className="text-indigo-600" />,
+                                'Soft Skills': <Sparkles className="text-pink-600" />,
+                                'Tools': <Target className="text-emerald-600" />
+                            };
+
+                            return (
+                                <div key={category} className="space-y-6">
+                                    <div className="flex items-center gap-3 pb-4 border-b-2 border-gray-50">
+                                        <div className="p-2 rounded-xl bg-gray-50">
+                                            {iconMap[category]}
+                                        </div>
+                                        <h4 className="font-black text-gray-800 uppercase tracking-widest text-sm">{category}</h4>
+                                    </div>
+
+                                    <div className="flex flex-wrap gap-3">
+                                        {skillsInCategory.length > 0 ? (
+                                            skillsInCategory.map((skill, index) => (
+                                                <motion.button
+                                                    key={index}
+                                                    whileHover={{ scale: 1.05, y: -2 }}
+                                                    whileTap={{ scale: 0.95 }}
+                                                    onClick={() => setSelectedSkill(skill)}
+                                                    className="group flex items-center gap-2 px-4 py-3 bg-white border-2 border-gray-100 rounded-2xl hover:border-indigo-500 hover:shadow-lg hover:shadow-indigo-500/10 transition-all text-left"
+                                                >
+                                                    <span className="font-bold text-gray-700 group-hover:text-indigo-600">{skill.name}</span>
+                                                    <Info size={14} className="text-gray-300 group-hover:text-indigo-400" />
+                                                </motion.button>
+                                            ))
+                                        ) : (
+                                            <p className="text-gray-400 text-sm italic font-medium">No {category.toLowerCase()} identified yet.</p>
+                                        )}
+                                    </div>
+                                </div>
+                            );
+                        })}
                     </div>
                 </motion.div>
+
+                {/* SaaS FAQ Section */}
+                <FAQSection />
             </div>
+
+            {/* Modal for Skill Matter (Interactive Description) */}
+            <AnimatePresence>
+                {selectedSkill && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            className="absolute inset-0 bg-black/60 backdrop-blur-md"
+                            onClick={() => setSelectedSkill(null)}
+                        />
+                        <motion.div
+                            initial={{ scale: 0.9, opacity: 0, rotateX: -10 }}
+                            animate={{ scale: 1, opacity: 1, rotateX: 0 }}
+                            exit={{ scale: 0.9, opacity: 0, rotateX: 10 }}
+                            className="bg-white w-full max-w-md rounded-[2.5rem] p-10 shadow-2xl relative z-10 border border-white/20"
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <button
+                                onClick={() => setSelectedSkill(null)}
+                                className="absolute top-6 right-6 p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-colors"
+                            >
+                                <X size={24} />
+                            </button>
+
+                            <div className="inline-flex p-4 rounded-3xl bg-indigo-50 text-indigo-600 mb-6 font-black text-sm uppercase tracking-widest border border-indigo-100">
+                                {selectedSkill.category}
+                            </div>
+
+                            <h3 className="text-3xl font-black text-gray-900 mb-4" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+                                {selectedSkill.name}
+                            </h3>
+
+                            <div className="h-1.5 w-16 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full mb-8" />
+
+                            <div className="p-6 bg-gray-50 rounded-3xl border border-gray-100 shadow-inner">
+                                <p className="text-lg text-gray-700 leading-relaxed font-medium italic">
+                                    "{selectedSkill.description}"
+                                </p>
+                            </div>
+
+                            <div className="mt-10 flex justify-center">
+                                <button
+                                    onClick={() => setSelectedSkill(null)}
+                                    className="bg-gray-900 text-white px-8 py-3 rounded-2xl font-bold hover:bg-indigo-600 transition-colors shadow-lg shadow-indigo-200"
+                                >
+                                    Got it, thanks!
+                                </button>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
 
             {/* Modal for Detailed Stats */}
             <AnimatePresence>
@@ -430,12 +552,15 @@ const Dashboard = () => {
                                 {(selectedStat.type === 'skills_found' || selectedStat.type === 'skills_gap') && (
                                     <div className="grid grid-cols-1 gap-3">
                                         {Array.isArray(selectedStat.data) && selectedStat.data.length > 0 ? (
-                                            selectedStat.data.map((skill, i) => (
-                                                <div key={i} className={`p-4 rounded-xl border flex items-center gap-3 ${selectedStat.type === 'skills_found' ? 'bg-green-50 border-green-100 text-green-800' : 'bg-orange-50 border-orange-100 text-orange-800'}`}>
-                                                    {selectedStat.type === 'skills_found' ? <CheckCircle size={20} /> : <XCircle size={20} />}
-                                                    <span className="font-semibold">{skill}</span>
-                                                </div>
-                                            ))
+                                            selectedStat.data.map((skill, i) => {
+                                                const skillName = typeof skill === 'object' ? skill.name : skill;
+                                                return (
+                                                    <div key={i} className={`p-4 rounded-xl border flex items-center gap-3 ${selectedStat.type === 'skills_found' ? 'bg-green-50 border-green-100 text-green-800' : 'bg-orange-50 border-orange-100 text-orange-800'}`}>
+                                                        {selectedStat.type === 'skills_found' ? <CheckCircle size={20} /> : <XCircle size={20} />}
+                                                        <span className="font-semibold">{skillName}</span>
+                                                    </div>
+                                                );
+                                            })
                                         ) : (
                                             <p className="text-gray-500 italic text-center py-4">No skills listed in this category.</p>
                                         )}
@@ -468,22 +593,5 @@ const Dashboard = () => {
         </div>
     );
 };
-
-const StatCard = ({ title, value, icon, color, bg, onClick }) => (
-    <motion.div
-        whileHover={{ y: -5, scale: 1.02 }}
-        whileTap={{ scale: 0.98 }}
-        className={`bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4 cursor-pointer hover:shadow-md transition-all group`}
-        onClick={onClick}
-    >
-        <div className={`w-12 h-12 rounded-full flex items-center justify-center ${bg} ${color} group-hover:scale-110 transition-transform`}>
-            {icon}
-        </div>
-        <div>
-            <p className="text-gray-500 text-sm font-medium">{title}</p>
-            <p className="text-2xl font-bold text-gray-900 group-hover:text-pink-600 transition-colors">{value}</p>
-        </div>
-    </motion.div>
-);
 
 export default Dashboard;

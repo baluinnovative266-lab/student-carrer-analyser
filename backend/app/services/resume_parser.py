@@ -6,23 +6,25 @@ import docx
 
 class ResumeParser:
     def __init__(self):
-        # Expanded skill set for better matching
-        self.skills_db: Set[str] = {
-            # Programming Languages
-            "python", "java", "c++", "c#", "javascript", "typescript", "ruby", "php", "swift", "kotlin", "go", "rust",
-            # Web Frameworks
-            "react", "angular", "vue", "django", "flask", "fastapi", "spring boot", "asp.net", "node.js", "express",
-            # Data Science & ML
-            "numpy", "pandas", "scikit-learn", "tensorflow", "pytorch", "keras", "matplotlib", "seaborn", "opencv", "nltk", "spacy",
-            # Databases
-            "sql", "mysql", "postgresql", "mongodb", "redis", "oracle", "sqlite",
-            # DevOps & Cloud
-            "aws", "azure", "google cloud", "docker", "kubernetes", "jenkins", "git", "github", "gitlab", "ci/cd",
-            # Soft Skills
-            "communication", "leadership", "problem solving", "teamwork", "time management", "critical thinking", "adaptability",
-            # Other
-            "html", "css", "linux", "agile", "scrum", "jira"
+        # Structured skill database with categories and descriptions
+        self.skills_data = {
+            "Python": {"cat": "Technical", "desc": "High-level programming language used for web dev, AI, and automation."},
+            "JavaScript": {"cat": "Technical", "desc": "The primary language of the web, essential for interactive frontends."},
+            "React": {"cat": "Tools", "desc": "Popular JS library for building modern component-based UIs."},
+            "SQL": {"cat": "Technical", "desc": "Standard language for managing and querying relational databases."},
+            "Machine Learning": {"cat": "Technical", "desc": "Teaching computers to learn from data and make predictions."},
+            "Communication": {"cat": "Soft Skills", "desc": "Effectively conveying information to stakeholders and team members."},
+            "Problem Solving": {"cat": "Soft Skills", "desc": "Analytical approach to resolving technical and logical challenges."},
+            "Git": {"cat": "Tools", "desc": "Distributed version control system for tracking source code changes."},
+            "Docker": {"cat": "Tools", "desc": "Containerization platform to package applications with dependencies."},
+            "Figma": {"cat": "Tools", "desc": "Collaborative interface design tool for UX/UI prototyping."},
+            "Leadership": {"cat": "Soft Skills", "desc": "Inspiring and managing team efforts towards a project goal."},
+            "Agile": {"cat": "Soft Skills", "desc": "Iterative project management methodology focused on rapid delivery."},
+            "HTML": {"cat": "Technical", "desc": "Standard markup language for creating the structure of web pages."},
+            "CSS": {"cat": "Technical", "desc": "Styling language used to control the layout and design of web documents."},
+            "NLP": {"cat": "Technical", "desc": "Natural Language Processing for machines to understand human text."},
         }
+        self.skills_db: Set[str] = {s.lower() for s in self.skills_data.keys()}
 
     def extract_text_from_pdf(self, file_content: bytes) -> str:
         """Extracts text from a PDF file efficiently with fallback."""
@@ -50,25 +52,25 @@ class ResumeParser:
             print(f"Error extracting text from DOCX: {e}")
             return ""
 
-    def extract_skills(self, text: str) -> List[str]:
-        """Extracts skills from the given text using keyword matching."""
+    def extract_skills(self, text: str) -> List[dict[str, str]]:
+        """Extracts skills from the given text using keyword matching with metadata."""
         if not text:
             return []
             
         text_lower = text.lower()
-        # Remove special chars for better matching but keep spaces
         text_clean = re.sub(r'[^\w\s]', ' ', text_lower)
         
-        found_skills = set()
+        found_skills = []
         
-        # Check for each skill in the text
-        # Using word boundary checks to avoid partial matches (e.g. "go" in "good")
-        for skill in self.skills_db:
-            # Create a regex pattern for the skill safely
-            pattern = r'\b' + re.escape(skill) + r'\b'
+        for skill_name, metadata in self.skills_data.items():
+            pattern = r'\b' + re.escape(skill_name.lower()) + r'\b'
             if re.search(pattern, text_clean):
-                found_skills.add(skill.title())  # Store as Title Case
+                found_skills.append({
+                    "name": skill_name,
+                    "category": metadata["cat"],
+                    "description": metadata["desc"]
+                })
                 
-        return list(found_skills)
+        return found_skills
 
 resume_parser = ResumeParser()
