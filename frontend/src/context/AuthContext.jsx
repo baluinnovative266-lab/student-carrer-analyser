@@ -12,24 +12,42 @@ export const AuthProvider = ({ children }) => {
 
     // Configure axios defaults
     useEffect(() => {
+        const fetchProfile = async (tk) => {
+            setLoading(true);
+            try {
+                const response = await axios.get('/api/auth/me', {
+                    headers: { 'Authorization': `Bearer ${tk}` }
+                });
+                setUser(response.data);
+            } catch (err) {
+                console.error("Failed to fetch profile", err);
+                // If it's a 401, clear everything
+                if (err.response?.status === 401) {
+                    delete axios.defaults.headers.common['Authorization'];
+                    localStorage.removeItem('token');
+                    setToken(null);
+                    setUser(null);
+                }
+            } finally {
+                setLoading(false);
+            }
+        };
+
         if (token) {
             axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
             localStorage.setItem('token', token);
-            // Decode token or just set a dummy user state so ProtectedRoute doesn't redirect
-            // Ideally, you would call an endpoint like /api/auth/me here
-            setUser({ email: 'user@example.com' });
+            fetchProfile(token);
         } else {
             delete axios.defaults.headers.common['Authorization'];
             localStorage.removeItem('token');
             setUser(null);
+            setLoading(false);
         }
-        setLoading(false);
     }, [token]);
 
     const login = async (email, password) => {
         try {
-            // Adjust API URL based on your setup. Assuming proxy or full URL.
-            const response = await axios.post('http://localhost:8000/api/auth/login',
+            const response = await axios.post('/api/auth/login',
                 new URLSearchParams({ username: email, password: password }), {
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
             }
@@ -50,7 +68,7 @@ export const AuthProvider = ({ children }) => {
 
     const register = async (fullName, email, password) => {
         try {
-            const response = await axios.post('http://localhost:8000/api/auth/register', {
+            const response = await axios.post('/api/auth/register', {
                 full_name: fullName,
                 email,
                 password
@@ -72,8 +90,21 @@ export const AuthProvider = ({ children }) => {
         navigate('/');
     };
 
+    const updateProfile = async (data) => {
+        try {
+            await axios.post('/api/auth/update-profile', data);
+            // Refresh user data
+            const response = await axios.get('/api/auth/me');
+            setUser(response.data);
+            return { success: true };
+        } catch (error) {
+            console.error("Update profile failed", error);
+            return { success: false, error: error.response?.data?.detail || "Update failed" };
+        }
+    };
+
     return (
-        <AuthContext.Provider value={{ user, token, login, register, logout, loading }}>
+        <AuthContext.Provider value={{ user, token, login, register, logout, updateProfile, loading }}>
             {!loading && children}
         </AuthContext.Provider>
     );

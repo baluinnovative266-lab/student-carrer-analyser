@@ -7,6 +7,17 @@ const api = axios.create({
     },
 });
 
+// Add request interceptor to include token
+api.interceptors.request.use((config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+}, (error) => {
+    return Promise.reject(error);
+});
+
 export const checkHealth = async () => {
     const response = await api.get('/health');
     return response.data;
@@ -25,6 +36,16 @@ export const analyzeResume = async (file) => {
             'Content-Type': 'multipart/form-data',
         },
     });
+    return response.data;
+};
+
+export const getAvatarRecommendations = async () => {
+    const response = await api.get('/auth/avatar-recommendations');
+    return response.data;
+};
+
+export const updateProfile = async (data) => {
+    const response = await api.post('/auth/update-profile', data);
     return response.data;
 };
 

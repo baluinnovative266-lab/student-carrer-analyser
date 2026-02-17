@@ -8,3 +8,5 @@ class User(Base):
     full_name = Column(String, index=True)
     email = Column(String, unique=True, index=True)
     hashed_password = Column(String)
+    avatar_url = Column(String, nullable=True)
+    predicted_career = Column(String, nullable=True)

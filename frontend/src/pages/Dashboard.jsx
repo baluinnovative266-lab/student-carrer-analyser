@@ -6,6 +6,7 @@ import {
     RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar
 } from 'recharts';
 import { CheckCircle, XCircle, TrendingUp, BookOpen, Target, Award, BarChart3, X, ChevronDown, ChevronUp } from 'lucide-react';
+import ChatBot from '../components/ChatBot';
 
 const Dashboard = () => {
     const location = useLocation();
@@ -13,6 +14,26 @@ const Dashboard = () => {
     const [loading, setLoading] = useState(true);
     const [selectedStat, setSelectedStat] = useState(null); // For Modal
     const [expandedSteps, setExpandedSteps] = useState({}); // For Roadmap
+
+    const Counter = ({ target, duration = 1.5 }) => {
+        const [count, setCount] = useState(0);
+        useEffect(() => {
+            let start = 0;
+            const end = parseInt(target);
+            if (start === end) return;
+            let timer = setInterval(() => {
+                start += Math.ceil(end / 40);
+                if (start >= end) {
+                    setCount(end);
+                    clearInterval(timer);
+                } else {
+                    setCount(start);
+                }
+            }, duration * 25);
+            return () => clearInterval(timer);
+        }, [target]);
+        return <span>{count}%</span>;
+    };
 
     useEffect(() => {
         // Mock data or data passed from ResumeAnalysis
@@ -147,6 +168,31 @@ const Dashboard = () => {
                                     />
                                 </RadarChart>
                             </ResponsiveContainer>
+                        </div>
+
+                        {/* Animated Skill Bars Section */}
+                        <div className="mt-8 pt-8 border-t border-gray-100 space-y-5">
+                            <h4 className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-4">Mastery Breakdown</h4>
+                            {stats.radar_data.map((skill, i) => (
+                                <div key={i} className="space-y-2">
+                                    <div className="flex justify-between items-center text-sm">
+                                        <span className="font-bold text-gray-700">{skill.subject}</span>
+                                        <span className="font-black text-indigo-600">
+                                            <Counter target={skill.A} />
+                                        </span>
+                                    </div>
+                                    <div className="relative w-full h-3 bg-gray-100 rounded-full overflow-hidden shadow-inner">
+                                        <motion.div
+                                            initial={{ width: 0 }}
+                                            animate={{ width: `${skill.A}%` }}
+                                            transition={{ duration: 1.5, ease: "easeOut", delay: i * 0.1 }}
+                                            className="absolute top-0 left-0 h-full bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-600 rounded-full"
+                                        >
+                                            <div className="absolute top-0 right-0 w-2 h-full bg-white/30 blur-[2px]" />
+                                        </motion.div>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
                     </motion.div>
 
@@ -413,6 +459,12 @@ const Dashboard = () => {
                     </div>
                 )}
             </AnimatePresence>
+
+            {/* AI Career Assistant ChatBot */}
+            <ChatBot
+                career={stats.predicted_career}
+                skills={stats.extracted_skills}
+            />
         </div>
     );
 };

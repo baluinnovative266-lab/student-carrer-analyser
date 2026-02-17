@@ -8,6 +8,7 @@ import Layout from './components/Layout';
 import Navbar from './components/Navbar';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import Settings from './pages/Settings';
 
 const ProtectedRoute = ({ children }) => {
     const { user, loading } = useAuth();
@@ -61,6 +62,16 @@ function AppContent() {
                     <ProtectedRoute>
                         <Layout>
                             <ResumeAnalysis />
+                        </Layout>
+                    </ProtectedRoute>
+                }
+            />
+            <Route
+                path="/settings"
+                element={
+                    <ProtectedRoute>
+                        <Layout>
+                            <Settings />
                         </Layout>
                     </ProtectedRoute>
                 }
