@@ -24,11 +24,15 @@ class CareerPredictionResponse(BaseModel):
     probabilities: List[CareerProbability] = []
     extracted_skills: List[str] = []
     missing_skills: List[str] = []
-    recommended_roadmap: List[str] = []
+    recommended_roadmap: List[dict] = []
     radar_data: List[dict] = []
+    career_match_score: Optional[float] = None
+    next_recommended_skill: Optional[str] = None
+    probability_chart_data: List[dict] = []
+    skill_comparison_data: List[dict] = []
 
 class SkillGapResponse(BaseModel):
     extracted_skills: List[str]
     missing_skills: List[str]
-    recommended_roadmap: List[str]
+    recommended_roadmap: List[dict]
     radar_data: List[dict] = []
