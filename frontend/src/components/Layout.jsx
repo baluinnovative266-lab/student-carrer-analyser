@@ -1,9 +1,11 @@
+import React from 'react';
 import Navbar from './Navbar';
 import { motion } from 'framer-motion';
+import ChatBot from './ChatBot';
 
 const Layout = ({ children }) => {
     return (
-        <div className="min-h-screen bg-gray-50 font-sans text-gray-900">
+        <div className="min-h-screen bg-slate-900 font-sans text-white">
             <Navbar />
             <motion.main
                 initial={{ opacity: 0, y: 20 }}
@@ -13,6 +15,7 @@ const Layout = ({ children }) => {
             >
                 {children}
             </motion.main>
+            <ChatBot />
         </div>
     );
 };

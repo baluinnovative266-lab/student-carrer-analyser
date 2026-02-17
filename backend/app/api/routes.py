@@ -35,13 +35,14 @@ def predict_career(input_data: CareerInput, current_user: Optional[User] = Depen
         "design": input_data.interest_design * 10
     }
     
-    roadmap = roadmap_engine.generate(predicted_career, scores_dict, [])
+    confidence_score = result.get("confidence", 0.85)
+    roadmap = roadmap_engine.generate(predicted_career, scores_dict, [], confidence=confidence_score)
     
     if current_user:
         current_user.predicted_career = predicted_career
         db.commit()
     
-    career_match = result.get("confidence", 0.85) * 100
+    career_match = confidence_score * 100
     radar_data = [
         {"subject": "Programming", "A": scores_dict["programming"], "fullMark": 100},
         {"subject": "Math", "A": scores_dict["math"], "fullMark": 100},

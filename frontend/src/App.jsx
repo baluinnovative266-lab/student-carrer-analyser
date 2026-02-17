@@ -11,6 +11,7 @@ import Register from './pages/Register';
 import Settings from './pages/Settings';
 import PhaseDetail from './pages/PhaseDetail';
 import FullRoadmap from './pages/FullRoadmap';
+import RoadmapOverview from './pages/RoadmapOverview';
 
 const ProtectedRoute = ({ children }) => {
     const { user, loading } = useAuth();
@@ -37,6 +38,28 @@ function AppContent() {
             } />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+
+            {/* New Interactive Roadmap Routes */}
+            <Route
+                path="/roadmap/overview"
+                element={
+                    <ProtectedRoute>
+                        <Layout>
+                            <RoadmapOverview />
+                        </Layout>
+                    </ProtectedRoute>
+                }
+            />
+            <Route
+                path="/roadmap/phase/:phaseId"
+                element={
+                    <ProtectedRoute>
+                        <Layout>
+                            <PhaseDetail />
+                        </Layout>
+                    </ProtectedRoute>
+                }
+            />
 
             <Route
                 path="/dashboard"
