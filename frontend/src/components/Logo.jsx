@@ -1,26 +1,29 @@
 import { motion } from 'framer-motion';
+import { Brain } from 'lucide-react';
 
-const Logo = ({ className = "" }) => {
+const Logo = ({ className = "", size = "default" }) => {
+    const sizes = {
+        small: { icon: 34, pad: 'p-1.5', text: 'text-lg', sub: 'text-[0.55rem]' },
+        default: { icon: 38, pad: 'p-2', text: 'text-xl', sub: 'text-[0.6rem]' },
+        large: { icon: 52, pad: 'p-3', text: 'text-3xl', sub: 'text-xs' },
+    };
+    const s = sizes[size] || sizes.default;
+
     return (
-        <div className={`flex items-center gap-2 ${className}`}>
+        <div className={`flex items-center gap-2.5 ${className}`}>
             <motion.div
-                whileHover={{ rotate: 180 }}
-                transition={{ duration: 0.5 }}
-                className="relative w-10 h-10 bg-primary rounded-xl flex items-center justify-center overflow-hidden shadow-lg shadow-primary/30"
+                whileHover={{ scale: 1.08, rotate: 5 }}
+                transition={{ duration: 0.3, type: 'spring' }}
+                className={`${s.pad} rounded-xl bg-gradient-to-br from-pink-500 to-rose-600 shadow-lg shadow-pink-500/25`}
             >
-                <div className="absolute inset-0 bg-white opacity-20 transform -skew-x-12 translate-x-[-50%]"></div>
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                    <path d="M2 17L12 22L22 17" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                    <path d="M2 12L12 17L22 12" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
+                <Brain className="text-white" size={s.icon * 0.55} strokeWidth={2} />
             </motion.div>
             <div className="flex flex-col leading-none">
-                <span className="text-xl font-extrabold tracking-tight text-gray-900">
-                    Career<span className="text-primary">Sense</span>
+                <span className={`${s.text} font-extrabold tracking-tight text-gray-900`} style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+                    Career<span className="text-pink-600">Sense</span>
                 </span>
-                <span className="text-[0.65rem] font-bold text-gray-400 uppercase tracking-[0.2em]">
-                    AI Guidance
+                <span className={`${s.sub} font-semibold text-pink-400/80 uppercase tracking-[0.2em]`} style={{ fontFamily: "'Inter', sans-serif" }}>
+                    AI-Powered Guidance
                 </span>
             </div>
         </div>

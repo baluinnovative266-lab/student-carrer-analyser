@@ -1,16 +1,19 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Brain, ArrowRight, Loader2, Sparkles, Target, Zap } from 'lucide-react';
+import { ArrowRight, Loader2, Sparkles, Target, Zap, BarChart3, Brain } from 'lucide-react';
 import { predictCareer } from '../services/api';
 
 const InputField = ({ label, name, type = "number", value, onChange, max, icon: Icon }) => (
     <div className="space-y-2 group">
-        <label className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em] ml-1 group-focus-within:text-indigo-400 transition-colors">
+        <label
+            className="text-[11px] font-bold text-gray-500 uppercase tracking-[0.15em] ml-1 group-focus-within:text-pink-500 transition-colors"
+            style={{ fontFamily: "'Inter', sans-serif" }}
+        >
             {label}
         </label>
         <div className="relative">
-            {Icon && <Icon className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-indigo-400 transition-colors" size={18} />}
+            {Icon && <Icon className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-pink-500 transition-colors" size={18} />}
             <input
                 type={type}
                 id={name}
@@ -18,8 +21,9 @@ const InputField = ({ label, name, type = "number", value, onChange, max, icon: 
                 value={value}
                 onChange={onChange}
                 max={max}
-                className={`w-full bg-slate-900/50 border border-slate-800 rounded-2xl ${Icon ? 'px-12' : 'px-6'} py-4 text-white outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500/50 transition-all shadow-xl placeholder:text-slate-700`}
-                placeholder={`Enlist ${label.toLowerCase()}...`}
+                className={`w-full bg-white border-2 border-gray-200 rounded-2xl ${Icon ? 'px-12' : 'px-6'} py-4 text-gray-800 font-semibold outline-none focus:ring-2 focus:ring-pink-500/20 focus:border-pink-500 transition-all shadow-sm hover:border-gray-300 placeholder:text-gray-400 custom-number-input`}
+                style={{ fontFamily: "'Inter', sans-serif", fontSize: '16px' }}
+                placeholder={`Enter ${label.toLowerCase()} score...`}
                 required
             />
         </div>
@@ -60,20 +64,39 @@ const CareerPrediction = () => {
     };
 
     return (
-        <div className="max-w-5xl mx-auto py-8">
+        <div className="max-w-5xl mx-auto py-8 px-4">
+            {/* Custom styles for number input spinners */}
+            <style>{`
+                .custom-number-input::-webkit-inner-spin-button,
+                .custom-number-input::-webkit-outer-spin-button {
+                    -webkit-appearance: none;
+                    margin: 0;
+                }
+                .custom-number-input {
+                    -moz-appearance: textfield;
+                    appearance: textfield;
+                }
+            `}</style>
+
             <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 className="mb-12 text-center"
             >
-                <div className="inline-flex p-4 rounded-3xl bg-indigo-500/10 border border-indigo-500/20 mb-8 shadow-[0_0_30px_rgba(99,102,241,0.1)]">
-                    <Brain className="text-indigo-400" size={48} />
+                {/* Pink Brain Logo */}
+                <div className="inline-flex p-5 rounded-3xl bg-gradient-to-br from-pink-100 via-pink-50 to-rose-100 border border-pink-200 mb-8 shadow-lg shadow-pink-200/40">
+                    <Brain className="text-pink-500" size={52} strokeWidth={1.8} />
                 </div>
-                <h1 className="text-4xl md:text-5xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-br from-white via-indigo-200 to-indigo-500 drop-shadow-[0_0_15px_rgba(99,102,241,0.5)] leading-tight uppercase mb-4">
-                    Career Intelligence Engine
+
+                <h1
+                    className="text-4xl md:text-5xl font-extrabold tracking-tight leading-tight mb-4"
+                    style={{ fontFamily: "'Space Grotesk', sans-serif" }}
+                >
+                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-gray-900 via-gray-800 to-gray-700">Career </span>
+                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600">Prediction Suite</span>
                 </h1>
-                <p className="text-slate-400 max-w-2xl mx-auto font-medium">
-                    Initialize your parameters. Our neural network will analyze your cognitive profile to determine your optimal professional trajectory.
+                <p className="text-gray-500 max-w-2xl mx-auto text-base leading-relaxed" style={{ fontFamily: "'Inter', sans-serif" }}>
+                    Enter your academic scores and interests below. Our AI engine will analyze your profile and predict your ideal career trajectory.
                 </p>
             </motion.div>
 
@@ -81,53 +104,64 @@ const CareerPrediction = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
-                className="glass-card p-10 bg-slate-900/40 border-white/5 relative overflow-hidden ring-1 ring-white/5 shadow-2xl"
+                className="bg-white p-10 rounded-3xl shadow-xl border border-gray-100 relative overflow-hidden"
             >
                 {/* Decorative background gradients */}
-                <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-indigo-600/5 rounded-full blur-[100px] -mr-32 -mt-32 pointer-events-none" />
-                <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-emerald-600/5 rounded-full blur-[100px] -ml-32 -mb-32 pointer-events-none" />
+                <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-pink-50 rounded-full blur-[120px] -mr-40 -mt-40 pointer-events-none" />
+                <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-indigo-50 rounded-full blur-[120px] -ml-40 -mb-40 pointer-events-none" />
 
                 <form onSubmit={handleSubmit} className="relative z-10 space-y-12">
                     <div className="space-y-8">
                         <div className="flex items-center gap-4">
-                            <div className="w-1.5 h-6 bg-indigo-500 rounded-full shadow-[0_0_10px_rgba(99,102,241,0.8)]" />
-                            <h2 className="text-sm font-black text-slate-300 uppercase tracking-[0.3em]">Cognitive Performance Assessment</h2>
+                            <div className="w-1.5 h-6 bg-pink-500 rounded-full" />
+                            <h2
+                                className="text-sm font-bold text-gray-600 uppercase tracking-[0.2em]"
+                                style={{ fontFamily: "'Inter', sans-serif" }}
+                            >
+                                Academic Performance
+                            </h2>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                             <InputField label="Mathematics" name="math_score" value={formData.math_score} onChange={handleChange} max={100} icon={Target} />
                             <InputField label="Programming" name="programming_score" value={formData.programming_score} onChange={handleChange} max={100} icon={Zap} />
-                            <InputField label="Linguistics" name="communication_score" value={formData.communication_score} onChange={handleChange} max={100} icon={Sparkles} />
-                            <InputField label="Logic Engine" name="problem_solving_score" value={formData.problem_solving_score} onChange={handleChange} max={100} icon={Brain} />
+                            <InputField label="Communication" name="communication_score" value={formData.communication_score} onChange={handleChange} max={100} icon={Sparkles} />
+                            <InputField label="Problem Solving" name="problem_solving_score" value={formData.problem_solving_score} onChange={handleChange} max={100} icon={BarChart3} />
                         </div>
                     </div>
 
                     <div className="space-y-8">
                         <div className="flex items-center gap-4">
-                            <div className="w-1.5 h-6 bg-emerald-500 rounded-full shadow-[0_0_10px_rgba(16,185,129,0.8)]" />
-                            <h2 className="text-sm font-black text-slate-300 uppercase tracking-[0.3em]">Specialized Interest Matrices</h2>
+                            <div className="w-1.5 h-6 bg-indigo-500 rounded-full" />
+                            <h2
+                                className="text-sm font-bold text-gray-600 uppercase tracking-[0.2em]"
+                                style={{ fontFamily: "'Inter', sans-serif" }}
+                            >
+                                Interest Areas <span className="text-gray-400 font-normal normal-case tracking-normal">(Scale 1–10)</span>
+                            </h2>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                            <InputField label="Cybernetics" name="interest_coding" value={formData.interest_coding} onChange={handleChange} max={10} />
-                            <InputField label="Creative Design" name="interest_design" value={formData.interest_design} onChange={handleChange} max={10} />
-                            <InputField label="Tactical Mgmt" name="interest_management" value={formData.interest_management} onChange={handleChange} max={10} />
+                            <InputField label="Coding" name="interest_coding" value={formData.interest_coding} onChange={handleChange} max={10} />
+                            <InputField label="Design" name="interest_design" value={formData.interest_design} onChange={handleChange} max={10} />
+                            <InputField label="Management" name="interest_management" value={formData.interest_management} onChange={handleChange} max={10} />
                         </div>
                     </div>
 
                     <div className="pt-8 flex justify-center md:justify-end">
                         <motion.button
-                            whileHover={{ scale: 1.05, boxShadow: '0 0 30px rgba(99,102,241,0.4)' }}
-                            whileTap={{ scale: 0.95 }}
+                            whileHover={{ scale: 1.03, boxShadow: '0 8px 30px rgba(236,72,153,0.3)' }}
+                            whileTap={{ scale: 0.97 }}
                             type="submit"
                             disabled={loading}
-                            className="bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 text-white px-12 py-5 rounded-2xl font-black uppercase tracking-widest shadow-2xl transition-all flex items-center gap-4 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="bg-gradient-to-r from-pink-600 to-rose-500 hover:from-pink-500 hover:to-rose-400 text-white px-12 py-5 rounded-2xl font-bold uppercase tracking-wider shadow-xl transition-all flex items-center gap-4 disabled:opacity-50 disabled:cursor-not-allowed"
+                            style={{ fontFamily: "'Space Grotesk', sans-serif" }}
                         >
                             {loading ? (
                                 <>
-                                    <Loader2 className="animate-spin" /> Synthesizing Data...
+                                    <Loader2 className="animate-spin" /> Analyzing...
                                 </>
                             ) : (
                                 <>
-                                    Compute Path <ArrowRight size={20} />
+                                    Analyze Career <ArrowRight size={20} />
                                 </>
                             )}
                         </motion.button>

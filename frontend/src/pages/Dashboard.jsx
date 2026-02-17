@@ -140,28 +140,65 @@ const Dashboard = () => {
                         </div>
                     </motion.div>
 
-                    {/* Missing Skills & Roadmap */}
+                    {/* Flow-Path Roadmap */}
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.1 }}
                         className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 lg:col-span-2"
                     >
-                        <h3 className="text-lg font-bold text-gray-800 mb-6 flex items-center gap-2">
-                            <BookOpen className="text-primary" size={20} /> Personal Roadmap
+                        <h3 className="text-lg font-bold text-gray-800 mb-8 flex items-center gap-2" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+                            <BookOpen className="text-indigo-600" size={20} /> Your Career Roadmap
                         </h3>
-                        <div className="space-y-4">
-                            {stats.recommended_roadmap.map((step, index) => (
-                                <div key={index} className="flex gap-4 p-4 rounded-xl bg-gray-50 border border-gray-100 hover:bg-white hover:shadow-md transition-all">
-                                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm">
-                                        {index + 1}
-                                    </div>
-                                    <div>
-                                        <p className="text-gray-800 font-medium">{step}</p>
-                                        <p className="text-sm text-gray-500 mt-1">Estimated time: 2 weeks</p>
-                                    </div>
+                        <div className="relative">
+                            {stats.recommended_roadmap.map((step, index) => {
+                                const isLast = index === stats.recommended_roadmap.length - 1;
+                                const colors = [
+                                    { bg: 'bg-indigo-500', ring: 'ring-indigo-100', accent: 'border-indigo-200', lightBg: 'bg-indigo-50' },
+                                    { bg: 'bg-violet-500', ring: 'ring-violet-100', accent: 'border-violet-200', lightBg: 'bg-violet-50' },
+                                    { bg: 'bg-blue-500', ring: 'ring-blue-100', accent: 'border-blue-200', lightBg: 'bg-blue-50' },
+                                    { bg: 'bg-cyan-500', ring: 'ring-cyan-100', accent: 'border-cyan-200', lightBg: 'bg-cyan-50' },
+                                    { bg: 'bg-emerald-500', ring: 'ring-emerald-100', accent: 'border-emerald-200', lightBg: 'bg-emerald-50' },
+                                ];
+                                const c = colors[index % colors.length];
+                                const durations = ['2-3 weeks', '3-4 weeks', '2 weeks', '4 weeks', '3 weeks'];
+                                return (
+                                    <motion.div
+                                        key={index}
+                                        initial={{ opacity: 0, x: -20 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        transition={{ delay: 0.15 * index }}
+                                        className="flex items-start gap-5 mb-0"
+                                    >
+                                        {/* Flow node + connector */}
+                                        <div className="flex flex-col items-center">
+                                            <div className={`w-10 h-10 rounded-full ${c.bg} ring-4 ${c.ring} text-white flex items-center justify-center font-bold text-sm shadow-lg z-10 flex-shrink-0`}>
+                                                {index + 1}
+                                            </div>
+                                            {!isLast && (
+                                                <div className="w-0.5 h-14 bg-gradient-to-b from-gray-300 to-gray-200" />
+                                            )}
+                                        </div>
+
+                                        {/* Content */}
+                                        <div className={`flex-1 pb-6 ${isLast ? '' : ''}`}>
+                                            <div className={`p-4 rounded-xl ${c.lightBg} border ${c.accent} hover:shadow-md transition-all cursor-default`}>
+                                                <p className="text-gray-800 font-semibold text-sm" style={{ fontFamily: "'Inter', sans-serif" }}>{step}</p>
+                                                <p className="text-xs text-gray-400 mt-1.5 font-medium" style={{ fontFamily: "'Inter', sans-serif" }}>
+                                                    ⏱ Estimated: {durations[index % durations.length]}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </motion.div>
+                                );
+                            })}
+                            {/* Final checkpoint */}
+                            <div className="flex items-center gap-5 ml-0">
+                                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-400 to-green-500 ring-4 ring-green-100 text-white flex items-center justify-center shadow-lg">
+                                    <CheckCircle size={20} />
                                 </div>
-                            ))}
+                                <p className="text-sm font-bold text-emerald-600" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>Career Ready! 🎯</p>
+                            </div>
                         </div>
                     </motion.div>
                 </div>

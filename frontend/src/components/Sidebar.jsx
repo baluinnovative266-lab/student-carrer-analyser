@@ -22,10 +22,10 @@ const Sidebar = ({ mobile }) => {
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.8 }}
                 >
-                    <h1 className="text-xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-br from-white via-indigo-200 to-indigo-500 drop-shadow-[0_0_10px_rgba(99,102,241,0.4)] uppercase">
+                    <h1 className="text-xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-br from-white via-indigo-200 to-indigo-500 drop-shadow-[0_0_10px_rgba(99,102,241,0.4)] uppercase" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
                         CAREERSENSE AI
                     </h1>
-                    <p className="text-[10px] text-indigo-300/30 font-mono tracking-[0.3em] mt-1 font-bold">V 2.0 PROTOCOL</p>
+                    <p className="text-[10px] text-indigo-300/30 font-mono tracking-[0.3em] mt-1 font-bold" style={{ fontFamily: "'Inter', sans-serif" }}>V 2.0 PROTOCOL</p>
                 </motion.div>
             </div>
 

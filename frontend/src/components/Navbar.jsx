@@ -2,6 +2,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { LogOut, User, Menu, X } from 'lucide-react';
 import { useState } from 'react';
+import Logo from './Logo';
 
 const Navbar = () => {
     const navigate = useNavigate();
@@ -18,7 +19,7 @@ const Navbar = () => {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between items-center h-20">
                     <Link to="/" className="flex items-center gap-2 group">
-                        <span className="text-xl font-bold">CareerSense</span>
+                        <Logo size="small" />
                     </Link>
 
                     {/* Desktop Menu */}
