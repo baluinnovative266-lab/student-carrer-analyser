@@ -81,22 +81,26 @@ const CareerPrediction = () => {
             <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="mb-12 text-center"
+                className="mb-12 text-center relative"
             >
-                {/* Pink Brain Logo */}
-                <div className="inline-flex p-5 rounded-3xl bg-gradient-to-br from-pink-100 via-pink-50 to-rose-100 border border-pink-200 mb-8 shadow-lg shadow-pink-200/40">
-                    <Brain className="text-pink-500" size={52} strokeWidth={1.8} />
+                {/* Pink Brain Logo with Pulse */}
+                <div className="relative inline-flex p-5 rounded-3xl bg-gradient-to-br from-pink-100 via-pink-50 to-rose-100 border border-pink-200 mb-8 shadow-lg shadow-pink-200/40">
+                    <div className="absolute inset-0 rounded-3xl bg-pink-400/20 animate-pulse blur-xl"></div>
+                    <Brain className="text-pink-600 relative z-10" size={52} strokeWidth={1.8} />
                 </div>
 
                 <h1
-                    className="text-4xl md:text-5xl font-extrabold tracking-tight leading-tight mb-4"
+                    className="text-5xl md:text-6xl font-black tracking-tight leading-tight mb-6"
                     style={{ fontFamily: "'Space Grotesk', sans-serif" }}
                 >
-                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-gray-900 via-gray-800 to-gray-700">Career </span>
-                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600">Prediction Suite</span>
+                    <span className="block text-gray-900 mb-2">Unlock Your</span>
+                    <span className="relative inline-block text-transparent bg-clip-text bg-gradient-to-r from-pink-600 via-rose-500 to-purple-600">
+                        Future Career
+                        <svg className="absolute w-full h-3 -bottom-1 left-0 text-pink-200 opacity-60" viewBox="0 0 200 9" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2.00025 6.99997C25.7201 5.2046 81.318 2.53467 122.992 2.5085C161.466 2.48435 186.275 6.46782 196.999 6.99997" stroke="currentColor" strokeWidth="3" strokeLinecap="round" /></svg>
+                    </span>
                 </h1>
-                <p className="text-gray-500 max-w-2xl mx-auto text-base leading-relaxed" style={{ fontFamily: "'Inter', sans-serif" }}>
-                    Enter your academic scores and interests below. Our AI engine will analyze your profile and predict your ideal career trajectory.
+                <p className="text-gray-600 max-w-2xl mx-auto text-lg font-medium leading-relaxed" style={{ fontFamily: "'Inter', sans-serif" }}>
+                    AI-powered analysis of your academic profile and interests to predict your perfect career match with <span className="text-pink-600 font-bold">94% accuracy</span>.
                 </p>
             </motion.div>
 

@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from app.core.database import get_db
 from app.api.auth import get_current_user, get_current_user_optional
 from app.models.user import User
+from app.models.roadmap import Roadmap
 from typing import Optional, List, Any
 from fastapi.responses import JSONResponse
 from app.models.api_schemas import CareerInput, CareerPredictionResponse, SkillGapResponse
@@ -15,6 +16,7 @@ router = APIRouter()
 @router.post("/predict-career", response_model=CareerPredictionResponse)
 def predict_career(input_data: CareerInput, current_user: Optional[User] = Depends(get_current_user_optional), db: Session = Depends(get_db)):
     try:
+
         if hasattr(input_data, "model_dump"):
             input_dict = input_data.model_dump()
         elif hasattr(input_data, "dict"):
@@ -40,9 +42,23 @@ def predict_career(input_data: CareerInput, current_user: Optional[User] = Depen
     
     if current_user:
         current_user.predicted_career = predicted_career
+        
+        # Save Roadmap to DB
+        existing_roadmap = db.query(Roadmap).filter(Roadmap.user_id == current_user.id, Roadmap.status == "active").first()
+        if existing_roadmap:
+            existing_roadmap.status = "archived"
+            
+        new_roadmap = Roadmap(
+            user_id=current_user.id,
+            career_path=predicted_career,
+            content=roadmap,
+            status="active"
+        )
+        db.add(new_roadmap)
         db.commit()
     
     career_match = confidence_score * 100
+    # ... (rest of response preparation) ...
     radar_data = [
         {"subject": "Programming", "A": scores_dict["programming"], "fullMark": 100},
         {"subject": "Math", "A": scores_dict["math"], "fullMark": 100},
@@ -64,12 +80,49 @@ def predict_career(input_data: CareerInput, current_user: Optional[User] = Depen
 
     next_recommended_skill = roadmap[0]["steps"][0]["skill"] if roadmap and roadmap[0]["steps"] else "Python"
 
+    # Build extracted_skills based on input scores
+    extracted_skills = []
+    if scores_dict["programming"] >= 50:
+        extracted_skills.append({"name": "Programming Logic", "category": "Technical", "description": f"Strong analytical ability with {scores_dict['programming']}% proficiency."})
+    if scores_dict["programming"] >= 70:
+        extracted_skills.append({"name": "Software Development", "category": "Technical", "description": "Capable of building full software systems."})
+    if scores_dict["math"] >= 50:
+        extracted_skills.append({"name": "Mathematical Reasoning", "category": "Technical", "description": f"Solid math foundation at {scores_dict['math']}% proficiency."})
+    if scores_dict["math"] >= 70:
+        extracted_skills.append({"name": "Data Analysis", "category": "Technical", "description": "Can interpret and analyze complex datasets."})
+    if scores_dict["communication"] >= 50:
+        extracted_skills.append({"name": "Communication", "category": "Soft Skills", "description": f"Effective communicator at {scores_dict['communication']}% proficiency."})
+    if scores_dict["communication"] >= 70:
+        extracted_skills.append({"name": "Team Collaboration", "category": "Soft Skills", "description": "Works well in team environments."})
+    if scores_dict["logic"] >= 50:
+        extracted_skills.append({"name": "Problem Solving", "category": "Soft Skills", "description": f"Strong problem solver at {scores_dict['logic']}% proficiency."})
+    if scores_dict["logic"] >= 70:
+        extracted_skills.append({"name": "Critical Thinking", "category": "Soft Skills", "description": "Excellent analytical and critical thinking skills."})
+    if scores_dict["design"] >= 50:
+        extracted_skills.append({"name": "UI/UX Design", "category": "Tools & Frameworks", "description": f"Design sense at {scores_dict['design']}% proficiency."})
+    
+    # Always add at least some baseline tools
+    extracted_skills.extend([
+        {"name": "Git & GitHub", "category": "Tools & Frameworks", "description": "Version control and collaborative development."},
+        {"name": "VS Code", "category": "Tools & Frameworks", "description": "Proficient in modern IDE workflows."},
+    ])
+
+    # Determine missing skills based on career
+    career_required_skills = {
+        "Software Engineer": ["Python", "Algorithms", "System Design", "Databases", "Cloud Computing"],
+        "Data Scientist": ["Python", "Machine Learning", "Statistics", "SQL", "Data Visualization"],
+        "Web Developer": ["React", "Node.js", "CSS", "REST APIs", "TypeScript"],
+        "UI/UX Designer": ["Figma", "User Research", "Prototyping", "Color Theory", "Wireframing"],
+        "Product Manager": ["Agile", "User Stories", "Roadmapping", "Stakeholder Mgmt", "Analytics"],
+    }
+    missing_skills = career_required_skills.get(predicted_career, ["Python", "Algorithms", "Databases", "Cloud", "Testing"])
+
     return {
         "predicted_career": predicted_career,
         "confidence": result.get("probabilities")[0].get("prob") / 100 if result.get("probabilities") else 0.8,
         "probabilities": result.get("probabilities", []),
-        "extracted_skills": [], 
-        "missing_skills": ["Python", "Algorithms", "Databases"], 
+        "extracted_skills": extracted_skills, 
+        "missing_skills": missing_skills, 
         "recommended_roadmap": roadmap,
         "radar_data": radar_data,
         "career_match_score": career_match,
@@ -77,6 +130,21 @@ def predict_career(input_data: CareerInput, current_user: Optional[User] = Depen
         "probability_chart_data": probability_chart_data,
         "skill_comparison_data": skill_comparison_data
     }
+
+@router.get("/get-roadmap")
+def get_user_roadmap(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    active_roadmap = db.query(Roadmap).filter(Roadmap.user_id == current_user.id, Roadmap.status == "active").first()
+    
+    if not active_roadmap:
+        return {"roadmap": [], "career": None}
+        
+    return {
+        "roadmap": active_roadmap.content,
+        "career": active_roadmap.career_path,
+        "created_at": active_roadmap.created_at
+    }
+
+# ... (rest of routes) ...
 
 @router.post("/analyze-resume", response_model=SkillGapResponse)
 async def analyze_resume(file: UploadFile = File(...), current_user: Optional[User] = Depends(get_current_user_optional), db: Session = Depends(get_db)):

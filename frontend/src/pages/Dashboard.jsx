@@ -8,6 +8,7 @@ import {
 import { CheckCircle, XCircle, TrendingUp, BookOpen, Target, Award, BarChart3, X, ChevronDown, ChevronUp, ShieldCheck, Sparkles, Layout, Info, ChevronRight } from 'lucide-react';
 import ChatBot from '../components/ChatBot';
 import FAQSection from '../components/FAQSection';
+import AvatarSelector from '../components/AvatarSelector';
 
 const StatCard = ({ title, value, icon, color, bg, onClick }) => (
     <motion.div
@@ -175,58 +176,64 @@ const Dashboard = () => {
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10">
-                    {/* Skills Radar Chart */}
+                    {/* Enhanced Skills Section with Avatar */}
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 lg:col-span-1"
+                        className="space-y-6 lg:col-span-1"
                     >
-                        <h3 className="text-lg font-bold text-gray-800 mb-6 flex items-center gap-2">
-                            <Award className="text-primary" size={20} /> Skill Proficiency
-                        </h3>
-                        <div className="h-[300px] w-full">
-                            <ResponsiveContainer width="100%" height="100%">
-                                <RadarChart cx="50%" cy="50%" outerRadius="80%" data={stats.radar_data}>
-                                    <PolarGrid stroke="#e5e7eb" />
-                                    <PolarAngleAxis dataKey="subject" tick={{ fill: '#6b7280', fontSize: 12 }} />
-                                    <PolarRadiusAxis angle={30} domain={[0, 100]} tick={false} axisLine={false} />
-                                    <Radar
-                                        name="My Skills"
-                                        dataKey="A"
-                                        stroke="#E23744"
-                                        fill="#E23744"
-                                        fillOpacity={0.6}
-                                    />
-                                    <Tooltip
-                                        contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}
-                                    />
-                                </RadarChart>
-                            </ResponsiveContainer>
+                        {/* Avatar Selector */}
+                        <div className="bg-slate-900 p-6 rounded-2xl shadow-sm border border-gray-100/10">
+                            <AvatarSelector currentCareer={stats.predicted_career} />
                         </div>
 
-                        {/* Animated Skill Bars Section */}
-                        <div className="mt-8 pt-8 border-t border-gray-100 space-y-5">
-                            <h4 className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-4">Mastery Breakdown</h4>
-                            {(stats.radar_data || []).map((skill, i) => (
-                                <div key={i} className="space-y-2">
-                                    <div className="flex justify-between items-center text-sm">
-                                        <span className="font-bold text-gray-700">{skill.subject}</span>
-                                        <span className="font-black text-indigo-600">
-                                            <Counter target={skill.A} />
-                                        </span>
+                        {/* Radar Chart Container */}
+                        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                            <h3 className="text-lg font-bold text-gray-800 mb-6 flex items-center gap-2">
+                                <Award className="text-primary" size={20} /> Skill Proficiency
+                            </h3>
+                            <div className="h-[250px] w-full">
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <RadarChart cx="50%" cy="50%" outerRadius="70%" data={stats.radar_data}>
+                                        <PolarGrid stroke="#e5e7eb" />
+                                        <PolarAngleAxis dataKey="subject" tick={{ fill: '#6b7280', fontSize: 11 }} />
+                                        <PolarRadiusAxis angle={30} domain={[0, 100]} tick={false} axisLine={false} />
+                                        <Radar
+                                            name="My Skills"
+                                            dataKey="A"
+                                            stroke="#E23744"
+                                            fill="#E23744"
+                                            fillOpacity={0.6}
+                                        />
+                                        <Tooltip
+                                            contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}
+                                        />
+                                    </RadarChart>
+                                </ResponsiveContainer>
+                            </div>
+
+                            {/* Animated Skill Bars Section */}
+                            <div className="mt-6 pt-6 border-t border-gray-100 space-y-4">
+                                <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Mastery Breakdown</h4>
+                                {(stats.radar_data || []).slice(0, 3).map((skill, i) => (
+                                    <div key={i} className="space-y-1">
+                                        <div className="flex justify-between items-center text-xs">
+                                            <span className="font-bold text-gray-700">{skill.subject}</span>
+                                            <span className="font-black text-indigo-600">
+                                                <Counter target={skill.A} />
+                                            </span>
+                                        </div>
+                                        <div className="relative w-full h-2 bg-gray-100 rounded-full overflow-hidden shadow-inner">
+                                            <motion.div
+                                                initial={{ width: 0 }}
+                                                animate={{ width: `${skill.A || 0}%` }}
+                                                transition={{ duration: 1.5, ease: "easeOut", delay: i * 0.1 }}
+                                                className="absolute top-0 left-0 h-full bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-600 rounded-full"
+                                            />
+                                        </div>
                                     </div>
-                                    <div className="relative w-full h-3 bg-gray-100 rounded-full overflow-hidden shadow-inner">
-                                        <motion.div
-                                            initial={{ width: 0 }}
-                                            animate={{ width: `${skill.A || 0}%` }}
-                                            transition={{ duration: 1.5, ease: "easeOut", delay: i * 0.1 }}
-                                            className="absolute top-0 left-0 h-full bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-600 rounded-full"
-                                        >
-                                            <div className="absolute top-0 right-0 w-2 h-full bg-white/30 blur-[2px]" />
-                                        </motion.div>
-                                    </div>
-                                </div>
-                            ))}
+                                ))}
+                            </div>
                         </div>
                     </motion.div>
 

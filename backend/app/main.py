@@ -25,6 +25,11 @@ def read_root():
 from app.core.database import engine, Base
 from app.api import auth
 
+# Import ALL models so they register with Base before create_all
+from app.models.user import User
+from app.models.roadmap import Roadmap
+from app.models.comment import Comment
+
 # Create tables
 Base.metadata.create_all(bind=engine)
 

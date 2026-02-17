@@ -5,6 +5,13 @@ import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
 import { ChevronRight, Star, Clock, BookOpen, ArrowRight, CheckCircle, Lock } from 'lucide-react';
 
+const phaseColors = [
+    { border: 'border-indigo-500/40', bg: 'bg-indigo-500/10', numberBg: 'bg-indigo-600', glow: 'shadow-indigo-500/20', text: 'text-indigo-400', ring: 'ring-indigo-500' },
+    { border: 'border-emerald-500/40', bg: 'bg-emerald-500/10', numberBg: 'bg-emerald-600', glow: 'shadow-emerald-500/20', text: 'text-emerald-400', ring: 'ring-emerald-500' },
+    { border: 'border-amber-500/40', bg: 'bg-amber-500/10', numberBg: 'bg-amber-600', glow: 'shadow-amber-500/20', text: 'text-amber-400', ring: 'ring-amber-500' },
+    { border: 'border-pink-500/40', bg: 'bg-pink-500/10', numberBg: 'bg-pink-600', glow: 'shadow-pink-500/20', text: 'text-pink-400', ring: 'ring-pink-500' },
+];
+
 const RoadmapOverview = () => {
     const { user } = useAuth();
     const navigate = useNavigate();
@@ -24,32 +31,42 @@ const RoadmapOverview = () => {
             // Mocking the fetch for now based on what the backend WOULD return
             // In production, this comes from /api/roadmap/current
             try {
-                // For demo, we might trigger a re-prediction or fetch stored
-                // We'll use a mocked flow if the user doesn't have one in context
-                if (user?.predicted_career) {
-                    // Re-fetch using the prediction logic to get the fresh dynamic roadmap
-                    // This is a bit inefficient but works for the prototype without a DB persistence layer for roadmaps
-                    const response = await axios.post('/api/predict-career', {
-                        programming_score: 75, // These should come from user profile
-                        math_score: 60,
-                        communication_score: 80,
-                        problem_solving_score: 70,
-                        interest_design: 8,
-                        interest_coding: 8,
-                        interest_business: 5,
-                        interest_public_speaking: 6
+                // 1. Try to get from location state (after prediction)
+                const stateData = location.state?.roadmap;
+                if (stateData) {
+                    setRoadmap(stateData);
+                    return;
+                }
+
+                // 2. Try to get from API (persistence)
+                const token = localStorage.getItem('token');
+                if (token) {
+                    const response = await fetch('/api/get-roadmap', {
+                        headers: { 'Authorization': `Bearer ${token}` }
                     });
-                    setRoadmap(response.data.recommended_roadmap);
+                    if (response.ok) {
+                        const data = await response.json();
+                        if (data.roadmap && data.roadmap.length > 0) {
+                            setRoadmap(data.roadmap);
+                            return;
+                        }
+                    }
+                }
+
+                // 3. Fallback to localStorage (legacy/guest)
+                const cached = localStorage.getItem('current_roadmap');
+                if (cached) {
+                    setRoadmap(JSON.parse(cached));
                 }
             } catch (err) {
-                console.error("Failed to load roadmap", err);
+                console.error("Failed to load roadmap:", err);
             } finally {
                 setLoading(false);
             }
         };
 
         fetchRoadmap();
-    }, [user]);
+    }, [location.state]);
 
     const containerVariants = {
         hidden: { opacity: 0 },
@@ -101,46 +118,49 @@ const RoadmapOverview = () => {
                     {/* Connection Line (Desktop) */}
                     <div className="hidden lg:block absolute top-1/2 left-0 w-full h-1 bg-gradient-to-r from-primary/50 via-blue-500/50 to-purple-500/50 -translate-y-1/2 z-0 transform scale-x-[0.9]"></div>
 
-                    {roadmap.map((phase, index) => (
-                        <motion.div
-                            key={index}
-                            variants={itemVariants}
-                            whileHover={{ y: -10, scale: 1.02 }}
-                            whileTap={{ scale: 0.98 }}
-                            onClick={() => setSelectedPhase(phase)}
-                            className={`
-                                relative z-10 bg-white/5 backdrop-blur-xl border border-white/10 p-6 rounded-3xl cursor-pointer
-                                group hover:border-primary/50 transition-all duration-300
-                                ${selectedPhase?.phase === phase.phase ? 'ring-2 ring-primary border-transparent' : ''}
+                    {roadmap.map((phase, index) => {
+                        const color = phaseColors[index % phaseColors.length];
+                        return (
+                            <motion.div
+                                key={index}
+                                variants={itemVariants}
+                                whileHover={{ y: -10, scale: 1.02 }}
+                                whileTap={{ scale: 0.98 }}
+                                onClick={() => setSelectedPhase(phase)}
+                                className={`
+                                relative z-10 ${color.bg} backdrop-blur-xl ${color.border} border p-6 rounded-3xl cursor-pointer
+                                group hover:border-opacity-80 transition-all duration-300 shadow-lg ${color.glow}
+                                ${selectedPhase?.phase === phase.phase ? `ring-2 ${color.ring} border-transparent` : ''}
                             `}
-                        >
-                            {/* Visual Connector / Number */}
-                            <div className="absolute -top-6 left-1/2 -translate-x-1/2 w-12 h-12 rounded-full bg-slate-900 border-4 border-slate-800 flex items-center justify-center font-black text-lg z-20 group-hover:border-primary transition-colors">
-                                {index + 1}
-                            </div>
+                            >
+                                {/* Visual Connector / Number */}
+                                <div className={`absolute -top-6 left-1/2 -translate-x-1/2 w-12 h-12 rounded-full ${color.numberBg} border-4 border-slate-800 flex items-center justify-center font-black text-lg z-20 text-white shadow-lg ${color.glow}`}>
+                                    {index + 1}
+                                </div>
 
-                            <div className="mt-6 text-center">
-                                <h3 className="text-xl font-bold mb-2 group-hover:text-primary transition-colors">{phase.phase}</h3>
-                                <div className="text-xs font-medium px-3 py-1 rounded-full bg-white/10 inline-block mb-4">
-                                    {phase.steps.length} Modules
+                                <div className="mt-6 text-center">
+                                    <h3 className={`text-xl font-bold mb-2 ${color.text} group-hover:text-white transition-colors`}>{phase.phase}</h3>
+                                    <div className={`text-xs font-medium px-3 py-1 rounded-full ${color.bg} ${color.text} inline-block mb-4 border ${color.border}`}>
+                                        {phase.steps.length} Modules
+                                    </div>
+                                    <p className="text-sm text-white/50 line-clamp-3">
+                                        {phase.description || "Master the core skills required for this level."}
+                                    </p>
                                 </div>
-                                <p className="text-sm text-white/50 line-clamp-3">
-                                    {phase.description || "Master the core skills required for this level."}
-                                </p>
-                            </div>
 
-                            {/* Mini Progress Bar */}
-                            <div className="mt-6">
-                                <div className="flex justify-between text-xs mb-1 opacity-60">
-                                    <span>Progress</span>
-                                    <span>0%</span>
+                                {/* Mini Progress Bar */}
+                                <div className="mt-6">
+                                    <div className="flex justify-between text-xs mb-1 opacity-60">
+                                        <span>Progress</span>
+                                        <span>0%</span>
+                                    </div>
+                                    <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden">
+                                        <div className={`w-0 h-full ${color.numberBg} rounded-full`}></div>
+                                    </div>
                                 </div>
-                                <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden">
-                                    <div className="w-0 h-full bg-primary rounded-full"></div>
-                                </div>
-                            </div>
-                        </motion.div>
-                    ))}
+                            </motion.div>
+                        );
+                    })}
                 </motion.div>
             </div>
 

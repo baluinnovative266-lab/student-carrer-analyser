@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { ThemeProvider } from './context/ThemeContext';
 import Home from './pages/Home';
 import Dashboard from './pages/Dashboard';
 import CareerPrediction from './pages/CareerPrediction';
@@ -131,7 +132,9 @@ function App() {
     return (
         <Router>
             <AuthProvider>
-                <AppContent />
+                <ThemeProvider>
+                    <AppContent />
+                </ThemeProvider>
             </AuthProvider>
         </Router>
     );

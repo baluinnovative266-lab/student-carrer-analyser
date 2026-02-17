@@ -1,26 +1,36 @@
 import { motion } from 'framer-motion';
-import { Search, MapPin, ChevronRight, Briefcase, FileText, TrendingUp, Award } from 'lucide-react';
+import { Search, MapPin, ChevronRight, Briefcase, FileText, TrendingUp, Award, Brain } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const Home = () => {
     return (
         <div className="min-h-screen bg-gray-50 pt-20">
             {/* Hero Section */}
-            <div className="relative h-[500px] w-full bg-[url('https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2072&q=80')] bg-cover bg-center">
-                <div className="absolute inset-0 bg-black/50" />
+            <div className="relative h-[560px] w-full bg-[url('https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2072&q=80')] bg-cover bg-center">
+                <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/50 to-black/70" />
                 <div className="relative max-w-7xl mx-auto px-4 h-full flex flex-col justify-center items-center text-center">
-                    <motion.h1
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="text-white text-5xl md:text-7xl font-extrabold mb-6 tracking-tight"
+                    {/* Logo + Brand */}
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 0.5 }}
+                        className="flex items-center gap-4 mb-8"
                     >
-                        Career<span className="italic font-light">Sense</span>
-                    </motion.h1>
+                        <div className="p-3 rounded-2xl bg-gradient-to-br from-pink-500 to-rose-600 shadow-lg shadow-pink-500/30">
+                            <Brain className="text-white" size={36} strokeWidth={2} />
+                        </div>
+                        <h1 className="text-white text-5xl md:text-7xl font-extrabold tracking-tight" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+                            Career<span className="text-pink-400 italic font-light">Sense</span>
+                            <span className="block text-sm md:text-base font-semibold text-pink-300/80 uppercase tracking-[0.25em] mt-1" style={{ fontFamily: "'Inter', sans-serif" }}>AI-Powered Career Guidance</span>
+                        </h1>
+                    </motion.div>
+
                     <motion.p
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.1 }}
-                        className="text-white/90 text-xl md:text-2xl max-w-3xl font-light mb-10"
+                        transition={{ delay: 0.15 }}
+                        className="text-white/85 text-xl md:text-2xl max-w-3xl font-light mb-10"
+                        style={{ fontFamily: "'Inter', sans-serif" }}
                     >
                         Discover the best career path for your skills and interests
                     </motion.p>
