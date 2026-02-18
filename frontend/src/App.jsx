@@ -1,10 +1,12 @@
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { AnimatePresence } from 'framer-motion';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import Home from './pages/Home';
 import Dashboard from './pages/Dashboard';
 import CareerPrediction from './pages/CareerPrediction';
 import ResumeAnalysis from './pages/ResumeAnalysis';
+import ResultsPage from './pages/ResultsPage';
 import Layout from './components/Layout';
 import Navbar from './components/Navbar';
 import Login from './pages/Login';
@@ -18,7 +20,11 @@ const ProtectedRoute = ({ children }) => {
     const { user, loading } = useAuth();
 
     if (loading) {
-        return <div className="flex h-screen items-center justify-center bg-slate-900 text-white">Loading...</div>;
+        return (
+            <div className="flex h-screen items-center justify-center bg-gray-50">
+                <div className="w-12 h-12 border-4 border-pink-500 border-t-transparent rounded-full animate-spin" />
+            </div>
+        );
     }
 
     if (!user) {
@@ -29,102 +35,106 @@ const ProtectedRoute = ({ children }) => {
 };
 
 function AppContent() {
+    const location = useLocation();
+
     return (
-        <Routes>
-            <Route path="/" element={
-                <div className="flex flex-col min-h-screen bg-slate-900 text-white">
-                    <Navbar />
-                    <Home />
-                </div>
-            } />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
+        <AnimatePresence mode="wait">
+            <Routes location={location} key={location.pathname}>
+                {/* Public */}
+                <Route path="/" element={
+                    <div className="flex flex-col min-h-screen bg-slate-900 text-white">
+                        <Navbar />
+                        <Home />
+                    </div>
+                } />
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
 
-            {/* New Interactive Roadmap Routes */}
-            <Route
-                path="/roadmap/overview"
-                element={
-                    <ProtectedRoute>
-                        <Layout>
-                            <RoadmapOverview />
-                        </Layout>
-                    </ProtectedRoute>
-                }
-            />
-            <Route
-                path="/roadmap/phase/:phaseId"
-                element={
-                    <ProtectedRoute>
-                        <Layout>
-                            <PhaseDetail />
-                        </Layout>
-                    </ProtectedRoute>
-                }
-            />
-
-            <Route
-                path="/dashboard"
-                element={
+                {/* Dashboard (hub / empty state) */}
+                <Route path="/dashboard" element={
                     <ProtectedRoute>
                         <Layout>
                             <Dashboard />
                         </Layout>
                     </ProtectedRoute>
-                }
-            />
-            <Route
-                path="/career-prediction"
-                element={
+                } />
+
+                {/* Results Page — after prediction/resume analysis */}
+                <Route path="/results" element={
+                    <ProtectedRoute>
+                        <Layout>
+                            <ResultsPage />
+                        </Layout>
+                    </ProtectedRoute>
+                } />
+
+                {/* Career Prediction */}
+                <Route path="/career-prediction" element={
                     <ProtectedRoute>
                         <Layout>
                             <CareerPrediction />
                         </Layout>
                     </ProtectedRoute>
-                }
-            />
-            <Route
-                path="/resume-analysis"
-                element={
+                } />
+
+                {/* Resume Analysis */}
+                <Route path="/resume-analysis" element={
                     <ProtectedRoute>
                         <Layout>
                             <ResumeAnalysis />
                         </Layout>
                     </ProtectedRoute>
-                }
-            />
-            <Route
-                path="/settings"
-                element={
+                } />
+
+                {/* Roadmap Overview */}
+                <Route path="/roadmap/overview" element={
                     <ProtectedRoute>
                         <Layout>
-                            <Settings />
+                            <RoadmapOverview />
                         </Layout>
                     </ProtectedRoute>
-                }
-            />
-            <Route
-                path="/roadmap/full"
-                element={
-                    <ProtectedRoute>
-                        <Layout>
-                            <FullRoadmap />
-                        </Layout>
-                    </ProtectedRoute>
-                }
-            />
-            <Route
-                path="/roadmap/:phaseId"
-                element={
+                } />
+
+                {/* Phase Detail */}
+                <Route path="/roadmap/phase/:phaseId" element={
                     <ProtectedRoute>
                         <Layout>
                             <PhaseDetail />
                         </Layout>
                     </ProtectedRoute>
-                }
-            />
-            {/* Fallback or 404 */}
-            <Route path="*" element={<Home />} />
-        </Routes>
+                } />
+
+                {/* Full Roadmap */}
+                <Route path="/roadmap/full" element={
+                    <ProtectedRoute>
+                        <Layout>
+                            <FullRoadmap />
+                        </Layout>
+                    </ProtectedRoute>
+                } />
+
+                {/* Legacy phase route */}
+                <Route path="/roadmap/:phaseId" element={
+                    <ProtectedRoute>
+                        <Layout>
+                            <PhaseDetail />
+                        </Layout>
+                    </ProtectedRoute>
+                } />
+
+                {/* Settings */}
+                <Route path="/settings" element={
+                    <ProtectedRoute>
+                        <Layout>
+                            <Settings />
+                        </Layout>
+                    </ProtectedRoute>
+                } />
+
+                {/* Fallback */}
+                <Route path="*" element={<Home />} />
+            </Routes>
+        </AnimatePresence>
     );
 }
 
@@ -141,4 +151,3 @@ function App() {
 }
 
 export default App;
-

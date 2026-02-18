@@ -1,37 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import axios from 'axios';
-import { ChevronRight, Star, Clock, BookOpen, ArrowRight, CheckCircle, Lock } from 'lucide-react';
-
-const phaseColors = [
-    { border: 'border-indigo-500/40', bg: 'bg-indigo-500/10', numberBg: 'bg-indigo-600', glow: 'shadow-indigo-500/20', text: 'text-indigo-400', ring: 'ring-indigo-500' },
-    { border: 'border-emerald-500/40', bg: 'bg-emerald-500/10', numberBg: 'bg-emerald-600', glow: 'shadow-emerald-500/20', text: 'text-emerald-400', ring: 'ring-emerald-500' },
-    { border: 'border-amber-500/40', bg: 'bg-amber-500/10', numberBg: 'bg-amber-600', glow: 'shadow-amber-500/20', text: 'text-amber-400', ring: 'ring-amber-500' },
-    { border: 'border-pink-500/40', bg: 'bg-pink-500/10', numberBg: 'bg-pink-600', glow: 'shadow-pink-500/20', text: 'text-pink-400', ring: 'ring-pink-500' },
-];
+import { ChevronRight, Star, Clock, BookOpen, ArrowRight, CheckCircle } from 'lucide-react';
 
 const RoadmapOverview = () => {
     const { user } = useAuth();
     const navigate = useNavigate();
+    const location = useLocation();
     const [roadmap, setRoadmap] = useState([]);
     const [loading, setLoading] = useState(true);
     const [selectedPhase, setSelectedPhase] = useState(null);
 
     useEffect(() => {
-        // In a real app, we'd fetch the generated roadmap from an endpoint
-        // For now, we might need to rely on what was predicted or re-fetch.
-        // Assuming /predict-career response was saved or we can re-generate.
-        // For this demo, let's try to fetch user's roadmap if saved, or hitting predict endpoint again if needed.
-        // Ideally, we should have a persistence layer. 
-        // Let's assume the user object or a specific endpoint gives us the current roadmap.
-
         const fetchRoadmap = async () => {
-            // Mocking the fetch for now based on what the backend WOULD return
-            // In production, this comes from /api/roadmap/current
             try {
-                // 1. Try to get from location state (after prediction)
+                // 1. Try to get from location state
                 const stateData = location.state?.roadmap;
                 if (stateData) {
                     setRoadmap(stateData);
@@ -41,7 +25,7 @@ const RoadmapOverview = () => {
                 // 2. Try to get from API (persistence)
                 const token = localStorage.getItem('token');
                 if (token) {
-                    const response = await fetch('/api/get-roadmap', {
+                    const response = await fetch('http://localhost:8000/api/get-roadmap', {
                         headers: { 'Authorization': `Bearer ${token}` }
                     });
                     if (response.ok) {
@@ -53,7 +37,7 @@ const RoadmapOverview = () => {
                     }
                 }
 
-                // 3. Fallback to localStorage (legacy/guest)
+                // 3. Fallback to localStorage
                 const cached = localStorage.getItem('current_roadmap');
                 if (cached) {
                     setRoadmap(JSON.parse(cached));
@@ -72,7 +56,7 @@ const RoadmapOverview = () => {
         hidden: { opacity: 0 },
         visible: {
             opacity: 1,
-            transition: { staggerChildren: 0.2 }
+            transition: { staggerChildren: 0.1 }
         }
     };
 
@@ -82,30 +66,35 @@ const RoadmapOverview = () => {
     };
 
     if (loading) {
-        return <div className="min-h-screen bg-slate-900 flex items-center justify-center text-white">Generating your personalized path...</div>;
+        return (
+            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-600"></div>
+            </div>
+        );
     }
 
     return (
-        <div className="min-h-screen bg-slate-900 text-white p-8 relative overflow-hidden">
-            {/* Background Gradients */}
-            <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
-                <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-primary/20 rounded-full blur-[100px]"></div>
-                <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-blue-600/20 rounded-full blur-[100px]"></div>
-            </div>
+        <div className="min-h-screen bg-gray-50 text-gray-900 p-8 relative overflow-hidden font-sans">
+            {/* Background Decorations */}
+            <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-pink-100/50 rounded-full blur-[120px] pointer-events-none -translate-y-1/2 translate-x-1/3"></div>
+            <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-red-50/50 rounded-full blur-[100px] pointer-events-none translate-y-1/3 -translate-x-1/4"></div>
 
             <div className="max-w-7xl mx-auto relative z-10">
-                <header className="mb-12">
-                    <div className="flex items-center gap-2 text-primary mb-2">
-                        <span className="text-sm font-bold tracking-wider uppercase">Your Journey</span>
-                        <ChevronRight size={16} />
-                        <span className="text-sm font-bold tracking-wider uppercase text-white/50">{user?.predicted_career || "Career Path"}</span>
+                <header className="mb-16 text-center md:text-left">
+                    <div className="flex items-center justify-center md:justify-start gap-2 text-pink-600 mb-3">
+                        <span className="text-xs font-bold tracking-widest uppercase bg-pink-50 px-3 py-1 rounded-full border border-pink-100">
+                            Career Path
+                        </span>
+                        <ChevronRight size={14} className="text-gray-300" />
+                        <span className="text-xs font-bold tracking-widest uppercase text-gray-500">
+                            {user?.predicted_career || "Your Journey"}
+                        </span>
                     </div>
-                    <h1 className="text-5xl font-black mb-4 bg-clip-text text-transparent bg-gradient-to-r from-white to-white/60">
-                        Interactive Roadmap
+                    <h1 className="text-4xl md:text-6xl font-black mb-6 text-gray-900 tracking-tight">
+                        Your Professional <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-600 to-red-600">Roadmap</span>
                     </h1>
-                    <p className="text-xl text-white/60 max-w-2xl">
-                        A personalized 4-phase journey tailored to your unique profile.
-                        Click on any phase to explore specialized modules and mentorship resources.
+                    <p className="text-lg text-gray-600 max-w-2xl leading-relaxed">
+                        A structured timeline designed to take you from foundational knowledge to industry mastery. Select a phase to begin.
                     </p>
                 </header>
 
@@ -113,49 +102,65 @@ const RoadmapOverview = () => {
                     variants={containerVariants}
                     initial="hidden"
                     animate="visible"
-                    className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 relative"
+                    className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 relative"
                 >
-                    {/* Connection Line (Desktop) */}
-                    <div className="hidden lg:block absolute top-1/2 left-0 w-full h-1 bg-gradient-to-r from-primary/50 via-blue-500/50 to-purple-500/50 -translate-y-1/2 z-0 transform scale-x-[0.9]"></div>
+                    {/* Connecting Line (Desktop) */}
+                    <div className="hidden lg:block absolute top-12 left-0 w-full h-0.5 bg-gray-200 -z-10 translate-y-4"></div>
 
                     {roadmap.map((phase, index) => {
-                        const color = phaseColors[index % phaseColors.length];
+                        const isEven = index % 2 === 0;
                         return (
                             <motion.div
                                 key={index}
                                 variants={itemVariants}
-                                whileHover={{ y: -10, scale: 1.02 }}
-                                whileTap={{ scale: 0.98 }}
+                                whileHover={{ y: -8 }}
                                 onClick={() => setSelectedPhase(phase)}
                                 className={`
-                                relative z-10 ${color.bg} backdrop-blur-xl ${color.border} border p-6 rounded-3xl cursor-pointer
-                                group hover:border-opacity-80 transition-all duration-300 shadow-lg ${color.glow}
-                                ${selectedPhase?.phase === phase.phase ? `ring-2 ${color.ring} border-transparent` : ''}
-                            `}
+                                    relative bg-white p-6 rounded-2xl cursor-pointer border border-gray-100 shadow-xl shadow-gray-200/50 hover:shadow-2xl hover:shadow-pink-500/10 transition-all duration-300 group flex flex-col h-full
+                                    ${selectedPhase?.phase === phase.phase ? 'ring-2 ring-pink-500 ring-offset-2' : ''}
+                                `}
                             >
-                                {/* Visual Connector / Number */}
-                                <div className={`absolute -top-6 left-1/2 -translate-x-1/2 w-12 h-12 rounded-full ${color.numberBg} border-4 border-slate-800 flex items-center justify-center font-black text-lg z-20 text-white shadow-lg ${color.glow}`}>
-                                    {index + 1}
+                                {/* Step Number Indicator */}
+                                <div className="flex items-center justify-between mb-6">
+                                    <div className="w-12 h-12 rounded-xl bg-pink-50 flex items-center justify-center font-black text-xl text-pink-600 border border-pink-100 shadow-sm group-hover:scale-110 transition-transform">
+                                        {index + 1}
+                                    </div>
+                                    <div className="text-[10px] font-bold tracking-widest uppercase text-gray-400 bg-gray-50 px-2 py-1 rounded-md">
+                                        Phase {index + 1}
+                                    </div>
                                 </div>
 
-                                <div className="mt-6 text-center">
-                                    <h3 className={`text-xl font-bold mb-2 ${color.text} group-hover:text-white transition-colors`}>{phase.phase}</h3>
-                                    <div className={`text-xs font-medium px-3 py-1 rounded-full ${color.bg} ${color.text} inline-block mb-4 border ${color.border}`}>
-                                        {phase.steps.length} Modules
-                                    </div>
-                                    <p className="text-sm text-white/50 line-clamp-3">
+                                {/* Content */}
+                                <div className="mb-4 flex-grow">
+                                    <h3 className="text-xl font-bold mb-3 text-gray-900 leading-tight group-hover:text-pink-600 transition-colors">
+                                        {phase.phase}
+                                    </h3>
+                                    <p className="text-sm text-gray-500 line-clamp-3 leading-relaxed">
                                         {phase.description || "Master the core skills required for this level."}
                                     </p>
                                 </div>
 
-                                {/* Mini Progress Bar */}
-                                <div className="mt-6">
-                                    <div className="flex justify-between text-xs mb-1 opacity-60">
-                                        <span>Progress</span>
-                                        <span>0%</span>
+                                {/* Metrics */}
+                                <div className="pt-4 border-t border-gray-50 mt-auto">
+                                    <div className="flex items-center justify-between text-xs font-semibold text-gray-500 mb-3">
+                                        <span className="flex items-center gap-1.5">
+                                            <BookOpen size={14} className="text-pink-400" />
+                                            {phase.steps.length} Modules
+                                        </span>
+                                        <span className="flex items-center gap-1.5">
+                                            <Star size={14} className="text-yellow-400" />
+                                            Focus
+                                        </span>
                                     </div>
-                                    <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden">
-                                        <div className={`w-0 h-full ${color.numberBg} rounded-full`}></div>
+
+                                    <div className="w-full bg-gray-100 rounded-full h-1.5 overflow-hidden">
+                                        <div className="bg-pink-500 h-full rounded-full w-0 group-hover:w-full transition-all duration-700 ease-out"></div>
+                                    </div>
+
+                                    <div className="mt-4 opacity-0 group-hover:opacity-100 transition-opacity transform translate-y-2 group-hover:translate-y-0">
+                                        <div className="text-center text-xs font-bold text-pink-600 uppercase tracking-wider flex items-center justify-center gap-1">
+                                            View Details <ArrowRight size={12} />
+                                        </div>
                                     </div>
                                 </div>
                             </motion.div>
@@ -173,52 +178,65 @@ const RoadmapOverview = () => {
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                             onClick={() => setSelectedPhase(null)}
-                            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40"
+                            className="fixed inset-0 bg-gray-900/20 backdrop-blur-sm z-40"
                         />
                         <motion.div
                             initial={{ x: '100%' }}
                             animate={{ x: 0 }}
                             exit={{ x: '100%' }}
-                            transition={{ type: "spring", damping: 25, stiffness: 200 }}
-                            className="fixed top-0 right-0 h-full w-full md:w-[500px] bg-slate-900 border-l border-white/10 z-50 p-8 overflow-y-auto shadow-2xl"
+                            transition={{ type: "spring", damping: 30, stiffness: 300 }}
+                            className="fixed top-0 right-0 h-full w-full md:w-[480px] bg-white z-50 shadow-2xl overflow-y-auto"
                         >
-                            <button
-                                onClick={() => setSelectedPhase(null)}
-                                className="absolute top-6 right-6 p-2 rounded-full hover:bg-white/10 transition-colors"
-                            >
-                                <ArrowRight size={24} />
-                            </button>
+                            {/* Panel Header */}
+                            <div className="sticky top-0 bg-white/90 backdrop-blur-md z-10 p-6 border-b border-gray-100 flex items-center justify-between">
+                                <div>
+                                    <span className="text-xs font-bold text-pink-600 uppercase tracking-widest">Phase Detail</span>
+                                    <h2 className="text-2xl font-black text-gray-900 leading-none mt-1">{selectedPhase.phase}</h2>
+                                </div>
+                                <button
+                                    onClick={() => setSelectedPhase(null)}
+                                    className="p-2 rounded-full hover:bg-gray-100 transition-colors text-gray-400 hover:text-gray-900"
+                                >
+                                    <ArrowRight size={24} />
+                                </button>
+                            </div>
 
-                            <div className="mt-8">
-                                <span className="text-primary font-bold tracking-wider text-sm uppercase">Phase Overview</span>
-                                <h2 className="text-3xl font-black mt-2 mb-4">{selectedPhase.phase}</h2>
-                                <p className="text-white/70 leading-relaxed mb-8">
+                            <div className="p-6">
+                                <p className="text-gray-600 leading-relaxed mb-8 text-base">
                                     {selectedPhase.description}
                                 </p>
 
-                                <div className="space-y-6">
-                                    <h3 className="text-xl font-bold border-b border-white/10 pb-4">Modules</h3>
+                                <div className="space-y-4">
+                                    <div className="flex items-center justify-between mb-4">
+                                        <h3 className="font-bold text-lg text-gray-900">Modules Breakdown</h3>
+                                        <span className="text-xs font-bold text-gray-400 bg-gray-100 px-2 py-1 rounded-md">{selectedPhase.steps.length} Steps</span>
+                                    </div>
+
                                     {selectedPhase.steps.map((step, idx) => (
-                                        <div key={idx} className="bg-white/5 rounded-2xl p-5 border border-white/5 hover:bg-white/10 transition-colors">
+                                        <div key={idx} className="group bg-white rounded-xl p-5 border border-gray-100 shadow-sm hover:shadow-md hover:border-pink-100 transition-all">
                                             <div className="flex justify-between items-start mb-2">
-                                                <h4 className="font-bold text-lg">{step.title}</h4>
-                                                {step.status === 'completed' && <CheckCircle size={18} className="text-green-500" />}
-                                                {step.status === 'fast-track' && <Star size={18} className="text-yellow-500" />}
+                                                <h4 className="font-bold text-base text-gray-800 group-hover:text-pink-600 transition-colors">{step.title}</h4>
+                                                {step.status === 'completed' && <CheckCircle size={18} className="text-emerald-500" />}
+                                                {step.status === 'fast-track' && <Star size={18} className="text-amber-500" />}
                                             </div>
-                                            <p className="text-sm text-white/50 mb-3">{step.outcome}</p>
-                                            <div className="flex items-center gap-4 text-xs font-medium text-white/40">
-                                                <div className="flex items-center gap-1">
-                                                    <Clock size={12} />
+
+                                            <p className="text-sm text-gray-500 mb-4 leading-relaxed line-clamp-2">{step.outcome}</p>
+
+                                            <div className="flex items-center gap-4 text-xs font-semibold text-gray-400">
+                                                <div className="flex items-center gap-1.5 bg-gray-50 px-2.5 py-1 rounded-md">
+                                                    <Clock size={12} className="text-gray-400" />
                                                     {step.duration}
                                                 </div>
-                                                <div className="flex items-center gap-1">
-                                                    <BookOpen size={12} />
+                                                <div className="flex items-center gap-1.5 bg-gray-50 px-2.5 py-1 rounded-md">
+                                                    <BookOpen size={12} className="text-gray-400" />
                                                     {step.skill}
                                                 </div>
                                             </div>
+
                                             {step.custom_description && (
-                                                <div className="mt-3 p-2 bg-primary/10 border border-primary/20 rounded-lg text-xs text-primary/80">
-                                                    {step.status === 'critical' ? '⚠️ ' : '💡 '}
+                                                <div className={`mt-3 p-3 rounded-lg text-xs font-medium border ${step.status === 'critical' ? 'bg-red-50 text-red-700 border-red-100' : 'bg-pink-50 text-pink-700 border-pink-100'
+                                                    }`}>
+                                                    {step.status === 'critical' ? '⚠️ Critical Focus: ' : '💡 Insight: '}
                                                     {step.custom_description}
                                                 </div>
                                             )}
@@ -230,9 +248,9 @@ const RoadmapOverview = () => {
                                     whileHover={{ scale: 1.02 }}
                                     whileTap={{ scale: 0.98 }}
                                     onClick={() => navigate(`/roadmap/phase/${selectedPhase.phase.replace(/\s/g, '-').toLowerCase()}`)}
-                                    className="w-full mt-8 bg-primary text-white py-4 rounded-xl font-bold text-lg shadow-lg shadow-primary/25 hover:bg-red-600 transition-colors flex items-center justify-center gap-2"
+                                    className="w-full mt-8 bg-gradient-to-r from-pink-600 to-red-600 text-white py-4 rounded-xl font-bold text-lg shadow-xl shadow-pink-600/20 hover:shadow-pink-600/40 transition-all flex items-center justify-center gap-2"
                                 >
-                                    Start This Phase <ArrowRight size={20} />
+                                    Begin Phase <ArrowRight size={20} />
                                 </motion.button>
                             </div>
                         </motion.div>

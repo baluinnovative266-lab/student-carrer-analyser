@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom';
-import { Home, Brain, FileText, BarChart2, CheckCircle } from 'lucide-react';
+import { Home, Brain, FileText, BarChart2, Map, TrendingUp } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const Sidebar = ({ mobile }) => {
@@ -7,7 +7,10 @@ const Sidebar = ({ mobile }) => {
         { path: '/dashboard', label: 'Dashboard', icon: Home },
         { path: '/career-prediction', label: 'Career Prediction', icon: Brain },
         { path: '/resume-analysis', label: 'Resume Analysis', icon: FileText },
+        { path: '/results', label: 'My Results', icon: BarChart2 },
+        { path: '/roadmap/overview', label: 'My Roadmap', icon: Map },
     ];
+
 
     const baseClasses = "h-screen w-64 bg-slate-900 border-r border-slate-800 flex flex-col";
     // If mobile is true, use 'flex' (it will be inside a fixed container from Layout). 

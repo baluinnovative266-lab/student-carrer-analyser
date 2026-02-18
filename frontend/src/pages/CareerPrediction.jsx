@@ -55,7 +55,7 @@ const CareerPrediction = () => {
                 Object.entries(formData).map(([k, v]) => [k, parseInt(v) || 0])
             );
             const result = await predictCareer(apiData);
-            navigate('/dashboard', { state: { predictionResults: result, inputData: apiData } });
+            navigate('/results', { state: { predictionResults: result, inputData: apiData } });
         } catch (error) {
             console.error("Prediction failed", error);
         } finally {

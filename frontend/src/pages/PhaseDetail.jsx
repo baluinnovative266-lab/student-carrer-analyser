@@ -4,8 +4,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
     ChevronLeft, Share2, MessageSquare, ThumbsUp,
     PlayCircle, FileText, Code, CheckCircle, ChevronDown, ChevronRight,
-    Send, BookOpen, ExternalLink, Video, Lightbulb, Globe
+    Send, BookOpen, ExternalLink, Video, Lightbulb, Globe,
+    Star, Target, TrendingUp, ArrowRight, CornerDownRight,
+    Award, Hash, Zap, Brain, Grid, List as ListIcon, Sparkles
 } from 'lucide-react';
+import PhaseGrid from '../components/PhaseGrid';
 import ReactFlow, {
     Background,
     Controls,
@@ -16,74 +19,115 @@ import ReactFlow, {
 import 'reactflow/dist/style.css';
 import axios from 'axios';
 
+// Unified Pink/Rose Theme
 const phaseColors = [
-    { gradient: 'from-indigo-600 to-blue-500', accent: '#6366f1', glow: 'bg-indigo-500/20' },
-    { gradient: 'from-emerald-600 to-teal-500', accent: '#10b981', glow: 'bg-emerald-500/20' },
-    { gradient: 'from-orange-500 to-amber-500', accent: '#f59e0b', glow: 'bg-amber-500/20' },
-    { gradient: 'from-pink-600 to-rose-500', accent: '#ec4899', glow: 'bg-pink-500/20' },
+    {
+        gradient: 'from-pink-600/10 via-rose-500/5 to-transparent',
+        accent: '#ec4899', // Pink-500
+        glow: 'bg-pink-500/10',
+        tag: 'bg-pink-50 text-pink-600 border-pink-100',
+        text: 'text-pink-600',
+        border: 'border-pink-100'
+    }
 ];
 
-// -- Generate dynamic mindmap nodes from phase data --
-function buildMindMapData(phaseName, modules) {
-    const nodes = [
-        {
-            id: 'root',
-            position: { x: 300, y: 0 },
-            data: { label: phaseName },
-            type: 'input',
-            style: { background: '#6366f1', color: 'white', border: 'none', borderRadius: '12px', padding: '14px 20px', fontWeight: 700, fontSize: '14px' },
-        },
-    ];
+const TAG_OPTIONS = [
+    { value: 'skills', label: '#skills', color: 'bg-blue-50 text-blue-600 border-blue-100' },
+    { value: 'projects', label: '#projects', color: 'bg-emerald-50 text-emerald-600 border-emerald-100' },
+    { value: 'career', label: '#career', color: 'bg-purple-50 text-purple-600 border-purple-100' },
+    { value: 'interview', label: '#interview', color: 'bg-amber-50 text-amber-600 border-amber-100' },
+];
+
+// =============================================
+// Build dynamic mindmap from phase API data
+// =============================================
+function buildMindMapFromAPI(phaseName, mindmapNodes, accentColor) {
+    const nodes = [];
     const edges = [];
 
-    modules.forEach((mod, i) => {
-        const nodeId = `mod-${i}`;
-        const x = 80 + i * 220;
-        const y = 120;
+    if (!mindmapNodes || !mindmapNodes.branches) {
+        return { nodes: [], edges: [] };
+    }
+
+    // Center node
+    nodes.push({
+        id: 'root',
+        position: { x: 400, y: 20 },
+        data: { label: phaseName },
+        type: 'input',
+        style: {
+            background: '#ec4899', // Pink-500
+            color: 'white',
+            border: 'none',
+            borderRadius: '12px',
+            padding: '12px 24px',
+            fontWeight: 700,
+            fontSize: '14px',
+            boxShadow: '0 4px 12px rgba(236, 72, 153, 0.2)',
+        },
+    });
+
+    const branches = mindmapNodes.branches;
+    const branchSpacing = 280;
+    const startX = 400 - ((branches.length - 1) * branchSpacing) / 2;
+
+    branches.forEach((branch, i) => {
+        const branchId = `branch-${i}`;
+        const x = startX + i * branchSpacing;
+        const y = 140;
+
+        // Simplified node style
+        const bColor = '#f472b6'; // Pink-400
+
         nodes.push({
-            id: nodeId,
+            id: branchId,
             position: { x, y },
-            data: { label: mod.title },
+            data: { label: branch.name },
             style: {
-                background: mod.completed ? '#059669' : '#1e293b',
-                color: 'white',
-                border: mod.completed ? '2px solid #34d399' : '1px solid #334155',
+                background: 'white',
+                color: '#1f2937', // Gray-800
+                border: `1px solid ${bColor}`,
                 borderRadius: '10px',
                 padding: '10px 16px',
                 fontSize: '12px',
                 fontWeight: 600,
+                boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
             },
         });
+
         edges.push({
-            id: `e-root-${nodeId}`,
+            id: `e-root-${branchId}`,
             source: 'root',
-            target: nodeId,
+            target: branchId,
             animated: true,
-            style: { stroke: mod.completed ? '#34d399' : '#6366f1', strokeWidth: 2 },
+            style: { stroke: '#ec4899', strokeWidth: 1.5, opacity: 0.5 },
         });
 
-        // Add sub-nodes for each module
-        if (mod.topics) {
-            mod.topics.forEach((topic, j) => {
-                const subId = `${nodeId}-sub-${j}`;
+        // Subnodes
+        if (branch.subnodes) {
+            const subSpacing = 150;
+            const subStartX = x - ((branch.subnodes.length - 1) * subSpacing) / 2;
+
+            branch.subnodes.forEach((sub, j) => {
+                const subId = `${branchId}-sub-${j}`;
                 nodes.push({
                     id: subId,
-                    position: { x: x - 40 + j * 120, y: y + 100 },
-                    data: { label: topic },
+                    position: { x: subStartX + j * subSpacing, y: y + 100 },
+                    data: { label: sub },
                     style: {
-                        background: '#0f172a',
-                        color: '#94a3b8',
-                        border: '1px solid #334155',
+                        background: '#fdf2f8', // Pink-50
+                        color: '#831843', // Pink-900
+                        border: '1px solid #fbcfe8',
                         borderRadius: '8px',
                         padding: '8px 12px',
                         fontSize: '11px',
                     },
                 });
                 edges.push({
-                    id: `e-${nodeId}-${subId}`,
-                    source: nodeId,
+                    id: `e-${branchId}-${subId}`,
+                    source: branchId,
                     target: subId,
-                    style: { stroke: '#334155', strokeWidth: 1 },
+                    style: { stroke: '#e5e7eb', strokeWidth: 1 },
                 });
             });
         }
@@ -92,55 +136,298 @@ function buildMindMapData(phaseName, modules) {
     return { nodes, edges };
 }
 
-// Resources data per phase type
-const phaseResources = {
-    default: [
-        { type: 'video', title: 'Introduction to Career Development', url: 'https://www.youtube.com/results?search_query=career+development', platform: 'YouTube' },
-        { type: 'article', title: 'Building a Strong Foundation', url: 'https://www.freecodecamp.org/', platform: 'freeCodeCamp' },
-        { type: 'course', title: 'Professional Skills Bootcamp', url: 'https://www.coursera.org/', platform: 'Coursera' },
-        { type: 'tool', title: 'Practice Coding Challenges', url: 'https://leetcode.com/', platform: 'LeetCode' },
-        { type: 'article', title: 'Industry Best Practices', url: 'https://dev.to/', platform: 'DEV.to' },
-        { type: 'video', title: 'Project Walkthrough Tutorial', url: 'https://www.youtube.com/results?search_query=project+tutorial', platform: 'YouTube' },
-    ],
-};
-
 const resourceIcons = {
-    video: <Video size={18} className="text-red-400" />,
-    article: <FileText size={18} className="text-blue-400" />,
-    course: <BookOpen size={18} className="text-green-400" />,
-    tool: <Code size={18} className="text-purple-400" />,
-    link: <Globe size={18} className="text-amber-400" />,
+    video: <Video className="text-red-500" size={18} />,
+    course: <PlayCircle className="text-blue-500" size={18} />,
+    article: <FileText className="text-green-500" size={18} />,
+    guide: <BookOpen className="text-purple-500" size={18} />,
+    link: <Globe className="text-gray-500" size={18} />,
+    code: <Code className="text-amber-500" size={18} />
 };
 
+// =============================================
+// COMMENT COMPONENT (with threading)
+// =============================================
+const CommentItem = ({ comment, depth = 0, onReply, onUpvote }) => {
+    const [showReplyBox, setShowReplyBox] = useState(false);
+    const [replyText, setReplyText] = useState('');
+    const [showReplies, setShowReplies] = useState(true);
+
+    const handleReply = () => {
+        if (replyText.trim()) {
+            onReply(comment.id, replyText);
+            setReplyText('');
+            setShowReplyBox(false);
+        }
+    };
+
+    return (
+        <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: depth * 0.05 }}
+            className={`${depth > 0 ? 'ml-8 border-l border-gray-100 pl-4' : ''}`}
+        >
+            <div className={`rounded-xl p-5 border transition-all mb-4 bg-white shadow-sm hover:shadow-md
+                ${comment.is_accepted
+                    ? 'border-emerald-100 ring-1 ring-emerald-50'
+                    : 'border-gray-100'
+                }`}
+            >
+                {/* Header */}
+                <div className="flex items-center gap-3 mb-3">
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-pink-500 to-rose-500 flex items-center justify-center font-bold text-white text-xs shadow-sm">
+                        {(comment.user_name || 'U').charAt(0).toUpperCase()}
+                    </div>
+                    <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                            <p className="text-gray-900 font-bold text-sm tracking-tight">{comment.user_name || 'Anonymous'}</p>
+                            {comment.is_accepted && (
+                                <span className="text-[10px] bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded-full border border-emerald-100 font-bold uppercase tracking-wide">SOLVED</span>
+                            )}
+                        </div>
+                        <p className="text-[10px] text-gray-400 font-medium">
+                            {comment.timestamp ? new Date(comment.timestamp).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'just now'}
+                        </p>
+                    </div>
+                </div>
+
+                {/* Pros/Cons */}
+                {(comment.pros || comment.cons) && (
+                    <div className="grid md:grid-cols-2 gap-3 mb-4">
+                        {comment.pros && (
+                            <div className="bg-emerald-50 p-3 rounded-lg border border-emerald-100">
+                                <p className="text-[10px] text-emerald-600 font-bold mb-1 uppercase tracking-wider flex items-center gap-1.5">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> Pros
+                                </p>
+                                <p className="text-xs text-emerald-900/80 leading-relaxed">{comment.pros}</p>
+                            </div>
+                        )}
+                        {comment.cons && (
+                            <div className="bg-rose-50 p-3 rounded-lg border border-rose-100">
+                                <p className="text-[10px] text-rose-600 font-bold mb-1 uppercase tracking-wider flex items-center gap-1.5">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-rose-500" /> Cons
+                                </p>
+                                <p className="text-xs text-rose-900/80 leading-relaxed">{comment.cons}</p>
+                            </div>
+                        )}
+                    </div>
+                )}
+
+                {/* Content */}
+                {comment.content && (
+                    <div className="pl-3 border-l-2 border-pink-100 mb-4">
+                        <p className="text-sm text-gray-600 font-medium leading-relaxed">"{comment.content}"</p>
+                    </div>
+                )}
+
+                {/* Tags */}
+                {comment.tags && (
+                    <div className="flex gap-2 mb-3">
+                        {comment.tags.split(',').map((tag, i) => {
+                            const tagOption = TAG_OPTIONS.find(t => t.value === tag.trim());
+                            return (
+                                <span key={i} className={`text-[10px] px-2 py-0.5 rounded-full border font-bold ${tagOption?.color || 'bg-gray-100 text-gray-500 border-gray-200'}`}>
+                                    #{tag.trim()}
+                                </span>
+                            );
+                        })}
+                    </div>
+                )}
+
+                {/* Actions */}
+                <div className="flex items-center gap-4 text-xs text-gray-400">
+                    <button
+                        onClick={() => onUpvote(comment.id)}
+                        className="flex items-center gap-1 hover:text-pink-600 transition-colors"
+                    >
+                        <ThumbsUp size={14} /> {comment.upvotes || 0}
+                    </button>
+                    {depth === 0 && (
+                        <button
+                            onClick={() => setShowReplyBox(!showReplyBox)}
+                            className="flex items-center gap-1 hover:text-pink-600 transition-colors"
+                        >
+                            <CornerDownRight size={14} /> Reply
+                        </button>
+                    )}
+                </div>
+
+                {/* Reply Box */}
+                <AnimatePresence>
+                    {showReplyBox && (
+                        <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="mt-3 overflow-hidden">
+                            <div className="flex gap-2">
+                                <input
+                                    value={replyText}
+                                    onChange={e => setReplyText(e.target.value)}
+                                    placeholder="Write a reply..."
+                                    className="flex-1 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:ring-1 focus:ring-pink-500 outline-none"
+                                    onKeyDown={e => e.key === 'Enter' && handleReply()}
+                                />
+                                <button onClick={handleReply} className="bg-pink-600 px-3 py-2 rounded-lg text-white text-sm font-bold hover:bg-pink-700 transition-colors">
+                                    <Send size={14} />
+                                </button>
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+            </div>
+
+            {/* Threaded Replies */}
+            {comment.replies && comment.replies.length > 0 && (
+                <div>
+                    <button
+                        onClick={() => setShowReplies(!showReplies)}
+                        className="text-xs text-gray-400 hover:text-gray-600 mb-2 flex items-center gap-1 ml-8"
+                    >
+                        <ChevronDown size={12} className={`transition-transform ${showReplies ? '' : '-rotate-90'}`} />
+                        {comment.replies.length} {comment.replies.length === 1 ? 'reply' : 'replies'}
+                    </button>
+                    <AnimatePresence>
+                        {showReplies && comment.replies.map(reply => (
+                            <CommentItem
+                                key={reply.id}
+                                comment={reply}
+                                depth={depth + 1}
+                                onReply={onReply}
+                                onUpvote={onUpvote}
+                            />
+                        ))}
+                    </AnimatePresence>
+                </div>
+            )}
+        </motion.div>
+    );
+};
+
+
+// =============================================
+// MAIN COMPONENT
+// =============================================
 const PhaseDetail = () => {
     const { phaseId } = useParams();
     const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState('roadmap');
+    const [viewMode, setViewMode] = useState('list'); // 'list' or 'grid'
 
-    // Determine phase index for color
-    const phaseIndex = parseInt(phaseId?.match(/\d+/)?.[0] || '1', 10) - 1;
-    const colors = phaseColors[phaseIndex % phaseColors.length];
+    // Unified Pink Theme
+    const colors = phaseColors[0]; // Always use the pink theme
 
-    // Phase Data (dynamically built from phaseId)
-    const phaseData = {
-        title: phaseId ? phaseId.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : "Phase Detail",
-        description: "Review and master the core concepts required for this stage of your career journey.",
-        progress: 35,
-        modules: [
-            { id: 1, title: "Module 1: Core Concepts", completed: true, topics: ['Fundamentals', 'Theory', 'Basics'] },
-            { id: 2, title: "Module 2: Advanced Logic", completed: false, topics: ['Patterns', 'Algorithms', 'Architecture'] },
-            { id: 3, title: "Module 3: Project Work", completed: false, topics: ['Planning', 'Implementation', 'Testing'] },
-        ],
-        faqs: [
-            { q: "How long does this phase take?", a: "Typically 4-6 weeks depending on your pace." },
-            { q: "Do I need prior experience?", a: "No, this phase is designed to build from the ground up." },
-        ],
+    // ---- Data from API ----
+    const [phaseData, setPhaseData] = useState(null);
+    const [career, setCareer] = useState('');
+    const [loading, setLoading] = useState(true);
+
+    // ---- ReactFlow Mindmap ----
+    const [nodes, setNodes] = useState([]);
+    const [edges, setEdges] = useState([]);
+
+    // ---- Comments ----
+    const [comments, setComments] = useState([]);
+    const [newComment, setNewComment] = useState({ content: '', pros: '', cons: '', tags: '' });
+    const [submitting, setSubmitting] = useState(false);
+    const [selectedTags, setSelectedTags] = useState([]);
+
+    // ---- AI Insights ----
+    const [aiInsights, setAiInsights] = useState(null);
+    const [insightsLoading, setInsightsLoading] = useState(false);
+
+    // Fetch roadmap data from API
+    useEffect(() => {
+        const fetchPhaseData = async () => {
+            try {
+                const token = localStorage.getItem('token');
+                const response = await axios.get('http://localhost:8000/api/get-roadmap', {
+                    headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+                });
+
+                const roadmapData = response.data.roadmap || [];
+                const userCareer = response.data.career || 'Software Engineer';
+                setCareer(userCareer);
+
+                // Find the matching phase
+                const phaseTitle = phaseId ? phaseId.replace(/-/g, ' ') : '';
+                const matched = roadmapData.find(p => {
+                    const phaseLower = p.phase.toLowerCase().replace(/[-–]/g, ' ').replace(/\s+/g, ' ');
+                    const idLower = phaseTitle.toLowerCase().replace(/\s+/g, ' ');
+                    return phaseLower.includes(idLower) || idLower.includes(phaseLower) ||
+                        phaseLower.replace(/phase \d+/, '').trim() === idLower.replace(/phase \d+/, '').trim();
+                });
+
+                if (matched) {
+                    setPhaseData(matched);
+                    // Build mindmap
+                    const { nodes: n, edges: e } = buildMindMapFromAPI(
+                        matched.phase, matched.mindmap_nodes, colors.accent
+                    );
+                    setNodes(n);
+                    setEdges(e);
+                } else if (roadmapData.length > 0) {
+                    // Fallback
+                    const idx = 0;
+                    const fallback = roadmapData[idx];
+                    setPhaseData(fallback);
+                    const { nodes: n, edges: e } = buildMindMapFromAPI(
+                        fallback.phase, fallback.mindmap_nodes, colors.accent
+                    );
+                    setNodes(n);
+                    setEdges(e);
+                }
+            } catch (err) {
+                console.error("Failed to load phase data", err);
+                // Fallback to cached data
+                const cached = localStorage.getItem('current_roadmap');
+                if (cached) {
+                    const roadmapData = JSON.parse(cached);
+                    if (roadmapData[0]) {
+                        setPhaseData(roadmapData[0]);
+                    }
+                }
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchPhaseData();
+    }, [phaseId]);
+
+    // Fetch comments
+    useEffect(() => {
+        const fetchComments = async () => {
+            try {
+                const response = await axios.get(`http://localhost:8000/api/comments/${phaseId || 'general'}`);
+                setComments(response.data);
+            } catch (err) {
+                console.error("Failed to fetch comments", err);
+            }
+        };
+        if (activeTab === 'discussion') {
+            fetchComments();
+            fetchAIInsights();
+        }
+    }, [activeTab, phaseId]);
+
+    // Fetch AI Insights
+    const fetchAIInsights = async (question = '') => {
+        setInsightsLoading(true);
+        try {
+            const response = await axios.post('http://localhost:8000/api/discussion-insights', {
+                career: career || 'Software Engineer',
+                phase: phaseData?.phase || 'Phase 1 – Foundations',
+                question
+            });
+            setAiInsights(response.data);
+        } catch (err) {
+            console.error("Failed to fetch AI insights", err);
+            setAiInsights({
+                advice: "Keep learning and building! Consistency is key.",
+                skill_gaps: ["Core technical skills", "Soft skills"],
+                next_actions: ["Set weekly goals", "Build projects"]
+            });
+        } finally {
+            setInsightsLoading(false);
+        }
     };
-
-    // ReactFlow Mind Map
-    const { nodes: initNodes, edges: initEdges } = buildMindMapData(phaseData.title, phaseData.modules);
-    const [nodes, setNodes] = useState(initNodes);
-    const [edges, setEdges] = useState(initEdges);
 
     const onNodesChange = useCallback(
         (changes) => setNodes((nds) => applyNodeChanges(changes, nds)), []
@@ -149,44 +436,32 @@ const PhaseDetail = () => {
         (changes) => setEdges((eds) => applyEdgeChanges(changes, eds)), []
     );
 
-    // Comment State
-    const [comments, setComments] = useState([]);
-    const [newComment, setNewComment] = useState({ content: '', pros: '', cons: '' });
-    const [submitting, setSubmitting] = useState(false);
-
-    // Fetch Comments
-    useEffect(() => {
-        const fetchComments = async () => {
-            try {
-                const response = await axios.get(`/api/comments/${phaseId || 'general'}`);
-                setComments(response.data);
-            } catch (err) {
-                console.error("Failed to fetch comments", err);
-            }
-        };
-        if (activeTab === 'discussion') {
-            fetchComments();
-        }
-    }, [activeTab, phaseId]);
-
+    // Post comment
     const handleCommentSubmit = async () => {
         if (!newComment.content && !newComment.pros && !newComment.cons) return;
         setSubmitting(true);
         try {
             const token = localStorage.getItem('token');
-            await axios.post('/api/comments', {
+            await axios.post('http://localhost:8000/api/comments', {
                 phase_id: phaseId || 'general',
                 content: newComment.content || '(no comment)',
                 pros: newComment.pros,
                 cons: newComment.cons,
+                tags: selectedTags.join(','),
             }, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
 
             // Refresh comments
-            const refresh = await axios.get(`/api/comments/${phaseId || 'general'}`);
+            const refresh = await axios.get(`http://localhost:8000/api/comments/${phaseId || 'general'}`);
             setComments(refresh.data);
-            setNewComment({ content: '', pros: '', cons: '' });
+            setNewComment({ content: '', pros: '', cons: '', tags: '' });
+            setSelectedTags([]);
+
+            // Refresh AI insights if question was posted
+            if (newComment.content) {
+                fetchAIInsights(newComment.content);
+            }
         } catch (err) {
             console.error("Failed to post comment", err);
         } finally {
@@ -194,300 +469,360 @@ const PhaseDetail = () => {
         }
     };
 
-    const resources = phaseResources.default;
+    // Reply to comment
+    const handleReply = async (parentId, content) => {
+        try {
+            const token = localStorage.getItem('token');
+            await axios.post('http://localhost:8000/api/comments', {
+                phase_id: phaseId || 'general',
+                content,
+                parent_id: parentId,
+            }, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const refresh = await axios.get(`http://localhost:8000/api/comments/${phaseId || 'general'}`);
+            setComments(refresh.data);
+        } catch (err) {
+            console.error("Failed to post reply", err);
+        }
+    };
+
+    // Upvote
+    const handleUpvote = async (commentId) => {
+        try {
+            await axios.post(`http://localhost:8000/api/comments/${commentId}/upvote`);
+            const refresh = await axios.get(`http://localhost:8000/api/comments/${phaseId || 'general'}`);
+            setComments(refresh.data);
+        } catch (err) {
+            console.error("Failed to upvote", err);
+        }
+    };
+
+    // Tag toggle
+    const toggleTag = (tag) => {
+        setSelectedTags(prev =>
+            prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]
+        );
+    };
+
+    // Loading state
+    if (loading) {
+        return (
+            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-500"></div>
+            </div>
+        );
+    }
+
+    // Fallback if no data
+    const displayTitle = phaseData?.phase || (phaseId ? phaseId.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : "Phase Detail");
+    const displayDesc = phaseData?.description || "Review and master the core concepts required for this stage.";
+    const objectives = phaseData?.objectives || [];
+    const improvementAreas = phaseData?.improvement_areas || [];
+    const steps = phaseData?.steps || [];
+    const phaseFocus = phaseData?.focus || "Building expertise";
+
+    const completedSteps = steps.filter(s => s.is_completed || s.status === 'completed').length;
+    const progress = steps.length > 0 ? Math.round((completedSteps / steps.length) * 100) : 0;
 
     return (
-        <div className="min-h-screen bg-slate-900 text-white pb-20">
-            {/* Header */}
-            <div className="sticky top-0 z-30 bg-slate-900/80 backdrop-blur-md border-b border-white/5 px-8 py-4 flex justify-between items-center">
+        <div className="min-h-screen bg-gray-50 text-gray-900 font-sans selection:bg-pink-100 selection:text-pink-900 pb-20">
+
+            {/* Navigation Bar */}
+            <div className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-100 px-6 py-4 flex items-center justify-between shadow-sm">
                 <div className="flex items-center gap-4">
                     <button
                         onClick={() => navigate('/roadmap/overview')}
-                        className="p-2 hover:bg-white/10 rounded-full transition-colors"
+                        className="p-2 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors border border-gray-100"
                     >
-                        <ChevronLeft size={20} />
+                        <ChevronLeft size={20} className="text-gray-500" />
                     </button>
                     <div>
-                        <div className="text-xs text-white/40 font-medium uppercase tracking-wider">Phase Detail</div>
-                        <h1 className="text-xl font-bold">{phaseData.title}</h1>
+                        <div className="flex items-center gap-2 mb-0.5">
+                            <span className="text-[10px] text-pink-500 font-bold uppercase tracking-widest bg-pink-50 px-2 py-0.5 rounded-full">Phase View</span>
+                        </div>
+                        <h1 className="text-lg font-bold tracking-tight text-gray-900">
+                            {displayTitle}
+                        </h1>
                     </div>
-                </div>
-                <div className="flex gap-2">
-                    <button className="p-2 hover:bg-white/10 rounded-full transition-colors"><Share2 size={20} /></button>
                 </div>
             </div>
 
-            <div className="max-w-7xl mx-auto px-8 py-12 grid grid-cols-1 lg:grid-cols-3 gap-12">
+            <div className="max-w-7xl mx-auto px-6 py-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
 
-                {/* Left Column */}
-                <div className="lg:col-span-2 space-y-12">
+                {/* Left Column: Overview & Roadmap */}
+                <div className="lg:col-span-2 space-y-8">
 
-                    {/* Hero Section - Colored */}
-                    <div className={`relative overflow-hidden rounded-3xl bg-gradient-to-br ${colors.gradient} p-10 border border-white/10`}>
-                        <div className="relative z-10">
-                            <h2 className="text-3xl font-black mb-4">{phaseData.title}</h2>
-                            <p className="text-lg text-white/70 mb-8 max-w-xl">{phaseData.description}</p>
+                    {/* Hero Card */}
+                    <div className="relative overflow-hidden rounded-2xl bg-white p-8 border border-gray-100 shadow-sm">
+                        {/* Pink Accent Gradient */}
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-pink-50 rounded-full blur-[80px] -mr-32 -mt-32 opacity-60" />
 
-                            <div className="flex items-center gap-4">
-                                <span className="text-xs font-bold uppercase tracking-wider bg-black/30 px-3 py-1 rounded">In Progress</span>
-                                <div className="h-2 w-32 bg-black/30 rounded-full overflow-hidden">
-                                    <div style={{ width: `${phaseData.progress}%` }} className="h-full bg-green-400 rounded-full" />
+                        <div className="relative z-10 flex flex-col md:flex-row gap-8 items-start justify-between">
+                            <div className="flex-1">
+                                <div className="flex items-center gap-3 mb-4">
+                                    <span className="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest border bg-pink-50 text-pink-600 border-pink-100">
+                                        {phaseFocus}
+                                    </span>
                                 </div>
-                                <span className="text-xs font-mono">{phaseData.progress}%</span>
+
+                                <h2 className="text-3xl font-black mb-4 leading-tight text-gray-900">
+                                    {displayTitle}
+                                </h2>
+
+                                <p className="text-sm text-gray-500 mb-6 max-w-xl leading-relaxed">
+                                    {displayDesc}
+                                </p>
+                            </div>
+
+                            {/* Circular Progress */}
+                            <div className="relative w-24 h-24 flex items-center justify-center">
+                                <svg className="w-full h-full transform -rotate-90">
+                                    <circle cx="50%" cy="50%" r="40" stroke="currentColor" strokeWidth="8" fill="transparent" className="text-gray-100" />
+                                    <circle cx="50%" cy="50%" r="40" stroke="currentColor" strokeWidth="8" fill="transparent"
+                                        strokeDasharray={251.2}
+                                        strokeDashoffset={251.2 - (251.2 * progress) / 100}
+                                        className="text-pink-500 transition-all duration-1000 ease-out"
+                                        strokeLinecap="round"
+                                    />
+                                </svg>
+                                <span className="absolute text-sm font-bold text-gray-900">{progress}%</span>
                             </div>
                         </div>
-                        <div className={`absolute right-0 bottom-0 w-64 h-64 ${colors.glow} blur-[80px] rounded-full`} />
                     </div>
 
                     {/* Tabs */}
-                    <div className="flex gap-8 border-b border-white/10">
+                    <div className="flex gap-8 border-b border-gray-200">
                         {['roadmap', 'mindmap', 'resources', 'discussion'].map(tab => (
                             <button
                                 key={tab}
                                 onClick={() => setActiveTab(tab)}
-                                className={`pb-4 text-sm font-bold uppercase tracking-wider transition-colors relative ${activeTab === tab ? 'text-primary' : 'text-white/40 hover:text-white'}`}
+                                className={`pb-3 text-xs font-bold uppercase tracking-wider transition-colors relative ${activeTab === tab ? 'text-pink-600' : 'text-gray-400 hover:text-gray-600'}`}
                             >
                                 {tab}
                                 {activeTab === tab && (
-                                    <motion.div layoutId="underline" className="absolute bottom-0 left-0 w-full h-0.5 bg-primary" />
+                                    <motion.div layoutId="underline" className="absolute bottom-0 left-0 w-full h-0.5 bg-pink-600" />
                                 )}
                             </button>
                         ))}
                     </div>
 
                     {/* Tab Content */}
-                    <div className="min-h-[400px]">
-                        <AnimatePresence mode="wait">
+                    <AnimatePresence mode="wait">
+                        {activeTab === 'roadmap' && (
+                            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="space-y-8">
 
-                            {/* ROADMAP TAB */}
-                            {activeTab === 'roadmap' && (
-                                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-4">
-                                    {phaseData.modules.map(m => (
-                                        <div key={m.id} className={`p-5 rounded-xl border transition-all ${m.completed
-                                            ? 'bg-emerald-500/10 border-emerald-500/20'
-                                            : 'bg-white/5 border-white/5 hover:bg-white/10'
-                                            }`}>
-                                            <div className="flex items-center justify-between mb-2">
-                                                <h4 className="font-bold text-lg">{m.title}</h4>
-                                                {m.completed && <CheckCircle size={18} className="text-emerald-400" />}
+                                {/* Objectives Grid */}
+                                {objectives.length > 0 && (
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+                                            <div className="flex items-center gap-2 mb-4">
+                                                <Target size={18} className="text-pink-500" />
+                                                <h3 className="font-bold text-gray-900">Objectives</h3>
                                             </div>
-                                            {m.topics && (
-                                                <div className="flex flex-wrap gap-2 mt-3">
-                                                    {m.topics.map((topic, i) => (
-                                                        <span key={i} className="text-xs px-3 py-1 rounded-full bg-white/10 text-white/60">{topic}</span>
-                                                    ))}
-                                                </div>
-                                            )}
+                                            <ul className="space-y-2">
+                                                {objectives.slice(0, 3).map((obj, i) => (
+                                                    <li key={i} className="flex items-start gap-2 text-xs text-gray-500 leading-relaxed">
+                                                        <span className="mt-1 w-1 h-1 rounded-full bg-pink-400 flex-shrink-0" />
+                                                        {obj}
+                                                    </li>
+                                                ))}
+                                            </ul>
                                         </div>
-                                    ))}
-                                </motion.div>
-                            )}
-
-                            {/* MINDMAP TAB - Full interactive ReactFlow */}
-                            {activeTab === 'mindmap' && (
-                                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-                                    <div className="h-[500px] bg-slate-800 rounded-xl overflow-hidden border border-white/10">
-                                        <ReactFlow
-                                            nodes={nodes}
-                                            edges={edges}
-                                            onNodesChange={onNodesChange}
-                                            onEdgesChange={onEdgesChange}
-                                            fitView
-                                            style={{ background: '#0f172a' }}
-                                        >
-                                            <Background color="#1e293b" gap={20} />
-                                            <Controls style={{ background: '#1e293b', borderRadius: '8px', border: '1px solid #334155' }} />
-                                            <MiniMap
-                                                nodeStrokeColor="#6366f1"
-                                                nodeColor="#1e293b"
-                                                maskColor="rgb(15, 23, 42, 0.7)"
-                                                style={{ background: '#0f172a', border: '1px solid #334155', borderRadius: '8px' }}
-                                            />
-                                        </ReactFlow>
-                                    </div>
-                                    <div className="mt-4 flex items-center gap-3 text-xs text-white/40">
-                                        <Lightbulb size={14} className="text-amber-400" />
-                                        <span>Drag nodes to rearrange • Scroll to zoom • Click and drag background to pan</span>
-                                    </div>
-                                </motion.div>
-                            )}
-
-                            {/* RESOURCES TAB - Full resource list */}
-                            {activeTab === 'resources' && (
-                                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-4">
-                                    <p className="text-white/50 text-sm mb-6">Curated learning materials for this phase. Click any resource to explore.</p>
-                                    {resources.map((res, i) => (
-                                        <a
-                                            key={i}
-                                            href={res.url}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="flex items-center gap-4 p-5 bg-white/5 rounded-xl border border-white/5 hover:bg-white/10 hover:border-white/15 transition-all group cursor-pointer"
-                                        >
-                                            <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0">
-                                                {resourceIcons[res.type] || resourceIcons.link}
+                                        <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+                                            <div className="flex items-center gap-2 mb-4">
+                                                <Zap size={18} className="text-amber-500" />
+                                                <h3 className="font-bold text-gray-900">Focus Areas</h3>
                                             </div>
-                                            <div className="flex-1">
-                                                <h4 className="font-bold text-sm group-hover:text-primary transition-colors">{res.title}</h4>
-                                                <p className="text-xs text-white/40 mt-1">{res.platform} • {res.type.charAt(0).toUpperCase() + res.type.slice(1)}</p>
-                                            </div>
-                                            <ExternalLink size={16} className="text-white/20 group-hover:text-primary transition-colors" />
-                                        </a>
-                                    ))}
-                                </motion.div>
-                            )}
+                                            <ul className="space-y-2">
+                                                {improvementAreas.slice(0, 3).map((area, i) => (
+                                                    <li key={i} className="flex items-start gap-2 text-xs text-gray-500 leading-relaxed">
+                                                        <span className="mt-1 w-1 h-1 rounded-full bg-amber-400 flex-shrink-0" />
+                                                        {area}
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    </div>
+                                )}
 
-                            {/* DISCUSSION TAB */}
-                            {activeTab === 'discussion' && (
-                                <motion.div
-                                    initial={{ opacity: 0, y: 10 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    exit={{ opacity: 0 }}
-                                    className="space-y-8"
+                                {/* Phase Grid */}
+                                <div>
+                                    <div className="flex items-center justify-between mb-4">
+                                        <h3 className="font-bold text-lg text-gray-900">Timeline & Modules</h3>
+                                    </div>
+                                    <PhaseGrid steps={steps} />
+                                </div>
+                            </motion.div>
+                        )}
+
+                        {activeTab === 'mindmap' && (
+                            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="h-[600px] border border-gray-100 rounded-2xl overflow-hidden bg-white shadow-sm relative">
+                                <ReactFlow
+                                    nodes={nodes}
+                                    edges={edges}
+                                    onNodesChange={onNodesChange}
+                                    onEdgesChange={onEdgesChange}
+                                    fitView
+                                    attributionPosition="bottom-right"
                                 >
-                                    <div className="bg-slate-800/50 rounded-2xl p-8 border border-white/10 relative overflow-hidden">
-                                        <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -mr-32 -mt-32 pointer-events-none" />
+                                    <Background color="#f9a8d4" gap={16} size={1} />
+                                    <Controls showInteractive={false} className="bg-white border-gray-200 text-gray-600" />
+                                    <MiniMap nodeColor="#fbcfe8" />
+                                </ReactFlow>
+                            </motion.div>
+                        )}
 
-                                        <h3 className="text-xl font-bold text-white mb-6 relative z-10">Community Feedback & Insights</h3>
-
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6 relative z-10">
-                                            <div className="space-y-2">
-                                                <label className="text-xs text-emerald-400 font-bold uppercase tracking-widest flex items-center gap-2">
-                                                    <ThumbsUp size={14} /> Pros
-                                                </label>
-                                                <textarea
-                                                    value={newComment.pros}
-                                                    onChange={e => setNewComment({ ...newComment, pros: e.target.value })}
-                                                    className="w-full bg-slate-700/50 border border-white/10 rounded-xl p-4 text-white placeholder:text-gray-500 focus:ring-2 focus:ring-emerald-500/50 outline-none resize-none"
-                                                    rows="3"
-                                                    placeholder="What works well?"
-                                                />
-                                            </div>
-                                            <div className="space-y-2">
-                                                <label className="text-xs text-rose-400 font-bold uppercase tracking-widest flex items-center gap-2">
-                                                    <MessageSquare size={14} /> Cons
-                                                </label>
-                                                <textarea
-                                                    value={newComment.cons}
-                                                    onChange={e => setNewComment({ ...newComment, cons: e.target.value })}
-                                                    className="w-full bg-slate-700/50 border border-white/10 rounded-xl p-4 text-white placeholder:text-gray-500 focus:ring-2 focus:ring-rose-500/50 outline-none resize-none"
-                                                    rows="3"
-                                                    placeholder="What challenges did you face?"
-                                                />
-                                            </div>
+                        {activeTab === 'resources' && (
+                            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {phaseData?.resources?.map((res, i) => (
+                                    <a key={i} href={res.link} target="_blank" rel="noreferrer" className="group bg-white p-5 rounded-xl border border-gray-100 hover:border-pink-200 shadow-sm hover:shadow-md transition-all flex items-start gap-4">
+                                        <div className="w-10 h-10 rounded-lg bg-pink-50 flex items-center justify-center group-hover:bg-pink-100 transition-colors">
+                                            {resourceIcons[res.type] || <ExternalLink size={18} className="text-pink-500" />}
                                         </div>
+                                        <div>
+                                            <h4 className="font-bold text-gray-900 text-sm group-hover:text-pink-600 transition-colors">{res.title}</h4>
+                                            <p className="text-xs text-gray-500 mt-1">{res.description}</p>
+                                        </div>
+                                    </a>
+                                ))}
+                            </motion.div>
+                        )}
 
-                                        <div className="space-y-2 mb-8 relative z-10">
-                                            <label className="text-xs text-blue-400 font-bold uppercase tracking-widest">Suggestions & Questions</label>
+                        {activeTab === 'discussion' && (
+                            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                                {/* Discussion Grid - AI & Comments */}
+                                <div className="grid lg:grid-cols-3 gap-8">
+                                    <div className="lg:col-span-2 space-y-6">
+                                        {/* New Comment Box */}
+                                        <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+                                            <h3 className="font-bold text-gray-900 mb-4">Share Insights</h3>
                                             <textarea
                                                 value={newComment.content}
                                                 onChange={e => setNewComment({ ...newComment, content: e.target.value })}
-                                                className="w-full bg-slate-700/50 border border-white/10 rounded-xl p-4 text-white placeholder:text-gray-500 focus:ring-2 focus:ring-blue-500/50 outline-none resize-none"
-                                                rows="3"
-                                                placeholder="Share your ideas or ask for help..."
+                                                placeholder="Ask a question or share a tip..."
+                                                className="w-full bg-gray-50 border border-gray-200 rounded-lg p-3 text-sm text-gray-900 focus:ring-2 focus:ring-pink-500 outline-none mb-3 resize-none h-24"
                                             />
-                                        </div>
-
-                                        <div className="flex justify-end relative z-10">
-                                            <button
-                                                onClick={handleCommentSubmit}
-                                                disabled={submitting || (!newComment.content && !newComment.pros && !newComment.cons)}
-                                                className="bg-gradient-to-r from-primary to-purple-600 text-white px-8 py-3 rounded-xl font-bold uppercase tracking-wider hover:opacity-90 transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                                            >
-                                                <Send size={18} /> {submitting ? 'Posting...' : 'Submit Feedback'}
-                                            </button>
-                                        </div>
-                                    </div>
-
-                                    {/* Comments Feed */}
-                                    <div className="space-y-6">
-                                        <h4 className="font-bold text-white/50 uppercase tracking-widest text-sm">Recent Activity ({comments.length})</h4>
-                                        {comments.length === 0 ? (
-                                            <div className="text-center py-12">
-                                                <MessageSquare size={40} className="text-white/10 mx-auto mb-4" />
-                                                <p className="text-white/30 italic">No comments yet. Be the first to share your experience!</p>
+                                            <div className="grid grid-cols-2 gap-3 mb-3">
+                                                <input
+                                                    value={newComment.pros}
+                                                    onChange={e => setNewComment({ ...newComment, pros: e.target.value })}
+                                                    placeholder="Pros (Optional)"
+                                                    className="bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-xs"
+                                                />
+                                                <input
+                                                    value={newComment.cons}
+                                                    onChange={e => setNewComment({ ...newComment, cons: e.target.value })}
+                                                    placeholder="Cons (Optional)"
+                                                    className="bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-xs"
+                                                />
                                             </div>
-                                        ) : (
-                                            comments.map((comment) => (
-                                                <motion.div
-                                                    key={comment.id}
-                                                    initial={{ opacity: 0, y: 10 }}
-                                                    animate={{ opacity: 1, y: 0 }}
-                                                    className="bg-white/5 rounded-2xl p-6 border border-white/5 hover:border-white/10 transition-colors"
+                                            <div className="flex justify-between items-center">
+                                                <div className="flex gap-2">
+                                                    {TAG_OPTIONS.map(opt => (
+                                                        <button
+                                                            key={opt.value}
+                                                            onClick={() => toggleTag(opt.value)}
+                                                            className={`px-2 py-1 rounded-full text-[10px] font-bold border transition-all ${selectedTags.includes(opt.value) ? opt.color : 'bg-white border-gray-200 text-gray-400'}`}
+                                                        >
+                                                            {opt.label}
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                                <button
+                                                    onClick={handleCommentSubmit}
+                                                    disabled={submitting || !newComment.content}
+                                                    className="bg-pink-600 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-pink-700 transition-colors disabled:opacity-50"
                                                 >
-                                                    <div className="flex items-center gap-4 mb-4">
-                                                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center font-bold text-white shadow-lg">
-                                                            {(comment.user_name || 'U').charAt(0)}
-                                                        </div>
-                                                        <div>
-                                                            <p className="text-white font-bold text-sm">{comment.user_name || 'Anonymous'}</p>
-                                                            <p className="text-xs text-white/40">{comment.timestamp ? new Date(comment.timestamp).toLocaleDateString() : 'just now'}</p>
-                                                        </div>
-                                                    </div>
+                                                    {submitting ? 'Posting...' : 'Post'}
+                                                </button>
+                                            </div>
+                                        </div>
 
-                                                    {(comment.pros || comment.cons) && (
-                                                        <div className="grid md:grid-cols-2 gap-4 mb-4">
-                                                            {comment.pros && (
-                                                                <div className="bg-emerald-500/10 p-4 rounded-xl border border-emerald-500/10">
-                                                                    <p className="text-xs text-emerald-400 font-bold mb-2 uppercase tracking-wider">✅ Pros</p>
-                                                                    <p className="text-sm text-gray-300 leading-relaxed">{comment.pros}</p>
-                                                                </div>
-                                                            )}
-                                                            {comment.cons && (
-                                                                <div className="bg-rose-500/10 p-4 rounded-xl border border-rose-500/10">
-                                                                    <p className="text-xs text-rose-400 font-bold mb-2 uppercase tracking-wider">⚠️ Cons</p>
-                                                                    <p className="text-sm text-gray-300 leading-relaxed">{comment.cons}</p>
-                                                                </div>
-                                                            )}
-                                                        </div>
-                                                    )}
-
-                                                    {comment.content && (
-                                                        <div className="pl-3 border-l-2 border-white/10">
-                                                            <p className="text-sm text-white/60 italic">"{comment.content}"</p>
-                                                        </div>
-                                                    )}
-                                                </motion.div>
-                                            ))
-                                        )}
+                                        {/* Comments List */}
+                                        <div className="space-y-4">
+                                            {comments.map(c => (
+                                                <CommentItem key={c.id} comment={c} onReply={handleReply} onUpvote={handleUpvote} />
+                                            ))}
+                                            {comments.length === 0 && (
+                                                <div className="text-center py-10 bg-white rounded-xl border border-gray-100">
+                                                    <MessageSquare className="mx-auto text-gray-300 mb-2" size={32} />
+                                                    <p className="text-gray-400 text-sm">No discussions yet. Start the conversation!</p>
+                                                </div>
+                                            )}
+                                        </div>
                                     </div>
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
-                    </div>
+
+                                    {/* AI Sidebar */}
+                                    <div className="space-y-6">
+                                        <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm sticky top-24">
+                                            <div className="flex items-center gap-2 mb-4 text-pink-600">
+                                                <Sparkles size={18} />
+                                                <h3 className="font-bold text-gray-900">AI Mentor</h3>
+                                            </div>
+
+                                            {insightsLoading ? (
+                                                <div className="animate-pulse space-y-3">
+                                                    <div className="h-4 bg-gray-100 rounded w-3/4"></div>
+                                                    <div className="h-4 bg-gray-100 rounded w-full"></div>
+                                                    <div className="h-4 bg-gray-100 rounded w-5/6"></div>
+                                                </div>
+                                            ) : (
+                                                <div className="space-y-4">
+                                                    <div>
+                                                        <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Advice</h4>
+                                                        <p className="text-sm text-gray-600 leading-relaxed bg-pink-50/50 p-3 rounded-lg border border-pink-50">
+                                                            {aiInsights?.advice || "Ask a question to get AI-powered insights tailored to this phase."}
+                                                        </p>
+                                                    </div>
+                                                    {aiInsights?.skill_gaps && (
+                                                        <div>
+                                                            <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Skill Gaps</h4>
+                                                            <div className="flex flex-wrap gap-2">
+                                                                {aiInsights.skill_gaps.map((skill, i) => (
+                                                                    <span key={i} className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-md border border-gray-200">{skill}</span>
+                                                                ))}
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
                 </div>
 
-                {/* Right Sidebar */}
-                <div className="space-y-8">
-                    {/* Quick Stats */}
-                    <div className={`bg-gradient-to-br ${colors.gradient} rounded-2xl p-6 border border-white/10`}>
-                        <h3 className="font-bold text-lg mb-4">Phase Stats</h3>
-                        <div className="space-y-3">
-                            <div className="flex justify-between text-sm">
-                                <span className="text-white/70">Modules</span>
-                                <span className="font-bold">{phaseData.modules.length}</span>
-                            </div>
-                            <div className="flex justify-between text-sm">
-                                <span className="text-white/70">Completed</span>
-                                <span className="font-bold">{phaseData.modules.filter(m => m.completed).length}</span>
-                            </div>
-                            <div className="flex justify-between text-sm">
-                                <span className="text-white/70">Progress</span>
-                                <span className="font-bold">{phaseData.progress}%</span>
-                            </div>
+                {/* Right Column: Skills & Tools */}
+                <div className="space-y-6">
+                    {/* Skills Card */}
+                    <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+                        <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
+                            <Award size={18} className="text-pink-500" /> Skills to Master
+                        </h3>
+                        <div className="flex flex-wrap gap-2">
+                            {['Python', 'Figma', 'System Design', 'React', 'Communication'].map((skill, i) => (
+                                <span key={i} className="px-3 py-1.5 bg-gray-50 text-gray-900/80 text-xs font-semibold rounded-lg border border-gray-100 hover:border-pink-200 hover:text-pink-600 transition-colors cursor-default">
+                                    {skill}
+                                </span>
+                            ))}
                         </div>
                     </div>
 
-                    {/* FAQ Widget */}
-                    <div className="bg-white/5 rounded-2xl border border-white/10 overflow-hidden">
-                        <div className="p-6 border-b border-white/10 flex items-center justify-between">
-                            <h3 className="font-bold text-lg">FAQ</h3>
-                        </div>
-                        <div className="divide-y divide-white/5">
-                            {phaseData.faqs.map((faq, i) => (
-                                <div key={i} className="p-6 cursor-pointer hover:bg-white/5 transition-colors group">
-                                    <h4 className="font-medium mb-2 text-sm text-primary group-hover:text-primary/80">{faq.q}</h4>
-                                    <p className="text-sm text-white/50 leading-relaxed">{faq.a}</p>
+                    {/* Tools Card */}
+                    <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+                        <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
+                            <Grid size={18} className="text-indigo-500" /> Recommended Tools
+                        </h3>
+                        <div className="grid grid-cols-2 gap-3">
+                            {['VS Code', 'GitHub', 'Figma', 'Notion'].map((tool, i) => (
+                                <div key={i} className="flex items-center gap-2 p-2 rounded-lg hover:bg-gray-50 transition-colors">
+                                    <div className="w-8 h-8 rounded bg-gray-100 flex items-center justify-center text-xs font-bold text-gray-500">
+                                        {tool.charAt(0)}
+                                    </div>
+                                    <span className="text-xs font-bold text-gray-700">{tool}</span>
                                 </div>
                             ))}
                         </div>

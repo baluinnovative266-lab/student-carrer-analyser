@@ -185,9 +185,36 @@ async def analyze_resume(file: UploadFile = File(...), current_user: Optional[Us
         current_user.predicted_career = target_career
         db.commit()
     
+    # Calculate mock scores based on extracted skills count
+    skill_count = len(extracted_skills)
+    base_score = min(skill_count * 10, 90)  # Cap at 90
+    
+    # Calculate probability chart data (mock based on target career)
+    # In a real app, we would run a classifier on the resume text
+    probability_chart_data = [
+        {"career": target_career, "probability": 85.5},
+        {"career": "Data Scientist" if target_career != "Data Scientist" else "ML Engineer", "probability": 60.2},
+        {"career": "Web Developer" if target_career != "Web Developer" else "Frontend Dev", "probability": 45.8},
+        {"career": "Product Manager", "probability": 30.1},
+        {"career": "DevOps Engineer", "probability": 20.5}
+    ]
+    
+    # Calculate skill comparison data (mock)
+    skill_comparison_data = [
+        {"skill": "Technical", "yourScore": base_score, "required": 85},
+        {"skill": "Soft Skills", "yourScore": 75, "required": 80},
+        {"skill": "Tools", "yourScore": 60, "required": 70}
+    ]
+
+    next_recommended_skill = roadmap[0]["steps"][0]["skill"] if roadmap and roadmap[0]["steps"] else "Advanced Python"
+
     return {
         "extracted_skills": extracted_skills,
-        "missing_skills": ["Scaling", "DevOps", "Advanced Algorithms"],
+        "missing_skills": ["Scaling", "DevOps", "Advanced Algorithms", "System Design"],
         "recommended_roadmap": roadmap,
-        "radar_data": radar_data
+        "radar_data": radar_data,
+        "career_match_score": base_score,
+        "next_recommended_skill": next_recommended_skill,
+        "probability_chart_data": probability_chart_data,
+        "skill_comparison_data": skill_comparison_data
     }

@@ -14,7 +14,8 @@ const Layout = ({ children }) => {
             <motion.main
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.35 }}
                 className="pt-20 px-4 md:px-8 max-w-7xl mx-auto"
             >
                 {children}
