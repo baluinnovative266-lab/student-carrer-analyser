@@ -6,18 +6,14 @@ import {
     PlayCircle, FileText, Code, CheckCircle, ChevronDown, ChevronRight,
     Send, BookOpen, ExternalLink, Video, Lightbulb, Globe,
     Star, Target, TrendingUp, ArrowRight, CornerDownRight,
-    Award, Hash, Zap, Brain, Grid, List as ListIcon, Sparkles
+    Award, Hash, Zap, Brain, Grid, List as ListIcon, Sparkles,
+    Loader2, AlertCircle, X
 } from 'lucide-react';
 import PhaseGrid from '../components/PhaseGrid';
-import ReactFlow, {
-    Background,
-    Controls,
-    applyEdgeChanges,
-    applyNodeChanges,
-    MiniMap
-} from 'reactflow';
-import 'reactflow/dist/style.css';
+import Breadcrumbs from '../components/Breadcrumbs';
+import SidePanel from '../components/SidePanel';
 import axios from 'axios';
+import MindMap from '../components/MindMap';
 
 // Unified Pink/Rose Theme
 const phaseColors = [
@@ -37,6 +33,23 @@ const TAG_OPTIONS = [
     { value: 'career', label: '#career', color: 'bg-purple-50 text-purple-600 border-purple-100' },
     { value: 'interview', label: '#interview', color: 'bg-amber-50 text-amber-600 border-amber-100' },
 ];
+
+const Toast = ({ message, type = 'info', onClose }) => (
+    <motion.div
+        initial={{ opacity: 0, y: 50, scale: 0.9 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{ opacity: 0, y: 20, scale: 0.9 }}
+        className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[100] flex items-center gap-3 px-6 py-4 bg-gray-900 text-white rounded-2xl shadow-2xl border border-white/10 min-w-[320px]"
+    >
+        <div className={`p-2 rounded-xl ${type === 'error' ? 'bg-red-500/20 text-red-400' : 'bg-pink-500/20 text-pink-400'}`}>
+            {type === 'error' ? <AlertCircle size={18} /> : <Sparkles size={18} />}
+        </div>
+        <div className="flex-1 text-sm font-bold">{message}</div>
+        <button onClick={onClose} className="p-1 hover:bg-white/10 rounded-lg">
+            <X size={16} className="text-white/40" />
+        </button>
+    </motion.div>
+);
 
 // =============================================
 // Build dynamic mindmap from phase API data
@@ -105,29 +118,33 @@ function buildMindMapFromAPI(phaseName, mindmapNodes, accentColor) {
 
         // Subnodes
         if (branch.subnodes) {
-            const subSpacing = 150;
+            const subSpacing = 160;
             const subStartX = x - ((branch.subnodes.length - 1) * subSpacing) / 2;
 
             branch.subnodes.forEach((sub, j) => {
                 const subId = `${branchId}-sub-${j}`;
                 nodes.push({
                     id: subId,
-                    position: { x: subStartX + j * subSpacing, y: y + 100 },
+                    position: { x: subStartX + j * subSpacing, y: y + 120 },
                     data: { label: sub },
                     style: {
-                        background: '#fdf2f8', // Pink-50
-                        color: '#831843', // Pink-900
-                        border: '1px solid #fbcfe8',
-                        borderRadius: '8px',
-                        padding: '8px 12px',
+                        background: 'white',
+                        color: '#4b5563', // Gray-600
+                        border: '1px solid #f3f4f6',
+                        borderRadius: '12px',
+                        padding: '10px 14px',
                         fontSize: '11px',
+                        fontWeight: 600,
+                        boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)',
+                        textAlign: 'center',
                     },
                 });
                 edges.push({
                     id: `e-${branchId}-${subId}`,
                     source: branchId,
                     target: subId,
-                    style: { stroke: '#e5e7eb', strokeWidth: 1 },
+                    animated: false,
+                    style: { stroke: '#f3f4f6', strokeWidth: 2 },
                 });
             });
         }
@@ -137,12 +154,29 @@ function buildMindMapFromAPI(phaseName, mindmapNodes, accentColor) {
 }
 
 const resourceIcons = {
-    video: <Video className="text-red-500" size={18} />,
+    video: <Video className="text-rose-500" size={18} />,
     course: <PlayCircle className="text-blue-500" size={18} />,
-    article: <FileText className="text-green-500" size={18} />,
+    article: <FileText className="text-emerald-500" size={18} />,
     guide: <BookOpen className="text-purple-500" size={18} />,
+    pdf: <FileText className="text-orange-500" size={18} />,
     link: <Globe className="text-gray-500" size={18} />,
-    code: <Code className="text-amber-500" size={18} />
+    code: <Code className="text-amber-500" size={18} />,
+    tool: <Zap className="text-pink-500" size={18} />
+};
+
+const PLATFORM_LOGOS = {
+    'YouTube': 'https://www.vectorlogo.zone/logos/youtube/youtube-icon.svg',
+    'Coursera': 'https://www.vectorlogo.zone/logos/coursera/coursera-icon.svg',
+    'Udemy': 'https://www.vectorlogo.zone/logos/udemy/udemy-icon.svg',
+    'Figma': 'https://www.vectorlogo.zone/logos/figma/figma-icon.svg',
+    'GitHub': 'https://www.vectorlogo.zone/logos/github/github-icon.svg',
+    'Medium': 'https://www.vectorlogo.zone/logos/medium/medium-icon.svg',
+    'LinkedIn': 'https://www.vectorlogo.zone/logos/linkedin/linkedin-icon.svg',
+    'Google': 'https://www.vectorlogo.zone/logos/google/google-icon.svg',
+    'Microsoft': 'https://www.vectorlogo.zone/logos/microsoft/microsoft-icon.svg',
+    'Amazon': 'https://www.vectorlogo.zone/logos/amazon/amazon-icon.svg',
+    'Product School': 'https://www.vectorlogo.zone/logos/productschool/productschool-icon.svg',
+    'Interaction Design Foundation': 'https://www.interaction-design.org/img/logos/idf-logo-square.png'
 };
 
 // =============================================
@@ -319,9 +353,8 @@ const PhaseDetail = () => {
     const [career, setCareer] = useState('');
     const [loading, setLoading] = useState(true);
 
-    // ---- ReactFlow Mindmap ----
-    const [nodes, setNodes] = useState([]);
-    const [edges, setEdges] = useState([]);
+    // ---- ReactFlow Mindmap removed as it is now in MindMap component ----
+
 
     // ---- Comments ----
     const [comments, setComments] = useState([]);
@@ -329,9 +362,65 @@ const PhaseDetail = () => {
     const [submitting, setSubmitting] = useState(false);
     const [selectedTags, setSelectedTags] = useState([]);
 
+    // ---- SidePanel state ----
+    const [isPanelOpen, setIsPanelOpen] = useState(false);
+    const [panelData, setPanelData] = useState(null);
+    const [panelTitle, setPanelTitle] = useState('');
+    const [panelType, setPanelType] = useState('skill');
+
+    const handleStepClick = (step) => {
+        // Enriched logic: use backend data attached to the step
+        const skillName = step.skill || step.title;
+
+        const details = {
+            description: step.skill_details?.description || step.outcome || step.custom_description || "Mastering this module is key to your progress in this phase.",
+            importance: step.skill_details?.importance || "Core component of the " + displayTitle,
+            use_cases: step.skill_details?.use_cases || ["Professional development", "Project implementation"],
+            objectives: step.skill_details?.objectives || [step.title, "Practical application"],
+            learning_time: step.skill_details?.learning_time || step.duration || "1-2 Weeks",
+            resources: step.module_resources || [],
+            featured_project: step.featured_project || null
+        };
+
+        setPanelTitle(step.title);
+        setPanelData(details);
+        setPanelType('skill');
+        setIsPanelOpen(true);
+    };
+
     // ---- AI Insights ----
     const [aiInsights, setAiInsights] = useState(null);
     const [insightsLoading, setInsightsLoading] = useState(false);
+    const [toast, setToast] = useState(null);
+    const [resourceLoading, setResourceLoading] = useState(null);
+
+    const showToast = (message, type = 'info') => {
+        setToast({ message, type });
+        setTimeout(() => setToast(null), 4000);
+    };
+
+    const handleResourceClick = async (res) => {
+        setResourceLoading(res.title);
+
+        let href = res.url || res.link;
+        if (href && !href.startsWith('http')) href = `https://${href}`;
+
+        // Small delay for UX/loading feel
+        setTimeout(() => {
+            if (!href || href === '#' || href.includes('undefined')) {
+                showToast("Resource temporarily unavailable.", "error");
+            } else {
+                if (res.type === 'pdf') {
+                    // Force PDF view in new tab or specific viewer logic could go here
+                    window.open(href, '_blank', 'noopener,noreferrer');
+                } else {
+                    window.open(href, '_blank', 'noopener,noreferrer');
+                }
+                showToast(`Opening ${res.title}...`, "success");
+            }
+            setResourceLoading(null);
+        }, 800);
+    };
 
     // Fetch roadmap data from API
     useEffect(() => {
@@ -357,22 +446,11 @@ const PhaseDetail = () => {
 
                 if (matched) {
                     setPhaseData(matched);
-                    // Build mindmap
-                    const { nodes: n, edges: e } = buildMindMapFromAPI(
-                        matched.phase, matched.mindmap_nodes, colors.accent
-                    );
-                    setNodes(n);
-                    setEdges(e);
                 } else if (roadmapData.length > 0) {
                     // Fallback
                     const idx = 0;
                     const fallback = roadmapData[idx];
                     setPhaseData(fallback);
-                    const { nodes: n, edges: e } = buildMindMapFromAPI(
-                        fallback.phase, fallback.mindmap_nodes, colors.accent
-                    );
-                    setNodes(n);
-                    setEdges(e);
                 }
             } catch (err) {
                 console.error("Failed to load phase data", err);
@@ -530,20 +608,30 @@ const PhaseDetail = () => {
 
             {/* Navigation Bar */}
             <div className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-100 px-6 py-4 flex items-center justify-between shadow-sm">
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-6">
                     <button
                         onClick={() => navigate('/roadmap/overview')}
-                        className="p-2 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors border border-gray-100"
+                        className="p-2.5 bg-gray-50 hover:bg-white hover:shadow-md rounded-xl transition-all border border-gray-100 group"
                     >
-                        <ChevronLeft size={20} className="text-gray-500" />
+                        <ChevronLeft size={20} className="text-gray-500 group-hover:text-pink-600" />
                     </button>
+                    <div className="h-8 w-px bg-gray-100 hidden md:block" />
                     <div>
-                        <div className="flex items-center gap-2 mb-0.5">
-                            <span className="text-[10px] text-pink-500 font-bold uppercase tracking-widest bg-pink-50 px-2 py-0.5 rounded-full">Phase View</span>
+                        <div className="mb-1">
+                            <Breadcrumbs />
                         </div>
-                        <h1 className="text-lg font-bold tracking-tight text-gray-900">
+                        <h1 className="text-xl font-black tracking-tight text-gray-900" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
                             {displayTitle}
                         </h1>
+                    </div>
+                </div>
+                <div className="hidden md:flex items-center gap-3">
+                    <div className="text-right mr-4">
+                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none">Status</p>
+                        <p className="text-xs font-bold text-gray-900 uppercase">{phaseFocus}</p>
+                    </div>
+                    <div className="w-10 h-10 rounded-xl bg-pink-50 text-pink-600 flex items-center justify-center border border-pink-100">
+                        <Award size={20} />
                     </div>
                 </div>
             </div>
@@ -554,7 +642,7 @@ const PhaseDetail = () => {
                 <div className="lg:col-span-2 space-y-8">
 
                     {/* Hero Card */}
-                    <div className="relative overflow-hidden rounded-2xl bg-white p-8 border border-gray-100 shadow-sm">
+                    <div className="relative overflow-hidden glass-card p-8 !bg-white/90">
                         {/* Pink Accent Gradient */}
                         <div className="absolute top-0 right-0 w-64 h-64 bg-pink-50 rounded-full blur-[80px] -mr-32 -mt-32 opacity-60" />
 
@@ -613,31 +701,65 @@ const PhaseDetail = () => {
                             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="space-y-8">
 
                                 {/* Objectives Grid */}
+                                {phaseData?.tools && phaseData.tools.length > 0 && (
+                                    <div className="space-y-4">
+                                        <div className="flex items-center gap-2 mb-4">
+                                            <Grid size={18} className="text-indigo-500" />
+                                            <h3 className="font-bold text-gray-900">Recommended Tools</h3>
+                                        </div>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                            {phaseData.tools.map((tool, i) => (
+                                                <motion.a
+                                                    key={i}
+                                                    href={tool.url}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    whileHover={{ y: -4, scale: 1.02 }}
+                                                    className="flex items-center gap-4 bg-white p-4 rounded-2xl border border-gray-100 shadow-sm hover:shadow-xl hover:border-indigo-100 transition-all group"
+                                                >
+                                                    <div className="w-12 h-12 rounded-xl bg-gray-50 flex items-center justify-center p-2 group-hover:bg-indigo-50 transition-colors">
+                                                        {tool.logo ? (
+                                                            <img src={tool.logo} alt={tool.name} className="w-full h-full object-contain" />
+                                                        ) : (
+                                                            <Zap className="text-indigo-500" size={20} />
+                                                        )}
+                                                    </div>
+                                                    <div className="flex-1 min-w-0">
+                                                        <h4 className="text-sm font-black text-gray-900 truncate group-hover:text-indigo-600">{tool.name}</h4>
+                                                        <p className="text-[10px] text-gray-400 line-clamp-1">{tool.desc || 'Essential workspace tool.'}</p>
+                                                    </div>
+                                                    <ExternalLink size={14} className="text-gray-300 group-hover:text-indigo-400 opacity-0 group-hover:opacity-100 transition-all" />
+                                                </motion.a>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+
                                 {objectives.length > 0 && (
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div className="glass-card p-6 !bg-white/80 border-pink-100 shadow-sm">
                                             <div className="flex items-center gap-2 mb-4">
                                                 <Target size={18} className="text-pink-500" />
-                                                <h3 className="font-bold text-gray-900">Objectives</h3>
+                                                <h3 className="font-bold text-gray-900">Learning Objectives</h3>
                                             </div>
-                                            <ul className="space-y-2">
-                                                {objectives.slice(0, 3).map((obj, i) => (
-                                                    <li key={i} className="flex items-start gap-2 text-xs text-gray-500 leading-relaxed">
-                                                        <span className="mt-1 w-1 h-1 rounded-full bg-pink-400 flex-shrink-0" />
+                                            <ul className="space-y-3">
+                                                {objectives.map((obj, i) => (
+                                                    <li key={i} className="flex items-start gap-3 text-xs text-gray-600 leading-relaxed">
+                                                        <div className="mt-1.5 w-1.5 h-1.5 rounded-full bg-pink-400 flex-shrink-0 shadow-[0_0_8px_rgba(244,114,182,0.5)]" />
                                                         {obj}
                                                     </li>
                                                 ))}
                                             </ul>
                                         </div>
-                                        <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+                                        <div className="glass-card p-6 !bg-white/80 border-amber-100 shadow-sm">
                                             <div className="flex items-center gap-2 mb-4">
                                                 <Zap size={18} className="text-amber-500" />
-                                                <h3 className="font-bold text-gray-900">Focus Areas</h3>
+                                                <h3 className="font-bold text-gray-900">Strategic Focus</h3>
                                             </div>
-                                            <ul className="space-y-2">
-                                                {improvementAreas.slice(0, 3).map((area, i) => (
-                                                    <li key={i} className="flex items-start gap-2 text-xs text-gray-500 leading-relaxed">
-                                                        <span className="mt-1 w-1 h-1 rounded-full bg-amber-400 flex-shrink-0" />
+                                            <ul className="space-y-3">
+                                                {improvementAreas.map((area, i) => (
+                                                    <li key={i} className="flex items-start gap-3 text-xs text-gray-600 leading-relaxed">
+                                                        <div className="mt-1.5 w-1.5 h-1.5 rounded-full bg-amber-400 flex-shrink-0 shadow-[0_0_8px_rgba(fb,191,36,0.5)]" />
                                                         {area}
                                                     </li>
                                                 ))}
@@ -651,41 +773,107 @@ const PhaseDetail = () => {
                                     <div className="flex items-center justify-between mb-4">
                                         <h3 className="font-bold text-lg text-gray-900">Timeline & Modules</h3>
                                     </div>
-                                    <PhaseGrid steps={steps} />
+                                    <PhaseGrid steps={steps} onStepClick={handleStepClick} />
                                 </div>
                             </motion.div>
                         )}
 
                         {activeTab === 'mindmap' && (
-                            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="h-[600px] border border-gray-100 rounded-2xl overflow-hidden bg-white shadow-sm relative">
-                                <ReactFlow
-                                    nodes={nodes}
-                                    edges={edges}
-                                    onNodesChange={onNodesChange}
-                                    onEdgesChange={onEdgesChange}
-                                    fitView
-                                    attributionPosition="bottom-right"
-                                >
-                                    <Background color="#f9a8d4" gap={16} size={1} />
-                                    <Controls showInteractive={false} className="bg-white border-gray-200 text-gray-600" />
-                                    <MiniMap nodeColor="#fbcfe8" />
-                                </ReactFlow>
+                            <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                className="h-[800px]"
+                            >
+                                <MindMap phaseData={phaseData} career={career} />
                             </motion.div>
                         )}
 
                         {activeTab === 'resources' && (
-                            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                {phaseData?.resources?.map((res, i) => (
-                                    <a key={i} href={res.link} target="_blank" rel="noreferrer" className="group bg-white p-5 rounded-xl border border-gray-100 hover:border-pink-200 shadow-sm hover:shadow-md transition-all flex items-start gap-4">
-                                        <div className="w-10 h-10 rounded-lg bg-pink-50 flex items-center justify-center group-hover:bg-pink-100 transition-colors">
-                                            {resourceIcons[res.type] || <ExternalLink size={18} className="text-pink-500" />}
+                            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-10">
+                                {['course', 'video', 'article', 'pdf', 'guide'].map(category => {
+                                    const filtered = phaseData?.resources?.filter(res => res.type === category) || [];
+                                    if (filtered.length === 0) return null;
+
+                                    return (
+                                        <div key={category} className="space-y-6">
+                                            <div className="flex items-center gap-3 px-2">
+                                                <div className="p-2 rounded-xl bg-pink-50 text-pink-600 border border-pink-100 shadow-sm">
+                                                    {resourceIcons[category] || <Globe size={20} />}
+                                                </div>
+                                                <div>
+                                                    <h3 className="text-base font-black text-gray-900 uppercase tracking-widest">{category}s</h3>
+                                                    <p className="text-[10px] text-gray-400 font-bold">Premium learning content for {displayTitle}</p>
+                                                </div>
+                                                <div className="h-px flex-1 bg-gradient-to-r from-gray-100 to-transparent ml-4" />
+                                            </div>
+
+                                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                                {filtered.map((res, i) => (
+                                                    <motion.div
+                                                        key={i}
+                                                        layout
+                                                        className="group relative bg-white rounded-3xl border border-gray-100 shadow-sm hover:shadow-2xl hover:border-pink-200 transition-all overflow-hidden"
+                                                    >
+                                                        {resourceLoading === res.title && (
+                                                            <div className="absolute inset-0 bg-white/60 backdrop-blur-sm z-20 flex items-center justify-center">
+                                                                <Loader2 size={24} className="animate-spin text-pink-500" />
+                                                            </div>
+                                                        )}
+
+                                                        <div className="p-6">
+                                                            <div className="flex items-start justify-between gap-4 mb-4">
+                                                                <div className="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center p-2.5 group-hover:bg-pink-50 transition-colors border border-gray-50 group-hover:border-pink-100">
+                                                                    {PLATFORM_LOGOS[res.platform] ? (
+                                                                        <img src={PLATFORM_LOGOS[res.platform]} alt={res.platform} className="w-full h-full object-contain" />
+                                                                    ) : (
+                                                                        resourceIcons[res.type] || <Globe size={20} className="text-gray-400" />
+                                                                    )}
+                                                                </div>
+                                                                <div className="flex items-center gap-2">
+                                                                    <span className="px-2.5 py-1 rounded-lg bg-gray-50 text-[10px] font-black text-gray-500 uppercase tracking-tight border border-gray-100 group-hover:bg-pink-50 group-hover:text-pink-600 group-hover:border-pink-100 transition-colors">
+                                                                        {res.difficulty || 'Intermediate'}
+                                                                    </span>
+                                                                    <span className="px-2.5 py-1 rounded-lg bg-emerald-50 text-[10px] font-black text-emerald-600 uppercase tracking-tight border border-emerald-100">
+                                                                        {res.duration || '2h'}
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+
+                                                            <div className="mb-6">
+                                                                <h4 className="font-black text-gray-900 text-lg leading-tight mb-2 group-hover:text-pink-600 transition-colors">
+                                                                    {res.title}
+                                                                </h4>
+                                                                <p className="text-xs text-gray-500 line-clamp-2 leading-relaxed">
+                                                                    {res.description || `Build mastery in ${res.title} with this ${res.type}.`}
+                                                                </p>
+                                                            </div>
+
+                                                            <div className="flex items-center justify-between pt-4 border-t border-gray-50">
+                                                                <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{res.platform || 'General'}</span>
+                                                                <button
+                                                                    onClick={() => handleResourceClick(res)}
+                                                                    className="flex items-center gap-2 text-xs font-black text-pink-600 hover:text-pink-700 transition-colors"
+                                                                >
+                                                                    {res.type === 'video' ? 'Watch Now' : res.type === 'pdf' ? 'View PDF' : 'Start Learning'}
+                                                                    <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                                                                </button>
+                                                            </div>
+                                                        </div>
+
+                                                        <div className="absolute top-0 right-0 w-24 h-24 bg-pink-50 rounded-full blur-3xl -mr-12 -mt-12 opacity-0 group-hover:opacity-40 transition-opacity" />
+                                                    </motion.div>
+                                                ))}
+                                            </div>
                                         </div>
-                                        <div>
-                                            <h4 className="font-bold text-gray-900 text-sm group-hover:text-pink-600 transition-colors">{res.title}</h4>
-                                            <p className="text-xs text-gray-500 mt-1">{res.description}</p>
-                                        </div>
-                                    </a>
-                                ))}
+                                    );
+                                })}
+                                {(!phaseData?.resources || phaseData.resources.length === 0) && (
+                                    <div className="text-center py-20 bg-white rounded-3xl border border-dashed border-gray-200">
+                                        <BookOpen size={48} className="mx-auto text-gray-200 mb-4" />
+                                        <p className="text-gray-400 font-medium">No specialized resources listed for this phase yet.</p>
+                                    </div>
+                                )}
                             </motion.div>
                         )}
 
@@ -830,6 +1018,24 @@ const PhaseDetail = () => {
                 </div>
 
             </div>
+
+            <SidePanel
+                isOpen={isPanelOpen}
+                onClose={() => setIsPanelOpen(false)}
+                title={panelTitle}
+                data={panelData}
+                type={panelType}
+            />
+
+            <AnimatePresence>
+                {toast && (
+                    <Toast
+                        message={toast.message}
+                        type={toast.type}
+                        onClose={() => setToast(null)}
+                    />
+                )}
+            </AnimatePresence>
         </div>
     );
 };

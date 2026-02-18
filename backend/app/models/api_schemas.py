@@ -41,3 +41,7 @@ class SkillGapResponse(BaseModel):
     missing_skills: List[str]
     recommended_roadmap: List[dict]
     radar_data: List[dict] = []
+    career_match_score: Optional[float] = None
+    next_recommended_skill: Optional[str] = None
+    probability_chart_data: List[dict] = []
+    skill_comparison_data: List[dict] = []

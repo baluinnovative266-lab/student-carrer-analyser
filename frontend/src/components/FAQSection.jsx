@@ -22,10 +22,14 @@ const faqData = [
 ];
 
 const FAQSection = () => {
-    const [activeIndex, setActiveIndex] = useState(null);
+    const [activeIndices, setActiveIndices] = useState([]);
 
     const toggleFAQ = (index) => {
-        setActiveIndex(activeIndex === index ? null : index);
+        setActiveIndices(prev =>
+            prev.includes(index)
+                ? prev.filter(i => i !== index)
+                : [...prev, index]
+        );
     };
 
     return (
@@ -39,22 +43,22 @@ const FAQSection = () => {
                 {faqData.map((faq, index) => (
                     <div
                         key={index}
-                        className={`bg-white rounded-2xl border transition-all duration-300 ${activeIndex === index ? 'border-primary/50 shadow-lg shadow-primary/5' : 'border-gray-100 shadow-sm'}`}
+                        className={`bg-white rounded-2xl border transition-all duration-300 ${activeIndices.includes(index) ? 'border-primary/50 shadow-lg shadow-primary/5' : 'border-gray-100 shadow-sm'}`}
                     >
                         <button
                             onClick={() => toggleFAQ(index)}
                             className="w-full flex items-center justify-between p-6 text-left"
                         >
-                            <span className={`font-bold text-lg ${activeIndex === index ? 'text-primary' : 'text-gray-800'}`}>
+                            <span className={`font-bold text-lg ${activeIndices.includes(index) ? 'text-primary' : 'text-gray-800'}`}>
                                 {faq.q}
                             </span>
-                            <span className={`p-2 rounded-full transition-colors ${activeIndex === index ? 'bg-primary/10 text-primary' : 'bg-gray-50 text-gray-400'}`}>
-                                {activeIndex === index ? <Minus size={20} /> : <Plus size={20} />}
+                            <span className={`p-2 rounded-full transition-colors ${activeIndices.includes(index) ? 'bg-primary/10 text-primary' : 'bg-gray-50 text-gray-400'}`}>
+                                {activeIndices.includes(index) ? <Minus size={20} /> : <Plus size={20} />}
                             </span>
                         </button>
 
                         <AnimatePresence>
-                            {activeIndex === index && (
+                            {activeIndices.includes(index) && (
                                 <motion.div
                                     initial={{ height: 0, opacity: 0 }}
                                     animate={{ height: "auto", opacity: 1 }}

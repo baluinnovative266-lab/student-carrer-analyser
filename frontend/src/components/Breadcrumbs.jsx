@@ -7,44 +7,45 @@ const Breadcrumbs = () => {
     const pathnames = location.pathname.split('/').filter((x) => x);
 
     return (
-        <nav className="flex px-4 py-3 text-slate-400 text-sm font-medium" aria-label="Breadcrumb">
-            <ol className="inline-flex items-center space-x-1 md:space-x-3">
+        <nav className="flex px-0 py-1 text-gray-400 text-[10px] font-bold uppercase tracking-wider" aria-label="Breadcrumb">
+            <ol className="inline-flex items-center space-x-1">
                 <li className="inline-flex items-center">
                     <Link
                         to="/dashboard"
-                        className="inline-flex items-center hover:text-blue-400 transition-colors duration-200"
+                        className="inline-flex items-center hover:text-pink-600 transition-colors duration-200"
                     >
-                        <Home className="w-4 h-4 mr-2" />
-                        Dashboard
+                        Home
                     </Link>
                 </li>
                 {pathnames.map((value, index) => {
                     const last = index === pathnames.length - 1;
                     const to = `/${pathnames.slice(0, index + 1).join('/')}`;
 
-                    // Capitalize and format the name
-                    const name = value
+                    // Custom labels based on path chunks
+                    let label = value
                         .split('-')
                         .map(word => word.charAt(0).toUpperCase() + word.slice(1))
                         .join(' ');
 
+                    if (value === 'roadmap') label = 'Roadmap';
+                    if (value === 'overview') label = 'Path';
+                    if (value === 'phase') return null; // Skip "phase" chunk for cleaner breadcrumbs
+
                     return (
-                        <li key={to}>
-                            <div className="flex items-center">
-                                <ChevronRight className="w-4 h-4 mx-1" />
-                                {last ? (
-                                    <span className="text-white font-semibold">
-                                        {name === "Full" ? "Career Journey" : name}
-                                    </span>
-                                ) : (
-                                    <Link
-                                        to={to}
-                                        className="hover:text-blue-400 transition-colors duration-200"
-                                    >
-                                        {name}
-                                    </Link>
-                                )}
-                            </div>
+                        <li key={to} className="flex items-center">
+                            <span className="mx-1 text-gray-300">/</span>
+                            {last ? (
+                                <span className="text-gray-900 font-black">
+                                    {label}
+                                </span>
+                            ) : (
+                                <Link
+                                    to={to === '/roadmap' ? '/roadmap/overview' : to}
+                                    className="hover:text-pink-600 transition-colors duration-200"
+                                >
+                                    {label}
+                                </Link>
+                            )}
                         </li>
                     );
                 })}

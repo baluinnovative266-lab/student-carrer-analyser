@@ -63,7 +63,7 @@ const ResumeAnalysis = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 pt-28 pb-12 px-4">
+        <div className="min-h-screen bg-gray-50 pt-24 pb-16 px-6">
             <div className="max-w-4xl mx-auto">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}

@@ -2,7 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { CheckCircle, PlayCircle, Sparkles, Clock, ArrowRight, Star } from 'lucide-react';
 
-const PhaseGrid = ({ steps }) => {
+const PhaseGrid = ({ steps, onStepClick }) => {
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {steps.map((step, idx) => {
@@ -17,8 +17,9 @@ const PhaseGrid = ({ steps }) => {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.05 * idx }}
                         whileHover={{ y: -5, boxShadow: "0 20px 25px -5px rgba(236, 72, 153, 0.1), 0 10px 10px -5px rgba(236, 72, 153, 0.04)" }}
+                        onClick={() => onStepClick && onStepClick(step)}
                         className={`
-                            relative p-6 rounded-xl bg-white border flex flex-col justify-between h-full min-h-[260px] transition-all duration-300 shadow-sm group
+                            relative p-6 rounded-xl bg-white border flex flex-col justify-between h-full min-h-[260px] cursor-pointer transition-all duration-300 shadow-sm group
                             ${isCompleted
                                 ? 'border-l-4 border-l-emerald-500 border-y-gray-100 border-r-gray-100'
                                 : isCritical
@@ -33,9 +34,9 @@ const PhaseGrid = ({ steps }) => {
                         <div>
                             <div className="flex justify-between items-start mb-4">
                                 <div className={`w-10 h-10 rounded-lg flex items-center justify-center transition-colors ${isCompleted ? 'bg-emerald-50 text-emerald-600' :
-                                        isCritical ? 'bg-rose-50 text-rose-600' :
-                                            isFastTrack ? 'bg-amber-50 text-amber-600' :
-                                                'bg-pink-50 text-pink-600'
+                                    isCritical ? 'bg-rose-50 text-rose-600' :
+                                        isFastTrack ? 'bg-amber-50 text-amber-600' :
+                                            'bg-pink-50 text-pink-600'
                                     }`}>
                                     {isCompleted ? <CheckCircle size={20} /> : <PlayCircle size={20} />}
                                 </div>
@@ -71,6 +72,7 @@ const PhaseGrid = ({ steps }) => {
 
                             <motion.button
                                 whileHover={{ x: 3 }}
+                                whileTap={{ scale: 0.98 }}
                                 className={`text-xs font-bold uppercase tracking-wider flex items-center gap-1 transition-colors ${isCompleted ? 'text-emerald-600' : 'text-gray-400 group-hover:text-pink-600'
                                     }`}
                             >

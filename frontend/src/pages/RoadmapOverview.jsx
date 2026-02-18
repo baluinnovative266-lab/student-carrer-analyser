@@ -116,7 +116,7 @@ const RoadmapOverview = () => {
                                 whileHover={{ y: -8 }}
                                 onClick={() => setSelectedPhase(phase)}
                                 className={`
-                                    relative bg-white p-6 rounded-2xl cursor-pointer border border-gray-100 shadow-xl shadow-gray-200/50 hover:shadow-2xl hover:shadow-pink-500/10 transition-all duration-300 group flex flex-col h-full
+                                    relative glass-card p-6 !bg-white/80 cursor-pointer hover:!bg-white shadow-xl shadow-gray-200/50 hover:shadow-2xl hover:shadow-pink-500/10 transition-all duration-300 group flex flex-col h-full
                                     ${selectedPhase?.phase === phase.phase ? 'ring-2 ring-pink-500 ring-offset-2' : ''}
                                 `}
                             >

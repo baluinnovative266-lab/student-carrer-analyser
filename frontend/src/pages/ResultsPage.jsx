@@ -1,15 +1,16 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import {
-    BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
-    RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar
-} from 'recharts';
+// Recharts components removed to use Custom components from Charts.jsx
 import {
     CheckCircle, XCircle, TrendingUp, BookOpen, Target, Award, BarChart3,
-    X, ShieldCheck, Sparkles, Layout, Info, ChevronRight, ArrowRight, Brain
+    X, ShieldCheck, Sparkles, Layout, Info, ChevronRight, ArrowRight, Brain, Code
 } from 'lucide-react';
 import AvatarSelector from '../components/AvatarSelector';
+import SidePanel from '../components/SidePanel';
+import FAQSection from '../components/FAQSection';
+import StatCard from '../components/StatCard';
+import { CustomBarChart, CustomRadarChart, AnimatedCounter } from '../components/Charts';
 
 // ─── Page transition variants ─────────────────────────────────────────────────
 const pageVariants = {
@@ -18,41 +19,8 @@ const pageVariants = {
     exit: { opacity: 0, x: -40, transition: { duration: 0.25, ease: 'easeIn' } },
 };
 
-// ─── Animated counter ─────────────────────────────────────────────────────────
-const Counter = ({ target, duration = 1.5 }) => {
-    const [count, setCount] = useState(0);
-    useEffect(() => {
-        if (!target) return;
-        let start = 0;
-        const end = parseInt(target) || 0;
-        if (start === end) return;
-        const timer = setInterval(() => {
-            start += Math.ceil(end / 40);
-            if (start >= end) { setCount(end); clearInterval(timer); }
-            else setCount(start);
-        }, duration * 25);
-        return () => clearInterval(timer);
-    }, [target, duration]);
-    return <span>{count}%</span>;
-};
+// (Internal Counter removed to use AnimatedCounter from Charts)
 
-// ─── Stat Card ────────────────────────────────────────────────────────────────
-const StatCard = ({ title, value, icon, color, bg, onClick }) => (
-    <motion.div
-        whileHover={{ y: -5, boxShadow: '0 20px 40px -10px rgba(236,72,153,0.15)' }}
-        whileTap={{ scale: 0.97 }}
-        className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4 cursor-pointer hover:shadow-lg transition-all group"
-        onClick={onClick}
-    >
-        <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${bg} ${color} group-hover:scale-110 transition-transform`}>
-            {icon}
-        </div>
-        <div>
-            <p className="text-gray-500 text-sm font-medium">{title}</p>
-            <p className="text-2xl font-bold text-gray-900 group-hover:text-pink-600 transition-colors">{value}</p>
-        </div>
-    </motion.div>
-);
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 const ResultsPage = () => {
@@ -62,6 +30,35 @@ const ResultsPage = () => {
     const [loading, setLoading] = useState(true);
     const [selectedStat, setSelectedStat] = useState(null);
     const [selectedSkill, setSelectedSkill] = useState(null);
+
+    // SaaS Panel State
+    const [isPanelOpen, setIsPanelOpen] = useState(false);
+    const [panelData, setPanelData] = useState(null);
+    const [panelTitle, setPanelTitle] = useState("");
+    const [panelType, setPanelType] = useState("");
+
+    const openSkillPanel = (skillName) => {
+        // Find skill details from stats or fallback
+        const detail = stats.skill_details?.[skillName.toLowerCase()] || {};
+        setPanelData(detail);
+        setPanelTitle(skillName);
+        setPanelType("Skill Gap");
+        setIsPanelOpen(true);
+    };
+
+    const openProjectPanel = (index) => {
+        const project = stats.featured_projects?.[index] || {
+            title: `Project ${index + 1}`,
+            overview: "A comprehensive project designed to solidify your new skill.",
+            tech_stack: "Modern Tech Stack",
+            difficulty: "Intermediate",
+            github_link: "#"
+        };
+        setPanelData(project);
+        setPanelTitle(project.title);
+        setPanelType("Build Project");
+        setIsPanelOpen(true);
+    };
 
     useEffect(() => {
         try {
@@ -109,7 +106,7 @@ const ResultsPage = () => {
                 >
                     <Brain className="w-20 h-20 text-pink-400 mx-auto mb-6" />
                     <h1 className="text-3xl font-black text-gray-900 mb-4">No Results Yet</h1>
-                    <p className="text-gray-500 mb-8">Run a career prediction or resume analysis to see your results here.</p>
+                    <p className="text-gray-500 mb-8 font-medium">Upload resume to generate skill insights.</p>
                     <div className="grid grid-cols-2 gap-4">
                         <Link to="/career-prediction" className="p-5 rounded-2xl bg-pink-50 border border-pink-100 hover:bg-pink-100 transition-all text-center">
                             <Target className="w-8 h-8 text-pink-600 mx-auto mb-2" />
@@ -131,7 +128,7 @@ const ResultsPage = () => {
             initial="initial"
             animate="animate"
             exit="exit"
-            className="min-h-screen bg-gray-50 pt-24 pb-16 px-4"
+            className="min-h-screen bg-gray-50 pt-24 pb-16 px-6"
         >
             <div className="max-w-7xl mx-auto">
 
@@ -169,34 +166,30 @@ const ResultsPage = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
                     <StatCard
                         title="Match Score"
-                        value={stats.career_match_score ? `${Math.round(stats.career_match_score)}%` : 'N/A'}
+                        value={stats.career_match_score ? <><AnimatedCounter value={Math.round(stats.career_match_score)} />%</> : 'N/A'}
                         icon={<Target size={22} />}
-                        color="text-pink-600"
-                        bg="bg-pink-50"
+                        color="pink"
                         onClick={() => setSelectedStat({ type: 'match', title: 'Match Score Breakdown', data: stats.radar_data || [] })}
                     />
                     <StatCard
                         title="Skills Found"
                         value={(stats.extracted_skills || []).length}
                         icon={<CheckCircle size={22} />}
-                        color="text-emerald-600"
-                        bg="bg-emerald-50"
+                        color="emerald"
                         onClick={() => setSelectedStat({ type: 'skills_found', title: 'Verified Skills', data: stats.extracted_skills || [] })}
                     />
                     <StatCard
                         title="Skills Gap"
                         value={(stats.missing_skills || []).length}
                         icon={<XCircle size={22} />}
-                        color="text-orange-600"
-                        bg="bg-orange-50"
+                        color="orange"
                         onClick={() => setSelectedStat({ type: 'skills_gap', title: 'Missing Skills', data: stats.missing_skills || [] })}
                     />
                     <StatCard
                         title="Next Goal"
                         value={stats.next_recommended_skill || 'Cloud'}
                         icon={<TrendingUp size={22} />}
-                        color="text-blue-600"
-                        bg="bg-blue-50"
+                        color="blue"
                         onClick={() => setSelectedStat({ type: 'next_goal', title: 'Next Learning Goal', data: stats.next_recommended_skill })}
                     />
                 </div>
@@ -208,23 +201,16 @@ const ResultsPage = () => {
                         animate={{ opacity: 1, y: 0 }}
                         className="space-y-5 lg:col-span-1"
                     >
-                        <div className="bg-slate-900 p-6 rounded-2xl shadow-sm border border-gray-100/10">
+                        <div className="bg-gray-900 p-6 rounded-[2rem] shadow-xl shadow-gray-200/50 border border-gray-100 overflow-hidden relative">
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-pink-500/10 rounded-full blur-2xl -mr-16 -mt-16" />
                             <AvatarSelector currentCareer={stats.predicted_career} />
                         </div>
                         <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
                             <h3 className="text-lg font-bold text-gray-800 mb-5 flex items-center gap-2">
                                 <Award className="text-pink-500" size={20} /> Skill Proficiency
                             </h3>
-                            <div className="h-[200px] w-full -ml-2">
-                                <ResponsiveContainer width="100%" height="100%">
-                                    <RadarChart cx="50%" cy="50%" outerRadius="65%" data={stats.radar_data}>
-                                        <PolarGrid stroke="#e5e7eb" />
-                                        <PolarAngleAxis dataKey="subject" tick={{ fill: '#6b7280', fontSize: 10 }} />
-                                        <PolarRadiusAxis angle={30} domain={[0, 100]} tick={false} axisLine={false} />
-                                        <Radar name="My Skills" dataKey="A" stroke="#ec4899" fill="#ec4899" fillOpacity={0.5} />
-                                        <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)' }} />
-                                    </RadarChart>
-                                </ResponsiveContainer>
+                            <div className="h-[200px] w-full">
+                                <CustomRadarChart data={stats.radar_data || []} />
                             </div>
                             <div className="mt-2 pt-4 border-t border-gray-100 space-y-3">
                                 <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Mastery Breakdown</h4>
@@ -232,7 +218,7 @@ const ResultsPage = () => {
                                     <div key={i} className="space-y-1">
                                         <div className="flex justify-between items-center text-xs">
                                             <span className="font-bold text-gray-700">{skill.subject}</span>
-                                            <span className="font-black text-pink-600"><Counter target={skill.A} /></span>
+                                            <span className="font-black text-pink-600"><AnimatedCounter value={skill.A} />%</span>
                                         </div>
                                         <div className="relative w-full h-2 bg-gray-100 rounded-full overflow-hidden">
                                             <motion.div
@@ -261,15 +247,7 @@ const ResultsPage = () => {
                                     <BarChart3 className="text-pink-500" size={20} /> Career Match Probabilities
                                 </h3>
                                 <div className="h-[220px] w-full">
-                                    <ResponsiveContainer width="100%" height="100%">
-                                        <BarChart data={stats.probability_chart_data} layout="vertical">
-                                            <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                                            <XAxis type="number" domain={[0, 100]} tick={{ fill: '#6b7280', fontSize: 12 }} />
-                                            <YAxis dataKey="career" type="category" width={120} tick={{ fill: '#374151', fontSize: 12, fontWeight: 600 }} />
-                                            <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)' }} formatter={(v) => `${v.toFixed(1)}%`} />
-                                            <Bar dataKey="probability" fill="#ec4899" radius={[0, 8, 8, 0]} />
-                                        </BarChart>
-                                    </ResponsiveContainer>
+                                    <CustomBarChart data={stats.probability_chart_data} dataKey="probability" />
                                 </div>
                             </motion.div>
                         )}
@@ -284,18 +262,8 @@ const ResultsPage = () => {
                                 <h3 className="text-lg font-bold text-gray-800 mb-5 flex items-center gap-2">
                                     <Target className="text-indigo-500" size={20} /> Your Skills vs Required
                                 </h3>
-                                <div className="h-[220px] w-full">
-                                    <ResponsiveContainer width="100%" height="100%">
-                                        <BarChart data={stats.skill_comparison_data}>
-                                            <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                                            <XAxis dataKey="skill" tick={{ fill: '#6b7280', fontSize: 11 }} />
-                                            <YAxis domain={[0, 100]} tick={{ fill: '#6b7280', fontSize: 12 }} />
-                                            <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)' }} />
-                                            <Legend wrapperStyle={{ fontSize: '13px', fontWeight: 600 }} />
-                                            <Bar dataKey="yourScore" fill="#10b981" name="Your Score" radius={[8, 8, 0, 0]} />
-                                            <Bar dataKey="required" fill="#6366f1" name="Required" radius={[8, 8, 0, 0]} />
-                                        </BarChart>
-                                    </ResponsiveContainer>
+                                <div className="h-[240px] w-full">
+                                    <CustomBarChart data={stats.skill_comparison_data} dataKey="yourScore" />
                                 </div>
                             </motion.div>
                         )}
@@ -343,7 +311,7 @@ const ResultsPage = () => {
                                                     key={index}
                                                     whileHover={{ scale: 1.05, y: -2 }}
                                                     whileTap={{ scale: 0.95 }}
-                                                    onClick={() => setSelectedSkill(skill)}
+                                                    onClick={() => openSkillPanel(skill.name)}
                                                     className="group flex items-center gap-2 px-4 py-3 bg-white border-2 border-gray-100 rounded-2xl hover:border-pink-400 hover:shadow-lg hover:shadow-pink-500/10 transition-all text-left"
                                                 >
                                                     <span className="font-bold text-gray-700 group-hover:text-pink-600">{skill.name}</span>
@@ -361,107 +329,121 @@ const ResultsPage = () => {
                 </motion.div>
 
                 {/* ── Gap Coverage: Skill → Tool → Project ── */}
+                {/* ── Gap Coverage: Skill → Tool → Project ── */}
                 {(stats.missing_skills || []).length > 0 && (
                     <motion.div
                         initial={{ opacity: 0, y: 30 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
-                        className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 mb-8"
+                        className="bg-white p-10 rounded-[3rem] shadow-sm border border-gray-100 mb-12 relative overflow-hidden"
                     >
-                        <h3 className="text-xl font-black text-gray-900 mb-2" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-                            Learning Gap Coverage
-                        </h3>
-                        <p className="text-gray-500 text-sm mb-8">Your skill gaps and the path to close them.</p>
+                        <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-rose-500 via-pink-500 to-indigo-500" />
 
-                        <div className="space-y-6">
-                            {(stats.missing_skills || []).slice(0, 5).map((skill, i) => {
+                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
+                            <div>
+                                <h3 className="text-2xl font-black text-gray-900 mb-2 uppercase tracking-tighter" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+                                    Learning Gap Coverage
+                                </h3>
+                                <p className="text-gray-500 font-medium">Your personalized path from missing skills to professional projects.</p>
+                            </div>
+                            <div className="flex items-center gap-4 bg-gray-50 p-2 rounded-2xl border border-gray-100">
+                                <div className="flex -space-x-2">
+                                    {[1, 2, 3].map(i => <div key={i} className="w-8 h-8 rounded-full border-2 border-white bg-pink-100 flex items-center justify-center text-[10px] font-black text-pink-600">P{i}</div>)}
+                                </div>
+                                <span className="text-xs font-bold text-gray-500 pr-2">Expert-Selected Projects</span>
+                            </div>
+                        </div>
+
+                        <div className="space-y-12">
+                            {(stats.missing_skills || []).slice(0, 3).map((skill, i) => {
                                 const skillName = typeof skill === 'object' ? skill.name : skill;
                                 return (
-                                    <div key={i} className="relative">
-                                        {/* Connector line */}
-                                        {i < Math.min((stats.missing_skills || []).length, 5) - 1 && (
-                                            <div className="absolute left-5 top-full w-0.5 h-6 bg-gradient-to-b from-rose-300 to-pink-200 z-10" />
-                                        )}
-                                        <div className="flex items-stretch gap-0">
-                                            {/* Skill node */}
-                                            <motion.div
-                                                whileHover={{ scale: 1.02 }}
-                                                className="flex items-center gap-3 bg-rose-50 border border-rose-100 rounded-2xl px-5 py-4 flex-1"
-                                            >
-                                                <div className="w-8 h-8 rounded-xl bg-rose-100 flex items-center justify-center text-rose-600 font-black text-sm shrink-0">
-                                                    {i + 1}
+                                    <div key={i} className="group flex flex-col lg:flex-row items-center gap-4 lg:gap-0">
+                                        {/* Skill node */}
+                                        <motion.div
+                                            whileHover={{ y: -5, boxShadow: '0 20px 25px -5px rgba(244,63,94,0.1)' }}
+                                            onClick={() => openSkillPanel(skillName)}
+                                            className="bg-white border-2 border-rose-100 rounded-[2rem] p-6 lg:w-72 cursor-pointer transition-all hover:border-rose-300 z-10"
+                                        >
+                                            <div className="flex items-center gap-4">
+                                                <div className="w-12 h-12 rounded-2xl bg-rose-500 text-white flex items-center justify-center shadow-lg shadow-rose-500/20 shrink-0">
+                                                    <Brain size={24} />
                                                 </div>
                                                 <div>
-                                                    <p className="text-[10px] text-rose-500 font-bold uppercase tracking-wider">Gap Skill</p>
-                                                    <p className="font-bold text-gray-900">{skillName}</p>
+                                                    <p className="text-[10px] text-rose-500 font-black uppercase tracking-widest mb-0.5">Missing Skill</p>
+                                                    <p className="font-black text-gray-900 text-sm leading-tight">{skillName}</p>
                                                 </div>
-                                            </motion.div>
-
-                                            {/* Arrow */}
-                                            <div className="flex items-center px-3">
-                                                <div className="w-8 h-0.5 bg-gradient-to-r from-rose-300 to-pink-400" />
-                                                <ChevronRight size={16} className="text-pink-400 -ml-1" />
                                             </div>
+                                        </motion.div>
 
-                                            {/* Tool node */}
+                                        {/* Connector */}
+                                        <div className="flex-1 h-1 bg-gradient-to-r from-rose-200 via-pink-200 to-indigo-100 relative hidden lg:block">
                                             <motion.div
-                                                whileHover={{ scale: 1.02 }}
-                                                className="flex items-center gap-3 bg-pink-50 border border-pink-100 rounded-2xl px-5 py-4 flex-1"
-                                            >
-                                                <div className="w-8 h-8 rounded-xl bg-pink-100 flex items-center justify-center text-pink-600 shrink-0">
-                                                    <Target size={16} />
-                                                </div>
-                                                <div>
-                                                    <p className="text-[10px] text-pink-500 font-bold uppercase tracking-wider">Learn via</p>
-                                                    <p className="font-bold text-gray-900">Roadmap Phase {i + 1}</p>
-                                                </div>
-                                            </motion.div>
-
-                                            {/* Arrow */}
-                                            <div className="flex items-center px-3">
-                                                <div className="w-8 h-0.5 bg-gradient-to-r from-pink-300 to-indigo-400" />
-                                                <ChevronRight size={16} className="text-indigo-400 -ml-1" />
+                                                className="absolute top-1/2 -translate-y-1/2 left-0 h-4 w-4 bg-pink-300 rounded-full blur-sm"
+                                                animate={{ left: ['0%', '100%', '0%'] }}
+                                                transition={{ duration: 4, repeat: Infinity, ease: "linear", delay: i * 1 }}
+                                            />
+                                            <div className="absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 px-4 py-1 bg-white border border-pink-100 rounded-full text-[9px] font-black text-pink-400 uppercase tracking-widest">
+                                                Solve via Roadmap
                                             </div>
-
-                                            {/* Project node */}
-                                            <motion.div
-                                                whileHover={{ scale: 1.02 }}
-                                                className="flex items-center gap-3 bg-indigo-50 border border-indigo-100 rounded-2xl px-5 py-4 flex-1"
-                                            >
-                                                <div className="w-8 h-8 rounded-xl bg-indigo-100 flex items-center justify-center text-indigo-600 shrink-0">
-                                                    <Award size={16} />
-                                                </div>
-                                                <div>
-                                                    <p className="text-[10px] text-indigo-500 font-bold uppercase tracking-wider">Build</p>
-                                                    <p className="font-bold text-gray-900">Project {i + 1}</p>
-                                                </div>
-                                            </motion.div>
                                         </div>
+
+                                        {/* Mobile vertical connector */}
+                                        <div className="h-8 w-1 bg-gradient-to-b from-rose-200 to-indigo-100 lg:hidden" />
+
+                                        {/* Project node */}
+                                        <motion.div
+                                            whileHover={{ y: -5, boxShadow: '0 20px 25px -5px rgba(79,70,229,0.1)' }}
+                                            onClick={() => openProjectPanel(i)}
+                                            className="bg-indigo-600 rounded-[2rem] p-6 lg:w-96 text-white cursor-pointer transition-all hover:bg-indigo-700 shadow-xl shadow-indigo-600/20 relative overflow-hidden"
+                                        >
+                                            <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-2xl -mr-16 -mt-16" />
+                                            <div className="flex items-center gap-5 relative z-10">
+                                                <div className="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center shrink-0">
+                                                    <Code size={30} />
+                                                </div>
+                                                <div>
+                                                    <p className="text-[10px] text-indigo-200 font-black uppercase tracking-widest mb-1">Capstone Project</p>
+                                                    <p className="font-black text-lg leading-tight">Mastery Project {i + 1}</p>
+                                                    <div className="flex items-center gap-2 mt-2 text-[10px] font-bold text-indigo-300">
+                                                        <Sparkles size={12} /> Personalized Learning Path
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </motion.div>
                                     </div>
                                 );
                             })}
                         </div>
 
-                        {/* Progress bar */}
-                        <div className="mt-8 pt-6 border-t border-gray-50">
-                            <div className="flex justify-between items-center mb-2">
-                                <p className="text-sm font-bold text-gray-600">Gap Coverage Progress</p>
-                                <p className="text-sm font-black text-pink-600">
-                                    {Math.round(((stats.extracted_skills || []).length / Math.max((stats.extracted_skills || []).length + (stats.missing_skills || []).length, 1)) * 100)}%
-                                </p>
+                        {/* Summary Bar */}
+                        <div className="mt-16 pt-10 border-t border-gray-100 flex flex-col md:flex-row items-center justify-between gap-8">
+                            <div className="flex-1 w-full max-w-xl">
+                                <div className="flex justify-between items-center mb-3">
+                                    <p className="text-sm font-black text-gray-700 uppercase tracking-widest">Gap Coverage Confidence</p>
+                                    <p className="text-xl font-black text-pink-600">
+                                        {Math.round(((stats.extracted_skills || []).length / Math.max((stats.extracted_skills || []).length + (stats.missing_skills || []).length, 1)) * 100)}%
+                                    </p>
+                                </div>
+                                <div className="w-full h-4 bg-gray-100 rounded-full overflow-hidden p-1 shadow-inner">
+                                    <motion.div
+                                        initial={{ width: 0 }}
+                                        whileInView={{ width: `${Math.round(((stats.extracted_skills || []).length / Math.max((stats.extracted_skills || []).length + (stats.missing_skills || []).length, 1)) * 100)}%` }}
+                                        viewport={{ once: true }}
+                                        transition={{ duration: 2, ease: 'backOut' }}
+                                        className="h-full bg-gradient-to-r from-rose-500 via-pink-400 to-indigo-500 rounded-full shadow-lg"
+                                    />
+                                </div>
                             </div>
-                            <div className="w-full h-3 bg-gray-100 rounded-full overflow-hidden">
-                                <motion.div
-                                    initial={{ width: 0 }}
-                                    whileInView={{ width: `${Math.round(((stats.extracted_skills || []).length / Math.max((stats.extracted_skills || []).length + (stats.missing_skills || []).length, 1)) * 100)}%` }}
-                                    viewport={{ once: true }}
-                                    transition={{ duration: 1.5, ease: 'easeOut' }}
-                                    className="h-full bg-gradient-to-r from-pink-500 to-rose-400 rounded-full"
-                                />
-                            </div>
-                            <div className="flex justify-between text-xs text-gray-400 mt-1">
-                                <span>{(stats.extracted_skills || []).length} skills mastered</span>
-                                <span>{(stats.missing_skills || []).length} gaps remaining</span>
+                            <div className="grid grid-cols-2 gap-4 shrink-0">
+                                <div className="p-4 bg-emerald-50 rounded-2xl border border-emerald-100 text-center">
+                                    <p className="text-[10px] font-black text-emerald-600 uppercase mb-1">Found</p>
+                                    <p className="text-2xl font-black text-gray-900">{(stats.extracted_skills || []).length}</p>
+                                </div>
+                                <div className="p-4 bg-rose-50 rounded-2xl border border-rose-100 text-center">
+                                    <p className="text-[10px] font-black text-rose-600 uppercase mb-1">Gaps</p>
+                                    <p className="text-2xl font-black text-gray-900">{(stats.missing_skills || []).length}</p>
+                                </div>
                             </div>
                         </div>
                     </motion.div>
@@ -553,7 +535,7 @@ const ResultsPage = () => {
                                                     <div className="w-24 h-2 bg-gray-200 rounded-full overflow-hidden">
                                                         <div className="h-full bg-pink-500" style={{ width: `${item.A}%` }} />
                                                     </div>
-                                                    <span className="font-bold text-gray-900 w-8 text-right">{item.A}</span>
+                                                    <span className="font-bold text-gray-900 w-8 text-right"><AnimatedCounter value={item.A} />%</span>
                                                 </div>
                                             </div>
                                         ))}
@@ -591,6 +573,18 @@ const ResultsPage = () => {
                     </div>
                 )}
             </AnimatePresence>
+
+            <div className="mt-16 pt-16 border-t border-gray-100">
+                <FAQSection />
+            </div>
+
+            <SidePanel
+                isOpen={isPanelOpen}
+                onClose={() => setIsPanelOpen(false)}
+                title={panelTitle}
+                data={panelData}
+                type={panelType}
+            />
         </motion.div>
     );
 };

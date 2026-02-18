@@ -107,6 +107,121 @@ class RoadmapEngine:
     }
 
     # ==========================================
+    # DETAILED SKILL METADATA FOR SIDE PANELS
+    # ==========================================
+    SKILL_DETAILS = {
+        "programming": {
+            "description": "The logic and syntax used to build functional software. Focuses on variables, loops, and basic algorithms.",
+            "importance": "Core foundation for any developer role. Prevents 'spaghetti code' and improves logic.",
+            "use_cases": ["Backend Logic", "Scripting", "Mobile Apps"],
+            "objectives": ["Understand Variables & Types", "Master Control Flow", "Apply OOP Patterns"],
+            "learning_time": "4 Weeks"
+        },
+        "logic": {
+            "description": "Structured thinking to solve complex problems by breaking them into smaller, manageable parts.",
+            "importance": "Essential for debugging and architecture design.",
+            "use_cases": ["Bug Fixing", "System Flow", "Game Logic"],
+            "objectives": ["Boolean Algebra", "Edge Case Identification", "Pseudo-coding"],
+            "learning_time": "2 Weeks"
+        },
+        "math": {
+            "description": "Mathematical foundations like Statistics, Probability, and Discrete Math tailored for Tech.",
+            "importance": "Powerhouse for Data Science and Graphics programming.",
+            "use_cases": ["ML Models", "3D Rendering", "A/B Testing"],
+            "objectives": ["Descriptive Statistics", "Calculus for ML", "Discrete Logic"],
+            "learning_time": "4 Weeks"
+        },
+        "data structures": {
+            "description": "Ways to store and organize data efficiently like Arrays, Hash Maps, and Trees.",
+            "importance": "Directly impacts application speed and technical interview performance.",
+            "use_cases": ["Search Engines", "Database Indices", "File Systems"],
+            "objectives": ["Space/Time Complexity", "Tree Traversals", "Hash Map Optimization"],
+            "learning_time": "3 Weeks"
+        },
+        "web development": {
+            "description": "Building and maintaining websites, from visual elements to server logic.",
+            "importance": "Most common entry point for software careers.",
+            "use_cases": ["E-commerce", "SaaS Dashboards", "Personal Portfolios"],
+            "objectives": ["Frontend (React/Vue)", "Backend (Node/FastAPI)", "RESTful APIs"],
+            "learning_time": "5 Weeks"
+        },
+        "database": {
+            "description": "Storing, retrieving, and managing and organizing data using SQL or NoSQL.",
+            "importance": "The brain of any application; essential for data persistence.",
+            "use_cases": ["User Management", "Transaction Logs", "Inventory Systems"],
+            "objectives": ["Schema Normalization", "Indexing", "ACID Properties"],
+            "learning_time": "3 Weeks"
+        },
+        "machine learning": {
+            "description": "Algorithms that improve automatically through experience and data usage.",
+            "importance": "Key for predictive analytics and modern AI features.",
+            "use_cases": ["Recommendation Engines", "Fraud Detection", "Computer Vision"],
+            "objectives": ["Supervised Learning", "Overfitting Prevention", "Hyperparameter Tuning"],
+            "learning_time": "6 Weeks"
+        },
+        "ui/ux design": {
+            "description": "Ensuring products are intuitive to use and visually pleasing.",
+            "importance": "Determines user retention and overall product success.",
+            "use_cases": ["App Interfaces", "Design Systems", "User Journeys"],
+            "objectives": ["Figma Prototyping", "Hierarchy & Layout", "User Empathy"],
+            "learning_time": "4 Weeks"
+        },
+        "agile": {
+            "description": "Iterative project management that focuses on continuous delivery and feedback.",
+            "importance": "Industry standard for how modern tech teams operate.",
+            "use_cases": ["Scrum Teams", "Startup Pivots", "Large Engineering Orgs"],
+            "objectives": ["Sprint Planning", "Jira/Linear Mastery", "Retrospectives"],
+            "learning_time": "2 Weeks"
+        },
+        "security": {
+            "description": "Protecting systems, networks, and programs from digital attacks.",
+            "importance": "Critical to protect user data and maintain trust.",
+            "use_cases": ["Pentesting", "Zero Trust Architecture", "SOC Analysis"],
+            "objectives": ["Network Security", "Cryptography", "Identity Mgmt"],
+            "learning_time": "5 Weeks"
+        }
+    }
+
+    # ==========================================
+    # ENRICHED PROJECTS FOR PHASES (Carrier + Phase)
+    # ==========================================
+    PROJECT_TEMPLATES = {
+        "Software Engineer": {
+            "Phase 1 – Foundations": [
+                {"title": "Terminal Task Manager", "overview": "A CLI app to manage daily tasks.", "tech_stack": "Python", "difficulty": "Easy", "github_link": "https://github.com/project-hub/cli-task-manager"},
+                {"title": "Algorithm Visualizer", "overview": "Visualize sorting algorithms in the browser.", "tech_stack": "JavaScript", "difficulty": "Medium", "github_link": "https://github.com/project-hub/algo-viz"}
+            ],
+            "Phase 2 – Core Skills": [
+                {"title": "Real-time Chat App", "overview": "Build a messaging system with WebSockets.", "tech_stack": "Node.js + Socket.io", "difficulty": "Hard", "github_link": "https://github.com/project-hub/realtime-chat"},
+                {"title": "Inventory API", "overview": "A robust REST API for warehouse management.", "tech_stack": "FastAPI + Postgres", "difficulty": "Medium", "github_link": "https://github.com/project-hub/inventory-api"}
+            ],
+            "Phase 3 – Projects": [
+                {"title": "SaaS Dashboard", "overview": "Complete project management suite with Auth.", "tech_stack": "React + Firebase", "difficulty": "Hard", "github_link": "https://github.com/project-hub/saas-dashboard"},
+                {"title": "E-commerce Microservice", "overview": "Scale a small store into microservices.", "tech_stack": "Go + Docker", "difficulty": "Expert", "github_link": "https://github.com/project-hub/micro-store"}
+            ]
+        },
+        "Data Scientist": {
+            "Phase 1 – Foundations": [
+                {"title": "Stock Data Scraper", "overview": "Extract and clean financial data.", "tech_stack": "Python + BeautifulSoup", "difficulty": "Medium", "github_link": "https://github.com/project-hub/stock-scraper"}
+            ],
+            "Phase 2 – Core Skills": [
+                {"title": "Housing Price Predictor", "overview": "Regression model for real estate.", "tech_stack": "Pandas + Scikit-learn", "difficulty": "Medium", "github_link": "https://github.com/project-hub/price-predict"}
+            ],
+            "Phase 3 – Projects": [
+                {"title": "Deep Learning Chatbot", "overview": "Train an LSTM model for conversation.", "tech_stack": "TensorFlow/PyTorch", "difficulty": "Hard", "github_link": "https://github.com/project-hub/ai-chat"}
+            ]
+        },
+        "UI/UX Designer": {
+            "Phase 1 – Foundations": [
+                {"title": "Portfolio Wireframes", "overview": "High-fidelity layouts for your own site.", "tech_stack": "Figma", "difficulty": "Easy", "github_link": "https://github.com/project-hub/ux-portfolio"}
+            ],
+            "Phase 3 – Projects": [
+                {"title": "Healthcare App Redesign", "overview": "End-to-end case study for medical UX.", "tech_stack": "Figma + Protopie", "difficulty": "Hard", "github_link": "https://github.com/project-hub/health-redesign"}
+            ]
+        }
+    }
+
+    # ==========================================
     # PHASE-SPECIFIC MINDMAP DATA PER CAREER
     # Each phase has unique branches and subnodes
     # ==========================================
@@ -290,70 +405,42 @@ class RoadmapEngine:
     PHASE_RESOURCES = {
         "Software Engineer": {
             "Phase 1 – Foundations": [
-                {"type": "course", "title": "CS50: Introduction to Computer Science", "url": "https://cs50.harvard.edu/x/", "platform": "Harvard/edX"},
-                {"type": "video", "title": "Programming Fundamentals Crash Course", "url": "https://www.youtube.com/results?search_query=programming+fundamentals+crash+course", "platform": "YouTube"},
-                {"type": "article", "title": "Learn Python — Interactive Tutorial", "url": "https://www.learnpython.org/", "platform": "LearnPython.org"},
-                {"type": "tool", "title": "HackerRank: 30 Days of Code", "url": "https://www.hackerrank.com/domains/tutorials/30-days-of-code", "platform": "HackerRank"},
-                {"type": "course", "title": "The Odin Project: Foundations", "url": "https://www.theodinproject.com/paths/foundations", "platform": "The Odin Project"},
-                {"type": "article", "title": "Git & GitHub for Beginners", "url": "https://guides.github.com/activities/hello-world/", "platform": "GitHub Guides"}
+                {"type": "course", "title": "CS50: Introduction to Computer Science", "url": "https://cs50.harvard.edu/x/", "platform": "Harvard", "duration": "12 weeks", "difficulty": "Beginner"},
+                {"type": "video", "title": "Programming Logic for Beginners", "url": "https://www.youtube.com/watch?v=zOjov-2OZ0E", "platform": "YouTube", "duration": "45 mins", "difficulty": "Beginner"},
+                {"type": "pdf", "title": "Clean Code: A Handbook of Agile Software Craftsmanship", "url": "https://www.investigatii.md/uploads/resurse/Clean_Code.pdf", "platform": "PDF", "duration": "Read", "difficulty": "Intermediate"},
+                {"type": "article", "title": "The Odin Project: Foundations", "url": "https://www.theodinproject.com/paths/foundations/courses/foundations", "platform": "Odin Project", "duration": "40 hours", "difficulty": "Beginner"}
             ],
             "Phase 2 – Core Skills": [
-                {"type": "course", "title": "Algorithms Specialization (Stanford)", "url": "https://www.coursera.org/specializations/algorithms", "platform": "Coursera"},
-                {"type": "video", "title": "Data Structures Full Course", "url": "https://www.youtube.com/results?search_query=data+structures+full+course", "platform": "YouTube"},
-                {"type": "tool", "title": "LeetCode: Top Interview Questions", "url": "https://leetcode.com/problemset/top-interview-questions/", "platform": "LeetCode"},
-                {"type": "article", "title": "Full-Stack Open: Modern Web Dev", "url": "https://fullstackopen.com/en/", "platform": "University of Helsinki"},
-                {"type": "course", "title": "Database Design & SQL Mastery", "url": "https://www.khanacademy.org/computing/computer-programming/sql", "platform": "Khan Academy"},
-                {"type": "tool", "title": "VisuAlgo: Algorithm Visualizer", "url": "https://visualgo.net/", "platform": "VisuAlgo"}
+                {"type": "course", "title": "Full Stack Open: Deep Dive Into Modern Web Dev", "url": "https://fullstackopen.com/en/", "platform": "University of Helsinki", "duration": "14 weeks", "difficulty": "Intermediate"},
+                {"type": "video", "title": "System Design for Beginners", "url": "https://www.youtube.com/watch?v=i7SInS8vO0E", "platform": "YouTube", "duration": "1 hour", "difficulty": "Intermediate"},
+                {"type": "article", "title": "REST API Design Best Practices", "url": "https://stackoverflow.blog/2020/03/02/best-practices-for-rest-api-design/", "platform": "StackOverflow", "duration": "20 mins", "difficulty": "Intermediate"},
+                {"type": "pdf", "title": "The Pragmatic Programmer: Quick Guide", "url": "https://www.cs.colorado.edu/~kena/classes/5448/f12/presentation-materials/thepragmaticprogrammer.pdf", "platform": "PDF", "duration": "Read", "difficulty": "Intermediate"}
             ],
             "Phase 3 – Projects": [
-                {"type": "video", "title": "Build & Deploy Full Stack Project", "url": "https://www.youtube.com/results?search_query=full+stack+project+tutorial+2024", "platform": "YouTube"},
-                {"type": "article", "title": "Docker for Beginners: Containerize Apps", "url": "https://docker-curriculum.com/", "platform": "Docker Curriculum"},
-                {"type": "tool", "title": "Vercel: Deploy Frontend Projects Free", "url": "https://vercel.com/", "platform": "Vercel"},
-                {"type": "course", "title": "GitHub Actions CI/CD Pipeline", "url": "https://docs.github.com/en/actions/quickstart", "platform": "GitHub Docs"},
-                {"type": "article", "title": "How to Write a Great README", "url": "https://www.makeareadme.com/", "platform": "MakeAReadme"},
-                {"type": "tool", "title": "Railway: Deploy Backend Apps Free", "url": "https://railway.app/", "platform": "Railway"}
+                {"type": "video", "title": "Building a Real-time Chat with WebSockets", "url": "https://www.youtube.com/watch?v=kYRPZRLS8L4", "platform": "YouTube", "duration": "1.5 hours", "difficulty": "Advanced"},
+                {"type": "article", "title": "Microservices Architecture Guide", "url": "https://microservices.io/patterns/microservices.html", "platform": "Microservices.io", "duration": "30 mins", "difficulty": "Advanced"},
+                {"type": "course", "title": "AWS Cloud Practitioner Essentials", "url": "https://explore.skillbuilder.aws/learn/course/external/view/elearning/134/aws-cloud-practitioner-essentials", "platform": "AWS", "duration": "6 hours", "difficulty": "Intermediate"}
             ],
             "Phase 4 – Career Preparation": [
-                {"type": "course", "title": "Grokking the System Design Interview", "url": "https://www.designgurus.io/course/grokking-the-system-design-interview", "platform": "Design Gurus"},
-                {"type": "video", "title": "Mock Technical Interview Practice", "url": "https://www.youtube.com/results?search_query=mock+coding+interview+google", "platform": "YouTube"},
-                {"type": "tool", "title": "Pramp: Free Mock Interviews", "url": "https://www.pramp.com/", "platform": "Pramp"},
-                {"type": "article", "title": "Tech Interview Handbook", "url": "https://www.techinterviewhandbook.org/", "platform": "Tech Interview HB"},
-                {"type": "course", "title": "AWS Cloud Practitioner Essentials", "url": "https://aws.amazon.com/training/digital/aws-cloud-practitioner-essentials/", "platform": "AWS Training"},
-                {"type": "tool", "title": "Resume Worded: ATS Resume Scorer", "url": "https://resumeworded.com/", "platform": "Resume Worded"}
+                {"type": "video", "title": "Cracking the Coding Interview: Tips", "url": "https://www.youtube.com/watch?v=uQ_Xit_C9pQ", "platform": "YouTube", "duration": "30 mins", "difficulty": "Hard"},
+                {"type": "article", "title": "Star Method for Behavioral Interviews", "url": "https://www.themuse.com/advice/star-interview-method", "platform": "The Muse", "duration": "15 mins", "difficulty": "Beginner"},
+                {"type": "pdf", "title": "Software Engineering Resume Template", "url": "https://www.careercup.com/resume", "platform": "CareerCup", "duration": "Template", "difficulty": "Beginner"}
             ]
         },
         "Data Scientist": {
             "Phase 1 – Foundations": [
-                {"type": "course", "title": "Statistics & Probability (Khan Academy)", "url": "https://www.khanacademy.org/math/statistics-probability", "platform": "Khan Academy"},
-                {"type": "video", "title": "3Blue1Brown: Essence of Linear Algebra", "url": "https://www.youtube.com/playlist?list=PLZHQObOWTQDPD3MizzM2xVFitgF8hE_ab", "platform": "YouTube"},
-                {"type": "article", "title": "Python for Data Science Handbook", "url": "https://jakevdp.github.io/PythonDataScienceHandbook/", "platform": "Jake VDP"},
-                {"type": "tool", "title": "Kaggle Learn: Intro to ML", "url": "https://www.kaggle.com/learn/intro-to-machine-learning", "platform": "Kaggle"},
-                {"type": "course", "title": "DataCamp: Data Scientist with Python", "url": "https://www.datacamp.com/tracks/data-scientist-with-python", "platform": "DataCamp"},
-                {"type": "video", "title": "StatQuest: Statistics Fundamentals", "url": "https://www.youtube.com/c/joshstarmer", "platform": "YouTube"}
+                {"type": "course", "title": "Python for Data Science (IBM)", "url": "https://www.edx.org/course/python-for-data-science-2", "platform": "edX", "duration": "4 weeks", "difficulty": "Beginner"},
+                {"type": "video", "title": "Linear Algebra for ML Pro", "url": "https://www.youtube.com/watch?v=kjBOesZCoqc", "platform": "YouTube", "duration": "2 hours", "difficulty": "Beginner"}
             ],
             "Phase 2 – Core Skills": [
-                {"type": "course", "title": "Machine Learning by Andrew Ng", "url": "https://www.coursera.org/learn/machine-learning", "platform": "Coursera"},
-                {"type": "video", "title": "Scikit-learn Full Tutorial", "url": "https://www.youtube.com/results?search_query=scikit+learn+full+tutorial", "platform": "YouTube"},
-                {"type": "tool", "title": "Google Colab: Free GPU Notebooks", "url": "https://colab.research.google.com/", "platform": "Google Colab"},
-                {"type": "article", "title": "Towards Data Science: ML Tutorials", "url": "https://towardsdatascience.com/", "platform": "Medium/TDS"},
-                {"type": "course", "title": "SQL for Data Scientists", "url": "https://mode.com/sql-tutorial/", "platform": "Mode Analytics"},
-                {"type": "tool", "title": "Weights & Biases: Experiment Tracking", "url": "https://wandb.ai/", "platform": "W&B"}
+                {"type": "article", "title": "Pandas Cheat Sheet for Data Analysis", "url": "https://pandas.pydata.org/Pandas_Cheat_Sheet.pdf", "platform": "Pandas", "duration": "5 mins", "difficulty": "Beginner"},
+                {"type": "video", "title": "Scikit-Learn Machine Learning Workflow", "url": "https://www.youtube.com/watch?v=0Lt9w-RO8MC", "platform": "YouTube", "duration": "1 hour", "difficulty": "Intermediate"}
             ],
             "Phase 3 – Projects": [
-                {"type": "tool", "title": "Kaggle Competitions: Real Datasets", "url": "https://www.kaggle.com/competitions", "platform": "Kaggle"},
-                {"type": "video", "title": "End-to-End ML Project Tutorial", "url": "https://www.youtube.com/results?search_query=end+to+end+machine+learning+project", "platform": "YouTube"},
-                {"type": "course", "title": "MLflow: Model Lifecycle Management", "url": "https://mlflow.org/docs/latest/tutorials-and-examples/tutorial.html", "platform": "MLflow"},
-                {"type": "article", "title": "Streamlit: Build Data Apps Fast", "url": "https://streamlit.io/", "platform": "Streamlit"},
-                {"type": "tool", "title": "Hugging Face: NLP Models & Datasets", "url": "https://huggingface.co/", "platform": "Hugging Face"},
-                {"type": "article", "title": "DVC: Data Version Control Guide", "url": "https://dvc.org/doc/start", "platform": "DVC"}
+                {"type": "video", "title": "Building your Data Science Portfolio", "url": "https://www.youtube.com/watch?v=8_L79767auM", "platform": "YouTube", "duration": "45 mins", "difficulty": "Intermediate"}
             ],
             "Phase 4 – Career Preparation": [
-                {"type": "course", "title": "Google Data Analytics Certificate", "url": "https://www.coursera.org/professional-certificates/google-data-analytics", "platform": "Coursera"},
-                {"type": "video", "title": "Data Science Interview Questions", "url": "https://www.youtube.com/results?search_query=data+science+interview+preparation", "platform": "YouTube"},
-                {"type": "tool", "title": "StrataScratch: SQL Interview Practice", "url": "https://www.stratascratch.com/", "platform": "StrataScratch"},
-                {"type": "article", "title": "How to Build a DS Portfolio", "url": "https://www.dataquest.io/blog/build-a-data-science-portfolio/", "platform": "Dataquest"},
-                {"type": "course", "title": "AWS Machine Learning Specialty", "url": "https://aws.amazon.com/certification/certified-machine-learning-specialty/", "platform": "AWS"},
-                {"type": "tool", "title": "Interview Query: DS Interview Prep", "url": "https://www.interviewquery.com/", "platform": "Interview Query"}
+                {"type": "article", "title": "Data Science Interview Bible", "url": "https://towardsdatascience.com/data-science-interview-guide-4ee9f5eb7787", "platform": "Medium", "duration": "1 hour", "difficulty": "Hard"}
             ]
         },
         "Product Manager": {
@@ -522,6 +609,29 @@ class RoadmapEngine:
         }
     }
 
+    # ==========================================
+    # MODULE-SPECIFIC RESOURCES (Used for side panels)
+    # ==========================================
+    MODULE_RESOURCES = {
+        "programming": [
+            {"type": "video", "title": "Programming Logic Masterclass", "url": "https://www.youtube.com/watch?v=zOjov-2OZ0E", "description": "Fundamentals of coding logic."},
+            {"type": "course", "title": "Intro to Programming (Harvard CS50)", "url": "https://cs50.harvard.edu/x/", "description": "The world's most famous intro to CS."}
+        ],
+        "data structures": [
+            {"type": "video", "title": "Data Structures in 10 Minutes", "url": "https://www.youtube.com/watch?v=bum_19loOEc", "description": "Quick overview of core structures."},
+            {"type": "tool", "title": "VisuAlgo", "url": "https://visualgo.net/", "description": "Visualizing data structures and algorithms."}
+        ],
+        "logic": [
+            {"type": "article", "title": "The Art of Logical Thinking", "url": "https://plato.stanford.edu/entries/logic-informal/", "description": "Foundations of informal logic."}
+        ],
+        "web development": [
+            {"type": "course", "title": "The Complete Web Dev Bootcamp", "url": "https://www.udemy.com/course/the-complete-web-development-bootcamp/", "description": "From zero to full-stack."}
+        ],
+        "machine learning": [
+            {"type": "video", "title": "Machine Learning for Everyone", "url": "https://www.youtube.com/watch?v=IpGxLWOIZy4", "description": "A non-technical intro to ML."}
+        ]
+    }
+
     def _get_phase_metadata(self, career: str, phase_name: str, scores: dict = None) -> Dict[str, Any]:
         """
         Build rich phase metadata including objectives, expectations, resources, and mindmap.
@@ -541,10 +651,23 @@ class RoadmapEngine:
         career_mindmap = self.MINDMAP_DATA.get(career, self.MINDMAP_DATA.get("Software Engineer", {}))
         mindmap_nodes = career_mindmap.get(phase_name, {"branches": []})
         
-        # Get resources
+        # Get resources (PHASE LEVEL)
         career_resources = self.PHASE_RESOURCES.get(career, self.PHASE_RESOURCES.get("Software Engineer", {}))
         resources = career_resources.get(phase_name, [])
         
+        # Enrich resources with more metadata
+        enriched_resources = []
+        for res in resources:
+            # Add default metadata if missing
+            res_copy = res.copy()
+            if 'duration' not in res_copy:
+                res_copy['duration'] = "2-4 hours" if res_copy['type'] in ['course', 'video'] else "15-30 mins"
+            if 'difficulty' not in res_copy:
+                res_copy['difficulty'] = "Beginner" if "Foundations" in phase_name else "Intermediate"
+            if 'description' not in res_copy:
+                res_copy['description'] = f"Master {res_copy['title']} to excel in this phase."
+            enriched_resources.append(res_copy)
+
         # Compute improvement areas from scores
         improvement_areas = []
         if scores:
@@ -562,26 +685,47 @@ class RoadmapEngine:
         if not improvement_areas:
             improvement_areas = ["Continue building on your strengths", "Explore advanced topics in your strong areas"]
 
-        # Get career-specific tools for this phase
-        tools_map = {
-            "Phase 1 – Foundations": {"Software Engineer": ["VS Code", "Git", "Terminal"], "Data Scientist": ["Jupyter", "Python", "Anaconda"], "Product Manager": ["Notion", "Miro", "Slack"], "Cybersecurity Analyst": ["Linux Terminal", "Wireshark", "VirtualBox"], "UI/UX Designer": ["Figma", "Miro", "Pen & Paper"]},
-            "Phase 2 – Core Skills": {"Software Engineer": ["React", "Node.js", "PostgreSQL"], "Data Scientist": ["Scikit-learn", "TensorFlow", "SQL"], "Product Manager": ["Jira", "Amplitude", "SQL"], "Cybersecurity Analyst": ["Kali Linux", "Burp Suite", "Nmap"], "UI/UX Designer": ["Figma Advanced", "Adobe XD", "Maze"]},
-            "Phase 3 – Projects": {"Software Engineer": ["Docker", "AWS/GCP", "GitHub Actions"], "Data Scientist": ["MLflow", "Streamlit", "Hugging Face"], "Product Manager": ["Linear", "Figma", "Analytics"], "Cybersecurity Analyst": ["Metasploit", "ELK Stack", "Splunk"], "UI/UX Designer": ["Framer", "Webflow", "Storybook"]},
-            "Phase 4 – Career Preparation": {"Software Engineer": ["LinkedIn", "Pramp", "LeetCode"], "Data Scientist": ["Kaggle", "StrataScratch", "LinkedIn"], "Product Manager": ["Exponent", "LinkedIn", "Glassdoor"], "Cybersecurity Analyst": ["PentesterLab", "LinkedIn", "BugCrowd"], "UI/UX Designer": ["Behance", "Dribbble", "ADPList"]},
+        # Get career-specific tools for this phase with full metadata
+        TOOL_META = {
+            "VS Code": {"name": "VS Code", "desc": "The most popular code editor for modern development.", "url": "https://code.visualstudio.com", "logo": "https://upload.wikimedia.org/wikipedia/commons/9/9a/Visual_Studio_Code_1.35_icon.svg"},
+            "Git": {"name": "Git", "desc": "Distributed version control system to track changes.", "url": "https://git-scm.com", "logo": "https://git-scm.com/images/logos/downloads/Git-Icon-1788C.svg"},
+            "Figma": {"name": "Figma", "desc": "Collaborative design tool for UI/UX teams.", "url": "https://figma.com", "logo": "https://www.vectorlogo.zone/logos/figma/figma-icon.svg"},
+            "Python": {"name": "Python", "desc": "Powerful language for backend, AI, and data science.", "url": "https://python.org", "logo": "https://www.vectorlogo.zone/logos/python/python-icon.svg"},
+            "React": {"name": "React", "desc": "A JavaScript library for building user interfaces.", "url": "https://reactjs.org", "logo": "https://www.vectorlogo.zone/logos/reactjs/reactjs-icon.svg"},
+            "PostgreSQL": {"name": "PostgreSQL", "desc": "Advanced open source relational database.", "url": "https://postgresql.org", "logo": "https://www.vectorlogo.zone/logos/postgresql/postgresql-icon.svg"},
+            "Docker": {"name": "Docker", "desc": "Containerization platform for reliable deployments.", "url": "https://docker.com", "logo": "https://www.vectorlogo.zone/logos/docker/docker-icon.svg"},
+            "AWS": {"name": "AWS", "desc": "Comprehensive cloud computing platform.", "url": "https://aws.amazon.com", "logo": "https://www.vectorlogo.zone/logos/amazon_aws/amazon_aws-icon.svg"},
+            "Jupyter": {"name": "Jupyter", "desc": "Interactive tool for data science and research.", "url": "https://jupyter.org", "logo": "https://www.vectorlogo.zone/logos/jupyter/jupyter-icon.svg"},
+            "Miro": {"name": "Miro", "desc": "Online whiteboard for visual collaboration.", "url": "https://miro.com", "logo": "https://www.vectorlogo.zone/logos/miro/miro-icon.svg"},
+            "Wireshark": {"name": "Wireshark", "desc": "World's foremost network protocol analyzer.", "url": "https://wireshark.org", "logo": "https://www.vectorlogo.zone/logos/wireshark/wireshark-icon.svg"},
+            "Kali Linux": {"name": "Kali Linux", "desc": "Advanced OS for penetration testing.", "url": "https://kali.org", "logo": "https://www.vectorlogo.zone/logos/kali/kali-icon.svg"}
+        }
+
+        phase_tools_raw = {
+            "Phase 1 – Foundations": {"Software Engineer": ["VS Code", "Git", "Python"], "Data Scientist": ["Jupyter", "Python", "Git"], "UI/UX Designer": ["Figma", "Miro"], "Cybersecurity Analyst": ["Git", "Wireshark"]},
+            "Phase 2 – Core Skills": {"Software Engineer": ["React", "PostgreSQL"], "Data Scientist": ["Jupyter", "PostgreSQL"], "UI/UX Designer": ["Figma", "Miro"], "Cybersecurity Analyst": ["Kali Linux", "Wireshark"]},
+            "Phase 3 – Projects": {"Software Engineer": ["Docker", "AWS"], "Data Scientist": ["Docker", "AWS"], "UI/UX Designer": ["Figma", "Framer"], "Cybersecurity Analyst": ["Kali Linux", "Docker"]},
+            "Phase 4 – Career Preparation": {"Software Engineer": ["Git", "VS Code"], "Data Scientist": ["Jupyter", "Git"], "UI/UX Designer": ["Figma", "Behance"], "Cybersecurity Analyst": ["Kali Linux", "Wireshark"]},
         }
         
-        tools = tools_map.get(phase_name, {}).get(career, ["VS Code", "Git", "Browser"])
+        tools_list = phase_tools_raw.get(phase_name, {}).get(career, ["VS Code", "Git"])
+        tools_data = [TOOL_META.get(t, {"name": t, "desc": "Essential tool for this phase.", "url": "#", "logo": ""}) for t in tools_list]
         
+        # Get featured projects (PHASE LEVEL)
+        featured_projects = self.PROJECT_TEMPLATES.get(career, {}).get(phase_name, [])
+
         return {
             "description": career_descriptions.get(phase_name, f"Mastering essential skills for {career}."),
             "focus": phase_obj.get("focus", "Building expertise"),
             "objectives": phase_obj.get("objectives", ["Master core skills", "Build practical experience"]),
             "expectations": phase_obj.get("expectations", ["Ready for the next level"]),
             "improvement_areas": improvement_areas,
-            "tools": tools,
-            "resources": resources,
-            "mindmap_nodes": mindmap_nodes
-        }
+            "tools": tools_data,
+            "resources": enriched_resources,
+            "mindmap_nodes": mindmap_nodes,
+            "featured_projects": featured_projects,
+            "skill_details": {k: v for k, v in self.SKILL_DETAILS.items()} # Ensure fresh copy
+        }\
 
     def generate(self, career: str, scores: dict[str, int], existing_skills: List[str], confidence: float = 0.5) -> List[dict[str, Any]]:
         template = self.TEMPLATES.get(career, self.TEMPLATES.get("Software Engineer")) # Fallback to SE
@@ -589,32 +733,22 @@ class RoadmapEngine:
         personalized_roadmap = []
         existing_skills_lower = [s.lower() for s in existing_skills]
         
-        # --- Modifier Logic ---
-        
-        # 1. Remedial Check: If scores are low in key areas, we might modify Phase 1
         needs_remedial_math = scores.get("math", 100) < 40
         needs_remedial_coding = scores.get("programming", 100) < 40
-        
-        # 2. Acceleration Check: If skills exist, we mark them completed or skip
-        # (Handled inside the loop via is_completed)
-
-        # 3. Ambition Check: High confidence adds "Advanced" content
         is_ambitious = confidence > 0.8
         
         for phase_name, steps in template.items():
             phase_steps = []
             
-            # Dynamic Step Injection
-            if phase_name == "Phase 1 – Foundations":
-                if needs_remedial_coding:
-                    phase_steps.append({
-                        "skill": "Intro to Logic", 
-                        "title": "Remedial: Coding Basics", 
-                        "duration": "2 weeks", 
-                        "outcome": "Building confidence in basic logic structures.",
-                        "status": "critical",
-                        "custom_description": "Added due to low programming score. Focus here first!"
-                    })
+            if phase_name == "Phase 1 – Foundations" and needs_remedial_coding:
+                phase_steps.append({
+                    "skill": "Intro to Logic", 
+                    "title": "Remedial: Coding Basics", 
+                    "duration": "2 weeks", 
+                    "outcome": "Building confidence in basic logic structures.",
+                    "status": "critical",
+                    "custom_description": "Added due to low programming score."
+                })
             
             for step in steps:
                 skill_req = step["skill"].lower()
@@ -622,30 +756,46 @@ class RoadmapEngine:
                 is_completed = False
                 custom_desc = step["outcome"]
                 
-                # Check for existing skills
-                # More intelligent check: search in both skill name and title
                 search_text = f"{skill_req} {step['title'].lower()}"
                 if any(ext_skill in search_text or search_text in ext_skill for ext_skill in existing_skills_lower):
                     status = "completed"
                     is_completed = True
                     custom_desc = "You already have this skill! moving to next."
                 
-                # Score impacts
                 elif scores.get(skill_req, 0) > 85:
                     status = "fast-track"
                     custom_desc = "High aptitude detected. You can move through this quickly."
                 elif scores.get(skill_req, 100) < 40 and not is_completed:
                      status = "critical"
-                     custom_desc = f"CRITICAL: {custom_desc}. Extra focus needed due to low assessment score."
+                     custom_desc = f"CRITICAL: {custom_desc}. Extra focus needed."
+
+                # ENRICH STEP WITH MODULE-SPECIFIC DATA
+                skill_meta = self.SKILL_DETAILS.get(skill_req, {})
+                module_resources = self.MODULE_RESOURCES.get(skill_req, [])
+                
+                # Get a unique project for this step if it exists in templates
+                phase_projects = self.PROJECT_TEMPLATES.get(career, {}).get(phase_name, [])
+                # Purely for demo, we link projects to specific steps by title match or circular assignment
+                step_project = None
+                for p in phase_projects:
+                    if skill_req in p['title'].lower() or skill_req in p['tech_stack'].lower():
+                        step_project = p
+                        break
+                
+                if not step_project and phase_projects:
+                    # Fallback to first available in phase if no skill match
+                    step_project = phase_projects[0]
 
                 phase_steps.append({
                     **step,
                     "status": status,
                     "is_completed": is_completed,
-                    "custom_description": custom_desc
+                    "custom_description": custom_desc,
+                    "skill_details": skill_meta,
+                    "module_resources": module_resources,
+                    "featured_project": step_project
                 })
             
-            # Ambition Injection
             if phase_name == "Phase 3 – Projects" and is_ambitious:
                  phase_steps.append({
                     "skill": "Open Source", 
@@ -653,7 +803,8 @@ class RoadmapEngine:
                     "duration": "ongoing", 
                     "outcome": " contributing to real-world software.",
                     "status": "upcoming",
-                    "custom_description": "Added due to high confidence. Challenge yourself!"
+                    "custom_description": "Added due to high confidence.",
+                    "module_resources": [{"type": "link", "title": "GitHub Explore", "url": "https://github.com/explore"}]
                 })
 
             phase_meta = self._get_phase_metadata(career, phase_name, scores)
