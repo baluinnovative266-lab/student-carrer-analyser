@@ -47,13 +47,8 @@ const ResultsPage = () => {
     };
 
     const openProjectPanel = (index) => {
-        const project = stats.featured_projects?.[index] || {
-            title: `Project ${index + 1}`,
-            overview: "A comprehensive project designed to solidify your new skill.",
-            tech_stack: "Modern Tech Stack",
-            difficulty: "Intermediate",
-            github_link: "#"
-        };
+        const project = stats.featured_projects?.[index];
+        if (!project) return;
         setPanelData(project);
         setPanelTitle(project.title);
         setPanelType("Build Project");
@@ -187,7 +182,7 @@ const ResultsPage = () => {
                     />
                     <StatCard
                         title="Next Goal"
-                        value={stats.next_recommended_skill || 'Cloud'}
+                        value={stats.next_recommended_skill || 'N/A'}
                         icon={<TrendingUp size={22} />}
                         color="blue"
                         onClick={() => setSelectedStat({ type: 'next_goal', title: 'Next Learning Goal', data: stats.next_recommended_skill })}
@@ -341,10 +336,10 @@ const ResultsPage = () => {
 
                         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
                             <div>
-                                <h3 className="text-2xl font-black text-gray-900 mb-2 uppercase tracking-tighter" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+                                <h3 className="text-3xl font-extrabold text-gray-900 mb-2 tracking-tight" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
                                     Learning Gap Coverage
                                 </h3>
-                                <p className="text-gray-500 font-medium">Your personalized path from missing skills to professional projects.</p>
+                                <p className="text-gray-500 font-bold uppercase text-[10px] tracking-widest opacity-70">Your personalized path to mastery</p>
                             </div>
                             <div className="flex items-center gap-4 bg-gray-50 p-2 rounded-2xl border border-gray-100">
                                 <div className="flex -space-x-2">
@@ -404,7 +399,9 @@ const ResultsPage = () => {
                                                 </div>
                                                 <div>
                                                     <p className="text-[10px] text-indigo-200 font-black uppercase tracking-widest mb-1">Capstone Project</p>
-                                                    <p className="font-black text-lg leading-tight">Mastery Project {i + 1}</p>
+                                                    <p className="font-black text-lg leading-tight">
+                                                        {stats.featured_projects?.[i]?.title || `Mastery Project ${i + 1}`}
+                                                    </p>
                                                     <div className="flex items-center gap-2 mt-2 text-[10px] font-bold text-indigo-300">
                                                         <Sparkles size={12} /> Personalized Learning Path
                                                     </div>

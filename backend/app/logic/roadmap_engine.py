@@ -11,6 +11,16 @@ class RoadmapEngine:
     Each phase includes unique mindmap nodes, objectives, resources, and expectations.
     """
     
+    CAREER_REQUIRED_SKILLS = {
+        "Software Engineer": ["Python", "Algorithms", "System Design", "Databases", "Cloud Computing"],
+        "Data Scientist": ["Python", "Machine Learning", "Statistics", "SQL", "Data Visualization"],
+        "Web Developer": ["React", "Node.js", "CSS", "REST APIs", "TypeScript"],
+        "UI/UX Designer": ["Figma", "User Research", "Prototyping", "Color Theory", "Wireframing"],
+        "Product Manager": ["Agile", "User Stories", "Roadmapping", "Stakeholder Mgmt", "Analytics"],
+        "Cybersecurity Analyst": ["Networking", "Security", "Cryptography", "Penetration Testing", "Linux"],
+    }
+
+    
     TEMPLATES = {
         "Software Engineer": {
             "Phase 1 – Foundations": [
@@ -101,7 +111,25 @@ class RoadmapEngine:
             ],
             "Phase 4 – Career Preparation": [
                 {"skill": "Portfolio", "title": "Portfolio Curation", "duration": "3 weeks", "outcome": "Showcasing work effectively on Behance/Dribbble."},
-                {"skill": "Interview Prep", "title": "Design Critiques", "duration": "2 weeks", "outcome": "Articulating design decisions confidently."}
+                 {"skill": "Interview Prep", "title": "Design Critiques", "duration": "2 weeks", "outcome": "Articulating design decisions confidently."}
+            ]
+        },
+        "Web Developer": {
+            "Phase 1 – Foundations": [
+                {"skill": "HTML/CSS", "title": "Web Fundamentals", "duration": "3 weeks", "outcome": "Building semantic and responsive layouts."},
+                {"skill": "JavaScript", "title": "Modern JS (ES6+)", "duration": "3 weeks", "outcome": "Functional programming and DOM mastery."}
+            ],
+            "Phase 2 – Core Skills": [
+                {"skill": "React", "title": "Frontend Frameworks", "duration": "5 weeks", "outcome": "Building complex component architectures."},
+                {"skill": "Node.js", "title": "Server-side JS", "duration": "4 weeks", "outcome": "REST API development and database integration."}
+            ],
+            "Phase 3 – Projects": [
+                {"skill": "Full Stack", "title": "Dynamic Web App", "duration": "6 weeks", "outcome": "A fully functional MERN stack application."},
+                {"skill": "Deployment", "title": "Cloud & Hosting", "duration": "2 weeks", "outcome": "Launching apps on Vercel/AWS."}
+            ],
+            "Phase 4 – Career Preparation": [
+                {"skill": "Performance", "title": "Optimization & SEO", "duration": "3 weeks", "outcome": "Speeding up apps and improving visibility."},
+                {"skill": "Portfolio", "title": "Project Showcase", "duration": "3 weeks", "outcome": "A professional portfolio of work."}
             ]
         }
     }
@@ -166,18 +194,235 @@ class RoadmapEngine:
             "objectives": ["Figma Prototyping", "Hierarchy & Layout", "User Empathy"],
             "learning_time": "4 Weeks"
         },
+        "html/css": {
+            "description": "The building blocks of the web. HTML for structure, CSS for presentation and layout.",
+            "importance": "Fundamental for any web-based project or frontend role.",
+            "use_cases": ["Landing Pages", "Email Templates", "Web Apps"],
+            "objectives": ["Semantic HTML5", "Flexbox & Grid", "Responsive Design"],
+            "learning_time": "3 Weeks"
+        },
+        "rest apis": {
+            "description": "Standardized way for different software systems to communicate over HTTP.",
+            "importance": "Core of modern web communication and microservices.",
+            "use_cases": ["Third-party Integrations", "Mobile App Backends", "Data Fetching"],
+            "objectives": ["HTTP Methods", "Status Codes", "JSON Design"],
+            "learning_time": "2 Weeks"
+        },
+        "typescript": {
+            "description": "A strongly typed superset of JavaScript that scales better for large projects.",
+            "importance": "Industry standard for enterprise web development.",
+            "use_cases": ["Large-scale Web Apps", "Library Development", "Refactor-safe Code"],
+            "objectives": ["Interfaces & Types", "Generics", "Strict Type Checking"],
+            "learning_time": "3 Weeks"
+        },
+        "networking": {
+            "description": "How computers connect and share data. Covers protocols like TCP/IP, DNS, and HTTP.",
+            "importance": "Crucial for Cloud, DevOps, and Security roles.",
+            "use_cases": ["Cloud Setup", "Web Troubleshooting", "Security Hardening"],
+            "objectives": ["OSI Model", "Subnetting", "Protocols (HTTP/S)"],
+            "learning_time": "4 Weeks"
+        },
+        "os internals": {
+            "description": "Understanding how operating systems (Linux/Windows) manage memory, processes, and files.",
+            "importance": "Baseline for Systems Engineering and Cybersecurity.",
+            "use_cases": ["Performance Tuning", "Malware Analysis", "Sysadmin Tasks"],
+            "objectives": ["Kernel Basics", "Process Management", "File Permissions"],
+            "learning_time": "3 Weeks"
+        },
+        "cryptography": {
+            "description": "Protecting information by transforming it into unreadable formats.",
+            "importance": "The backbone of privacy and digital security.",
+            "use_cases": ["SSL/TLS", "Password Hashing", "Blockchain"],
+            "objectives": ["Symmetric/Asymmetric Keys", "Hashing Algorithms", "Encryption Standards"],
+            "learning_time": "3 Weeks"
+        },
         "agile": {
             "description": "Iterative project management that focuses on continuous delivery and feedback.",
             "importance": "Industry standard for how modern tech teams operate.",
-            "use_cases": ["Scrum Teams", "Startup Pivots", "Large Engineering Orgs"],
-            "objectives": ["Sprint Planning", "Jira/Linear Mastery", "Retrospectives"],
+            "use_cases": ["Sprint Planning", "Backlog Grooming", "Daily Standups"],
+            "objectives": ["Understand Scrum", "Master Kanban", "Agile Estimation"],
             "learning_time": "2 Weeks"
         },
+        "penetration testing": {
+            "description": "Simulating cyberattacks to find and fix security vulnerabilities.",
+            "importance": "Proactive defense strategy for protecting critical infrastructure.",
+            "use_cases": ["Web App Pentesting", "Network Audits", "Red Teaming"],
+            "objectives": ["Nmap Scanning", "Metasploit Basics", "OWASP Top 10"],
+            "learning_time": "5 Weeks"
+        },
+        "linux": {
+            "description": "Mastery of the Linux command line and system administration.",
+            "importance": "Indispensable for Servers, Cloud, and Security professionals.",
+            "use_cases": ["Bash Scripting", "Server Hardening", "DevOps Pipelines"],
+            "objectives": ["CLI Navigation", "Shell Scripting", "User & Group Permissions"],
+            "learning_time": "3 Weeks"
+        },
+        "siem": {
+            "description": "Security Information and Event Management. Real-time monitoring and analysis of security alerts.",
+            "importance": "Vital for incident response and threat detection.",
+            "use_cases": ["Log Analysis", "Threat Hunting", "Compliance Auditing"],
+            "objectives": ["Splunk/ELK Basics", "Writing Detection Rules", "Alert Triage"],
+            "learning_time": "3 Weeks"
+        },
+        "performance": {
+            "description": "Optimizing software to run faster and use fewer resources.",
+            "importance": "Directly impacts user experience and infrastructure costs.",
+            "use_cases": ["Reducing Load Times", "Database Optimization", "Memory Management"],
+            "objectives": ["Profiling Code", "Caching Strategies", "Asset Minification"],
+            "learning_time": "3 Weeks"
+        },
+        "python": {
+            "description": "The most versatile language for software engineering, data science, and AI.",
+            "importance": "Core language for modern development.",
+            "use_cases": ["Backend", "Data Science", "Automation"],
+            "objectives": ["Syntax & PEP 8", "Virtual Envs", "Async/Await"],
+            "learning_time": "3 Weeks"
+        },
+        "algorithms": {
+            "description": "Solving problems efficiently using standard patterns like sorting, searching, and recursion.",
+            "importance": "Key for technical interviews and performance optimization.",
+            "use_cases": ["Search", "Optimization", "Ranking"],
+            "objectives": ["Big O Notation", "Recursion", "Searching/Sorting"],
+            "learning_time": "4 Weeks"
+        },
+        "system design": {
+            "description": "Designing large-scale, distributed systems that are reliable and scalable.",
+            "importance": "Critical for senior engineering roles.",
+            "use_cases": ["Cloud Arch", "SaaS Scaling", "Microservices"],
+            "objectives": ["Load Balancing", "Caching", "Sharding"],
+            "learning_time": "5 Weeks"
+        },
+        "databases": {
+            "description": "Managing data persistence using SQL and NoSQL systems.",
+            "importance": "Essential for any data-driven application.",
+            "use_cases": ["User Data", "Analytics", "Inventory"],
+            "objectives": ["Normalizations", "Indexing", "Query Opt"],
+            "learning_time": "3 Weeks"
+        },
+        "cloud computing": {
+            "description": "Deploying and managing applications on platforms like AWS, GCP, or Azure.",
+            "importance": "Industry standard for modern deployments.",
+            "use_cases": ["Serverless", "S3 Storage", "Managed DBs"],
+            "objectives": ["IAM Roles", "EC2/EKS", "VPC Networking"],
+            "learning_time": "4 Weeks"
+        },
+        "machine learning": {
+            "description": "Teaching systems to learn from data using statistical techniques.",
+            "importance": "The engine behind modern AI features.",
+            "use_cases": ["Predictions", "NLP", "CV"],
+            "objectives": ["Regression", "Neural Nets", "Model Tuning"],
+            "learning_time": "6 Weeks"
+        },
+        "statistics": {
+            "description": "The mathematical study of data collection, analysis, interpretation, and presentation.",
+            "importance": "Fundamental for data science and research.",
+            "use_cases": ["A/B Testing", "Inference", "Hypothesis testing"],
+            "objectives": ["Probability Dist", "Linear Regression", "P-values"],
+            "learning_time": "3 Weeks"
+        },
+        "sql": {
+            "description": "Standard language for managing and querying relational databases.",
+            "importance": "Vital for data retrieval and manipulation.",
+            "use_cases": ["Data Extraction", "Reporting", "ETL"],
+            "objectives": ["Joins & Unions", "Aggregation", "Indexing"],
+            "learning_time": "2 Weeks"
+        },
+        "data visualization": {
+            "description": "Transforming data into visual graphics like charts and dashboards to reveal insights.",
+            "importance": "Crucial for communicating findings to stakeholders.",
+            "use_cases": ["Dashboards", "Business Reports", "Research"],
+            "objectives": ["Chart selection", "Color Theory", "D3.js/Tableau"],
+            "learning_time": "3 Weeks"
+        },
+        "react": {
+            "description": "A JavaScript library for building component-based user interfaces.",
+            "importance": "The industry standard for frontend development.",
+            "use_cases": ["Web Apps", "SPAs", "UI Components"],
+            "objectives": ["Hooks API", "Virtual DOM", "State Management"],
+            "learning_time": "4 Weeks"
+        },
+        "node.js": {
+            "description": "A runtime environment that allows running JavaScript on the server.",
+            "importance": "Key for building fast and scalable network applications.",
+            "use_cases": ["APIs", "Real-time Apps", "Microservices"],
+            "objectives": ["Event Loop", "NPM Ecosystem", "Express Middleware"],
+            "learning_time": "4 Weeks"
+        },
+        "figma": {
+            "description": "Collaborative interface design tool for building UI/UX prototypes.",
+            "importance": "Primary tool for modern product designers.",
+            "use_cases": ["Prototyping", "Design Systems", "User Journeys"],
+            "objectives": ["Auto-layout", "Components", "Interactive Prototyping"],
+            "learning_time": "2 Weeks"
+        },
+        "css": {
+            "description": "Stylesheet language for controlling the visual presentation of web pages.",
+            "importance": "Essential for any frontend or web development role.",
+            "use_cases": ["Responsive Layouts", "Animations", "Theming"],
+            "objectives": ["Flexbox & Grid", "Media Queries", "CSS Variables"],
+            "learning_time": "3 Weeks"
+        },
+        "user research": {
+            "description": "Systematic study of target users to understand their behaviors, needs, and motivations.",
+            "importance": "Foundation of user-centered design; prevents building the wrong product.",
+            "use_cases": ["User Interviews", "Surveys", "Persona Creation"],
+            "objectives": ["Interview Techniques", "Affinity Mapping", "Usability Testing"],
+            "learning_time": "3 Weeks"
+        },
+        "prototyping": {
+            "description": "Creating interactive mockups to test and validate design ideas before development.",
+            "importance": "Reduces costly rework by catching issues early.",
+            "use_cases": ["Clickable Mockups", "User Testing", "Stakeholder Demos"],
+            "objectives": ["Low-fi Wireframes", "Hi-fi Prototypes", "Interaction Design"],
+            "learning_time": "2 Weeks"
+        },
+        "color theory": {
+            "description": "The science and art of using color effectively in design to evoke emotion and hierarchy.",
+            "importance": "Directly impacts brand perception and user experience.",
+            "use_cases": ["Brand Identity", "UI Theming", "Accessibility"],
+            "objectives": ["Color Harmony", "Contrast Ratios", "Palette Generation"],
+            "learning_time": "1 Week"
+        },
+        "wireframing": {
+            "description": "Creating skeletal blueprints of a page or app to define layout and information architecture.",
+            "importance": "First step in translating requirements into visual structure.",
+            "use_cases": ["Page Layouts", "Navigation Flows", "Content Hierarchy"],
+            "objectives": ["Information Architecture", "Sketching", "Tool Proficiency (Figma/Balsamiq)"],
+            "learning_time": "1 Week"
+        },
+        "user stories": {
+            "description": "Short descriptions of a feature from the end user's perspective, used in Agile development.",
+            "importance": "Bridges the gap between business requirements and development tasks.",
+            "use_cases": ["Backlog Creation", "Sprint Planning", "Acceptance Criteria"],
+            "objectives": ["As-a / I-want / So-that Format", "Story Splitting", "Estimation"],
+            "learning_time": "1 Week"
+        },
+        "roadmapping": {
+            "description": "Strategic planning tool that outlines the vision, direction, and priorities of a product over time.",
+            "importance": "Aligns teams and stakeholders on what to build and when.",
+            "use_cases": ["Quarterly Planning", "Feature Prioritization", "Release Planning"],
+            "objectives": ["Now/Next/Later Framework", "OKRs", "Dependency Mapping"],
+            "learning_time": "2 Weeks"
+        },
+        "stakeholder mgmt": {
+            "description": "The process of managing expectations and communication with key decision-makers.",
+            "importance": "Critical for getting buy-in and unblocking cross-functional work.",
+            "use_cases": ["Executive Updates", "Cross-team Alignment", "Conflict Resolution"],
+            "objectives": ["RACI Matrix", "Communication Plans", "Influence Mapping"],
+            "learning_time": "2 Weeks"
+        },
+        "analytics": {
+            "description": "Using data and metrics to measure product performance and guide decisions.",
+            "importance": "Enables evidence-based product development and optimization.",
+            "use_cases": ["Funnel Analysis", "Cohort Tracking", "A/B Testing"],
+            "objectives": ["Google Analytics", "Mixpanel/Amplitude", "KPI Definition"],
+            "learning_time": "3 Weeks"
+        },
         "security": {
-            "description": "Protecting systems, networks, and programs from digital attacks.",
-            "importance": "Critical to protect user data and maintain trust.",
-            "use_cases": ["Pentesting", "Zero Trust Architecture", "SOC Analysis"],
-            "objectives": ["Network Security", "Cryptography", "Identity Mgmt"],
+            "description": "Protecting systems, networks, and programs from digital attacks and unauthorized access.",
+            "importance": "Critical to protect user data and maintain organizational trust.",
+            "use_cases": ["Penetration Testing", "Zero Trust Architecture", "SOC Analysis"],
+            "objectives": ["Network Security", "Identity Management", "Threat Modeling"],
             "learning_time": "5 Weeks"
         }
     }
@@ -188,37 +433,227 @@ class RoadmapEngine:
     PROJECT_TEMPLATES = {
         "Software Engineer": {
             "Phase 1 – Foundations": [
-                {"title": "Terminal Task Manager", "overview": "A CLI app to manage daily tasks.", "tech_stack": "Python", "difficulty": "Easy", "github_link": "https://github.com/project-hub/cli-task-manager"},
-                {"title": "Algorithm Visualizer", "overview": "Visualize sorting algorithms in the browser.", "tech_stack": "JavaScript", "difficulty": "Medium", "github_link": "https://github.com/project-hub/algo-viz"}
+                {
+                    "title": "Terminal Task Manager", 
+                    "overview": "A CLI app to manage daily tasks.", 
+                    "tech_stack": "Python", 
+                    "difficulty": "Easy", 
+                    "github_link": "https://github.com/project-hub/cli-task-manager",
+                    "resources": [
+                        {"platform": "YouTube", "title": "Python CLI Basics", "url": "https://youtube.com/results?search_query=python+cli+tutorial"},
+                        {"platform": "Documentation", "title": "Argparse Guide", "url": "https://docs.python.org/3/library/argparse.html"}
+                    ],
+                    "objectives": ["Python Syntax", "File I/O", "CLI Arguments"]
+                },
+                {
+                    "title": "Algorithm Visualizer", 
+                    "overview": "Visualize sorting algorithms in the browser.", 
+                    "tech_stack": "JavaScript", 
+                    "difficulty": "Medium", 
+                    "github_link": "https://github.com/project-hub/algo-viz",
+                    "resources": [
+                        {"platform": "MDN", "title": "Canvas API", "url": "https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API"},
+                        {"platform": "YouTube", "title": "Visualizing Algorithms", "url": "https://youtube.com/results?search_query=algorithm+visualizer+js"}
+                    ],
+                    "objectives": ["Sorting Logic", "DOM Manipulation", "Animation Frames"]
+                }
             ],
             "Phase 2 – Core Skills": [
-                {"title": "Real-time Chat App", "overview": "Build a messaging system with WebSockets.", "tech_stack": "Node.js + Socket.io", "difficulty": "Hard", "github_link": "https://github.com/project-hub/realtime-chat"},
-                {"title": "Inventory API", "overview": "A robust REST API for warehouse management.", "tech_stack": "FastAPI + Postgres", "difficulty": "Medium", "github_link": "https://github.com/project-hub/inventory-api"}
+                {
+                    "title": "Real-time Chat App", 
+                    "overview": "Build a messaging system with WebSockets.", 
+                    "tech_stack": "Node.js + Socket.io", 
+                    "difficulty": "Hard", 
+                    "github_link": "https://github.com/project-hub/realtime-chat",
+                    "resources": [
+                        {"platform": "Socket.io", "title": "Get Started with Socket.io", "url": "https://socket.io/get-started/chat"},
+                        {"platform": "Medium", "title": "WebSockets in Node.js", "url": "https://medium.com/tag/websockets"}
+                    ],
+                    "objectives": ["Event-driven Arch", "WebSocket Handshakes", "Rooms & Namespaces"]
+                },
+                {
+                    "title": "Inventory API & Schema", 
+                    "overview": "A robust REST API for warehouse management with SQL optimization.", 
+                    "tech_stack": "FastAPI + Postgres", 
+                    "difficulty": "Medium", 
+                    "github_link": "https://github.com/project-hub/inventory-api",
+                    "resources": [
+                        {"platform": "FastAPI", "title": "FastAPI Docs", "url": "https://fastapi.tiangolo.com/"},
+                        {"platform": "SQL", "title": "Postgres SQL Optimization", "url": "https://use-the-index-luke.com/"}
+                    ],
+                    "objectives": ["DB Normalization", "Indexing Strategies", "API Documentation"]
+                }
             ],
             "Phase 3 – Projects": [
-                {"title": "SaaS Dashboard", "overview": "Complete project management suite with Auth.", "tech_stack": "React + Firebase", "difficulty": "Hard", "github_link": "https://github.com/project-hub/saas-dashboard"},
-                {"title": "E-commerce Microservice", "overview": "Scale a small store into microservices.", "tech_stack": "Go + Docker", "difficulty": "Expert", "github_link": "https://github.com/project-hub/micro-store"}
+                {
+                    "title": "SaaS Dashboard", 
+                    "overview": "Complete project management suite with Auth.", 
+                    "tech_stack": "React + Firebase", 
+                    "difficulty": "Hard", 
+                    "github_link": "https://github.com/project-hub/saas-dashboard",
+                    "resources": [
+                        {"platform": "Firebase", "title": "Firebase Auth Setup", "url": "https://firebase.google.com/docs/auth"},
+                        {"platform": "React", "title": "Tailwind UI Components", "url": "https://tailwindui.com/"}
+                    ],
+                    "objectives": ["Authentication Flow", "NoSQL Data Models", "Protected Routes"]
+                },
+                {
+                    "title": "E-commerce Microservice", 
+                    "overview": "Scale a small store into microservices with Docker.", 
+                    "tech_stack": "Go + Docker", 
+                    "difficulty": "Expert", 
+                    "github_link": "https://github.com/project-hub/micro-store",
+                    "resources": [
+                        {"platform": "Docker", "title": "Dockerizing Go Apps", "url": "https://docs.docker.com/language/golang/"},
+                        {"platform": "Microservices.io", "title": "Microservice Patterns", "url": "https://microservices.io/"}
+                    ],
+                    "objectives": ["Service Discovery", "Containerization", "Inter-service Comm"]
+                },
+                {
+                    "title": "Distributed Task Queue", 
+                    "overview": "Handle background jobs at scale with Redis and Celery.", 
+                    "tech_stack": "Python + Redis + System Design", 
+                    "difficulty": "Expert", 
+                    "github_link": "https://github.com/project-hub/task-queue",
+                    "resources": [
+                        {"platform": "Celery", "title": "Celery First Steps", "url": "https://docs.celeryq.dev/en/stable/getting-started/first-steps-with-celery.html"},
+                        {"platform": "Redis", "title": "Redis Pub/Sub Guide", "url": "https://redis.io/docs/manual/pubsub/"}
+                    ],
+                    "objectives": ["Async Processing", "Message Queuing", "Worker Scaling"]
+                }
             ]
         },
         "Data Scientist": {
             "Phase 1 – Foundations": [
-                {"title": "Stock Data Scraper", "overview": "Extract and clean financial data.", "tech_stack": "Python + BeautifulSoup", "difficulty": "Medium", "github_link": "https://github.com/project-hub/stock-scraper"}
+                {
+                    "title": "Stock Data Scraper", 
+                    "overview": "Extract and clean financial data.", 
+                    "tech_stack": "Python + BeautifulSoup", 
+                    "difficulty": "Medium", 
+                    "github_link": "https://github.com/project-hub/stock-scraper",
+                    "resources": [
+                        {"platform": "YouTube", "title": "Web Scraping with BeautifulSoup", "url": "https://youtube.com/results?search_query=beautiful+soup+tutorial"},
+                        {"platform": "Docs", "title": "Pandas Data Cleaning", "url": "https://pandas.pydata.org/docs/user_guide/10min.html"}
+                    ],
+                    "objectives": ["HTML Parsing", "Data Cleaning", "CSV Export"]
+                }
             ],
             "Phase 2 – Core Skills": [
-                {"title": "Housing Price Predictor", "overview": "Regression model for real estate.", "tech_stack": "Pandas + Scikit-learn", "difficulty": "Medium", "github_link": "https://github.com/project-hub/price-predict"}
+                {
+                    "title": "Housing Price Predictor", 
+                    "overview": "Regression model for real estate.", 
+                    "tech_stack": "Pandas + Scikit-learn", 
+                    "difficulty": "Medium", 
+                    "github_link": "https://github.com/project-hub/price-predict",
+                    "resources": [
+                        {"platform": "Kaggle", "title": "Regression Techniques Guide", "url": "https://www.kaggle.com/learn/intro-to-machine-learning"},
+                        {"platform": "Scikit-Learn", "title": "Linear Regression Example", "url": "https://scikit-learn.org/stable/auto_examples/linear_model/plot_ols.html"}
+                    ],
+                    "objectives": ["Feature Engineering", "Model Evaluation", "Regression Algorithms"]
+                }
             ],
             "Phase 3 – Projects": [
-                {"title": "Deep Learning Chatbot", "overview": "Train an LSTM model for conversation.", "tech_stack": "TensorFlow/PyTorch", "difficulty": "Hard", "github_link": "https://github.com/project-hub/ai-chat"}
+                {
+                    "title": "Deep Learning Chatbot", 
+                    "overview": "Train an LSTMs for natural conversation.", 
+                    "tech_stack": "TensorFlow/PyTorch", 
+                    "difficulty": "Hard", 
+                    "github_link": "https://github.com/project-hub/ai-chat",
+                    "resources": [
+                        {"platform": "TensorFlow", "title": "NLP with TensorFlow", "url": "https://www.tensorflow.org/tutorials/text/word_embeddings"},
+                        {"platform": "PyTorch", "title": "Sequence Models & LSTM", "url": "https://pytorch.org/tutorials/beginner/nlp/sequence_models_tutorial.html"}
+                    ],
+                    "objectives": ["Tokenization", "LSTM Layers", "Seq2Seq Models"]
+                }
             ]
         },
-        "UI/UX Designer": {
+        "Web Developer": {
             "Phase 1 – Foundations": [
-                {"title": "Portfolio Wireframes", "overview": "High-fidelity layouts for your own site.", "tech_stack": "Figma", "difficulty": "Easy", "github_link": "https://github.com/project-hub/ux-portfolio"}
+                {
+                    "title": "Personal Portfolio", 
+                    "overview": "Build a responsive portfolio site.", 
+                    "tech_stack": "HTML/CSS/JS", 
+                    "difficulty": "Easy", 
+                    "github_link": "https://github.com/project-hub/portfolio-boilerplate",
+                    "resources": [
+                        {"platform": "YouTube", "title": "Responsive Layouts", "url": "https://youtube.com/results?search_query=responsive+web+design"},
+                        {"platform": "MDN", "title": "Flexbox Guide", "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Flexible_Box_Layout/Basic_Concepts_of_Flexbox"}
+                    ],
+                    "objectives": ["Semantics", "Mobile-First Design", "SEO Basics"]
+                }
             ],
             "Phase 3 – Projects": [
-                {"title": "Healthcare App Redesign", "overview": "End-to-end case study for medical UX.", "tech_stack": "Figma + Protopie", "difficulty": "Hard", "github_link": "https://github.com/project-hub/health-redesign"}
+                {
+                    "title": "Social Media Dashboard", 
+                    "overview": "A modern React dashboard with light/dark mode.", 
+                    "tech_stack": "React + Tailwind", 
+                    "difficulty": "Medium", 
+                    "github_link": "https://github.com/project-hub/react-dashboard",
+                    "resources": [
+                        {"platform": "React", "title": "React Docs", "url": "https://react.dev/"},
+                        {"platform": "Tailwind", "title": "Component Library", "url": "https://tailwindcss.com/docs/installation"}
+                    ],
+                    "objectives": ["State Mgmt", "Hook Patterns", "UI Theming"]
+                }
             ]
-        }
+        },
+        "Product Manager": {
+            "Phase 2 – Core Skills": [
+                {
+                    "title": "PRD for New Feature", 
+                    "overview": "Write a complete Product Requirements Document.", 
+                    "tech_stack": "Notion/Google Docs", 
+                    "difficulty": "Medium", 
+                    "github_link": "https://github.com/project-hub/pm-templates",
+                    "resources": [
+                        {"platform": "Medium", "title": "Writing Great PRDs", "url": "https://medium.com/product-management"},
+                        {"platform": "Atlassian", "title": "Agile Basics", "url": "https://www.atlassian.com/agile"}
+                    ],
+                    "objectives": ["User Personas", "Feature Prioritization", "Success Metrics"]
+                }
+            ],
+            "Phase 3 – Projects": [
+                {
+                    "title": "Product Launch Roadmap", 
+                    "overview": "Plan a Q3 roadmap for a SaaS product.", 
+                    "tech_stack": "Jira/Miro", 
+                    "difficulty": "Hard", 
+                    "github_link": "https://github.com/project-hub/pm-roadmap",
+                    "resources": [
+                        {"platform": "Miro", "title": "Roadmap Templates", "url": "https://miro.com/templates/product-roadmap/"}
+                    ],
+                    "objectives": ["Stakeholder Mgmt", "Gantt Charts", "Risk Assessment"]
+                }
+            ]
+        },
+        "Cybersecurity Analyst": {
+            "Phase 1 – Foundations": [
+                {
+                    "title": "Network Homelab", 
+                    "overview": "Setup a secure virtual network environment.", 
+                    "tech_stack": "VirtualBox + Kali Linux", 
+                    "difficulty": "Medium", 
+                    "github_link": "https://github.com/project-hub/security-lab",
+                    "resources": [
+                        {"platform": "YouTube", "title": "Cybersecurity Homelab", "url": "https://youtube.com/results?search_query=cybersecurity+homelab+setup"}
+                    ],
+                    "objectives": ["Network Segmentation", "VPN Setup", "Firewall Rules"]
+                }
+            ],
+            "Phase 3 – Projects": [
+                {
+                    "title": "Intrusion Detection System", 
+                    "overview": "Configure and tune Snort for network alerts.", 
+                    "tech_stack": "Snort + Linux", 
+                    "difficulty": "Hard", 
+                    "github_link": "https://github.com/project-hub/ids-config",
+                    "resources": [
+                        {"platform": "Snort", "title": "Snort Documentation", "url": "https://www.snort.org/documents"}
+                    ],
+                    "objectives": ["Packet Analysis", "Signature Writing", "Alert Tuning"]
+                }
+            ]
+        },
     }
 
     # ==========================================
@@ -445,106 +880,75 @@ class RoadmapEngine:
         },
         "Product Manager": {
             "Phase 1 – Foundations": [
-                {"type": "course", "title": "Product Management Fundamentals", "url": "https://www.coursera.org/learn/uva-darden-digital-product-management", "platform": "Coursera"},
-                {"type": "video", "title": "What Does a Product Manager Do?", "url": "https://www.youtube.com/results?search_query=product+manager+role+explained", "platform": "YouTube"},
-                {"type": "article", "title": "Lenny's Newsletter: PM Insights", "url": "https://www.lennysnewsletter.com/", "platform": "Substack"},
-                {"type": "tool", "title": "Miro: Collaborative Whiteboarding", "url": "https://miro.com/", "platform": "Miro"},
-                {"type": "course", "title": "Design Thinking for Innovation", "url": "https://www.coursera.org/learn/uva-darden-design-thinking-innovation", "platform": "Coursera"},
-                {"type": "article", "title": "Inspired by Marty Cagan (Summary)", "url": "https://www.productplan.com/learn/inspired-marty-cagan-summary/", "platform": "ProductPlan"}
+                {"type": "course", "title": "Product Management Fundamentals", "url": "https://www.coursera.org/learn/uva-darden-digital-product-management", "platform": "Coursera", "duration": "4 weeks", "difficulty": "Beginner"},
+                {"type": "video", "title": "Product Manager Role Explained", "url": "https://www.youtube.com/watch?v=zOjov-2OZ0E", "platform": "YouTube", "duration": "1 hour", "difficulty": "Beginner"},
+                {"type": "article", "title": "Inspired by Marty Cagan (Summary)", "url": "https://www.productplan.com/learn/inspired-marty-cagan-summary/", "platform": "ProductPlan", "duration": "20 mins", "difficulty": "Beginner"},
+                {"type": "tool", "title": "Miro: Collaborative Whiteboarding", "url": "https://miro.com/", "platform": "Miro", "duration": "Tool", "difficulty": "Beginner"}
             ],
             "Phase 2 – Core Skills": [
-                {"type": "course", "title": "Agile with Atlassian Jira", "url": "https://www.coursera.org/learn/agile-atlassian-jira", "platform": "Coursera"},
-                {"type": "video", "title": "Product Metrics & Analytics Deep Dive", "url": "https://www.youtube.com/results?search_query=product+metrics+analytics+pm", "platform": "YouTube"},
-                {"type": "tool", "title": "Amplitude: Product Analytics", "url": "https://amplitude.com/", "platform": "Amplitude"},
-                {"type": "article", "title": "RICE Prioritization Framework", "url": "https://www.intercom.com/blog/rice-simple-prioritization-for-product-managers/", "platform": "Intercom"},
-                {"type": "course", "title": "SQL for Product Managers", "url": "https://mode.com/sql-tutorial/", "platform": "Mode"},
-                {"type": "tool", "title": "Notion: Product Spec Templates", "url": "https://www.notion.so/templates/product", "platform": "Notion"}
+                {"type": "course", "title": "Agile with Atlassian Jira", "url": "https://www.coursera.org/learn/agile-atlassian-jira", "platform": "Coursera", "duration": "12 hours", "difficulty": "Intermediate"},
+                {"type": "video", "title": "Product Metrics & Analytics Deep Dive", "url": "https://www.youtube.com/watch?v=i7SInS8vO0E", "platform": "YouTube", "duration": "1.5 hours", "difficulty": "Intermediate"},
+                {"type": "article", "title": "RICE Prioritization Framework", "url": "https://www.intercom.com/blog/rice-simple-prioritization-for-product-managers/", "platform": "Intercom", "duration": "15 mins", "difficulty": "Intermediate"},
+                {"type": "tool", "title": "Amplitude: Product Analytics", "url": "https://amplitude.com/", "platform": "Amplitude", "duration": "Tool", "difficulty": "Intermediate"}
             ],
             "Phase 3 – Projects": [
-                {"type": "course", "title": "Product Launch: Go-to-Market Strategy", "url": "https://www.reforge.com/", "platform": "Reforge"},
-                {"type": "video", "title": "How Top PMs Ship Products", "url": "https://www.youtube.com/results?search_query=how+product+managers+ship+products", "platform": "YouTube"},
-                {"type": "article", "title": "Writing Great Product Specs", "url": "https://www.lennysnewsletter.com/p/my-favorite-templates-issue-37", "platform": "Lenny's"},
-                {"type": "tool", "title": "Linear: Modern Project Management", "url": "https://linear.app/", "platform": "Linear"},
-                {"type": "article", "title": "Feature Flag Best Practices", "url": "https://launchdarkly.com/blog/what-are-feature-flags/", "platform": "LaunchDarkly"},
-                {"type": "tool", "title": "Figma: Collaborate with Designers", "url": "https://www.figma.com/", "platform": "Figma"}
+                {"type": "course", "title": "Product Launch: Go-to-Market Strategy", "url": "https://www.reforge.com/", "platform": "Reforge", "duration": "Advanced", "difficulty": "Advanced"},
+                {"type": "video", "title": "How Top PMs Ship Products", "url": "https://www.youtube.com/watch?v=kYRPZRLS8L4", "platform": "YouTube", "duration": "45 mins", "difficulty": "Advanced"},
+                {"type": "article", "title": "Writing Great Product Specs", "url": "https://www.lennysnewsletter.com/p/my-favorite-templates-issue-37", "platform": "Lenny's", "duration": "30 mins", "difficulty": "Advanced"}
             ],
             "Phase 4 – Career Preparation": [
-                {"type": "course", "title": "Exponent: PM Interview Course", "url": "https://www.tryexponent.com/courses/pm", "platform": "Exponent"},
-                {"type": "video", "title": "PM Interview: Product Sense Practice", "url": "https://www.youtube.com/results?search_query=product+sense+interview+practice", "platform": "YouTube"},
-                {"type": "tool", "title": "Product School: Free PM Resources", "url": "https://productschool.com/free-product-management-resources/", "platform": "Product School"},
-                {"type": "article", "title": "Cracking the PM Interview (Guide)", "url": "https://www.crackingthepminterview.com/", "platform": "CTPMI"},
-                {"type": "course", "title": "Google Project Management Certificate", "url": "https://www.coursera.org/professional-certificates/google-project-management", "platform": "Coursera"},
-                {"type": "tool", "title": "Glassdoor: PM Interview Questions", "url": "https://www.glassdoor.com/Interview/product-manager-interview-questions-SRCH_KO0,15.htm", "platform": "Glassdoor"}
+                {"type": "course", "title": "Exponent: PM Interview Course", "url": "https://www.tryexponent.com/courses/pm", "platform": "Exponent", "duration": "Course", "difficulty": "Hard"},
+                {"type": "video", "title": "Mock Technical Interview Practice", "url": "https://www.youtube.com/watch?v=uQ_Xit_C9pQ", "platform": "YouTube", "duration": "1 hour", "difficulty": "Hard"},
+                {"type": "article", "title": "Cracking the PM Interview Guide", "url": "https://www.crackingthepminterview.com/", "platform": "CTPMI", "duration": "Book/Guide", "difficulty": "Hard"}
             ]
         },
         "Cybersecurity Analyst": {
             "Phase 1 – Foundations": [
-                {"type": "course", "title": "TryHackMe: Complete Beginner Path", "url": "https://tryhackme.com/path/outline/beginner", "platform": "TryHackMe"},
-                {"type": "video", "title": "CompTIA Network+ Full Course", "url": "https://www.youtube.com/results?search_query=comptia+network+plus+full+course", "platform": "YouTube"},
-                {"type": "article", "title": "Linux Command Line Basics", "url": "https://linuxcommand.org/", "platform": "LinuxCommand.org"},
-                {"type": "tool", "title": "OverTheWire: Bandit Wargame", "url": "https://overthewire.org/wargames/bandit/", "platform": "OverTheWire"},
-                {"type": "course", "title": "Cybrary: Introduction to IT & Cybersecurity", "url": "https://www.cybrary.it/", "platform": "Cybrary"},
-                {"type": "article", "title": "OWASP Top 10 Explained", "url": "https://owasp.org/www-project-top-ten/", "platform": "OWASP"}
+                {"type": "course", "title": "TryHackMe: Complete Beginner Path", "url": "https://tryhackme.com/path/outline/beginner", "platform": "TryHackMe", "duration": "40 hours", "difficulty": "Beginner"},
+                {"type": "video", "title": "CompTIA Network+ Full Course", "url": "https://www.youtube.com/watch?v=qiALsdEz7uy", "platform": "YouTube", "duration": "14 hours", "difficulty": "Beginner"},
+                {"type": "pdf", "title": "Linux Command Line Basics (Cheat Sheet)", "url": "https://web.mit.edu/m-it/linux/cheat-sheet.pdf", "platform": "MIT", "duration": "10 mins", "difficulty": "Beginner"},
+                {"type": "tool", "title": "OverTheWire: Bandit Wargame", "url": "https://overthewire.org/wargames/bandit/", "platform": "OverTheWire", "duration": "Self-paced", "difficulty": "Beginner"}
             ],
             "Phase 2 – Core Skills": [
-                {"type": "course", "title": "Ethical Hacking with Kali Linux", "url": "https://www.udemy.com/course/learn-ethical-hacking-from-scratch/", "platform": "Udemy"},
-                {"type": "video", "title": "Wireshark Tutorial for Beginners", "url": "https://www.youtube.com/results?search_query=wireshark+tutorial+beginners", "platform": "YouTube"},
-                {"type": "tool", "title": "HackTheBox: Penetration Testing Labs", "url": "https://www.hackthebox.com/", "platform": "HackTheBox"},
-                {"type": "article", "title": "MITRE ATT&CK Framework Guide", "url": "https://attack.mitre.org/", "platform": "MITRE"},
-                {"type": "course", "title": "Cryptography I (Stanford)", "url": "https://www.coursera.org/learn/crypto", "platform": "Coursera"},
-                {"type": "tool", "title": "Burp Suite Community Edition", "url": "https://portswigger.net/burp/communitydownload", "platform": "PortSwigger"}
+                {"type": "course", "title": "Ethical Hacking with Kali Linux", "url": "https://www.udemy.com/course/learn-ethical-hacking-from-scratch/", "platform": "Udemy", "duration": "15 hours", "difficulty": "Intermediate"},
+                {"type": "video", "title": "Wireshark Tutorial for Beginners", "url": "https://www.youtube.com/watch?v=lb1Dw0elw0Q", "platform": "YouTube", "duration": "2 hours", "difficulty": "Intermediate"},
+                {"type": "article", "title": "MITRE ATT&CK Framework Guide", "url": "https://attack.mitre.org/", "platform": "MITRE", "duration": "45 mins", "difficulty": "Intermediate"},
+                {"type": "tool", "title": "Burp Suite Community Edition", "url": "https://portswigger.net/burp/communitydownload", "platform": "PortSwigger", "duration": "Tool", "difficulty": "Intermediate"}
             ],
             "Phase 3 – Projects": [
-                {"type": "video", "title": "Build a Home Hacking Lab", "url": "https://www.youtube.com/results?search_query=home+cyber+security+lab+setup", "platform": "YouTube"},
-                {"type": "tool", "title": "VulnHub: Vulnerable VMs for Practice", "url": "https://www.vulnhub.com/", "platform": "VulnHub"},
-                {"type": "article", "title": "SIEM Setup with ELK Stack", "url": "https://www.elastic.co/what-is/siem", "platform": "Elastic"},
-                {"type": "course", "title": "Incident Response & Handling", "url": "https://www.cybrary.it/course/incident-response/", "platform": "Cybrary"},
-                {"type": "tool", "title": "Splunk Free: Log Analysis Practice", "url": "https://www.splunk.com/en_us/download/splunk-enterprise.html", "platform": "Splunk"},
-                {"type": "article", "title": "CTF Write-ups Collection", "url": "https://ctftime.org/writeups/", "platform": "CTFtime"}
+                {"type": "video", "title": "Build a Home Hacking Lab", "url": "https://www.youtube.com/watch?v=Wp87I8K0rSw", "platform": "YouTube", "duration": "1 hour", "difficulty": "Intermediate"},
+                {"type": "tool", "title": "VulnHub: Vulnerable VMs for Practice", "url": "https://www.vulnhub.com/", "platform": "VulnHub", "duration": "Practice", "difficulty": "Advanced"},
+                {"type": "pdf", "title": "SIEM Implementation Guide (Elastic)", "url": "https://www.elastic.co/pdf/siem-guide.pdf", "platform": "Elastic", "duration": "1 hour", "difficulty": "Advanced"}
             ],
             "Phase 4 – Career Preparation": [
-                {"type": "course", "title": "CompTIA Security+ Study Guide", "url": "https://www.comptia.org/certifications/security", "platform": "CompTIA"},
-                {"type": "video", "title": "OSCP Certification Preparation", "url": "https://www.youtube.com/results?search_query=oscp+preparation+guide", "platform": "YouTube"},
-                {"type": "tool", "title": "PentesterLab: Practice Security Skills", "url": "https://pentesterlab.com/", "platform": "PentesterLab"},
-                {"type": "article", "title": "Cybersecurity Career Roadmap", "url": "https://www.cyberseek.org/pathway.html", "platform": "CyberSeek"},
-                {"type": "course", "title": "CEH Certification Path", "url": "https://www.eccouncil.org/programs/certified-ethical-hacker-ceh/", "platform": "EC-Council"},
-                {"type": "tool", "title": "BugCrowd: Bug Bounty Platform", "url": "https://www.bugcrowd.com/", "platform": "BugCrowd"}
+                {"type": "course", "title": "CompTIA Security+ Study Guide", "url": "https://www.comptia.org/certifications/security", "platform": "CompTIA", "duration": "Study Plan", "difficulty": "Hard"},
+                {"type": "video", "title": "OSCP Certification Preparation", "url": "https://www.youtube.com/watch?v=S07_C98_N9Y", "platform": "YouTube", "duration": "2 hours", "difficulty": "Hard"},
+                {"type": "article", "title": "Cybersecurity Interview Questions", "url": "https://www.simplilearn.com/tutorials/cyber-security-tutorial/cyber-security-interview-questions", "platform": "SimpliLearn", "duration": "1 hour", "difficulty": "Hard"}
             ]
         },
         "UI/UX Designer": {
             "Phase 1 – Foundations": [
-                {"type": "course", "title": "Google UX Design Certificate", "url": "https://www.coursera.org/professional-certificates/google-ux-design", "platform": "Coursera"},
-                {"type": "video", "title": "Figma Tutorial for Beginners", "url": "https://www.youtube.com/results?search_query=figma+tutorial+beginners+2024", "platform": "YouTube"},
-                {"type": "article", "title": "Laws of UX: Essential Principles", "url": "https://lawsofux.com/", "platform": "Laws of UX"},
-                {"type": "tool", "title": "Daily UI: 100 Day Design Challenge", "url": "https://www.dailyui.co/", "platform": "Daily UI"},
-                {"type": "course", "title": "Interaction Design Foundation: Basics", "url": "https://www.interaction-design.org/", "platform": "IxDF"},
-                {"type": "article", "title": "Refactoring UI: Design Tips", "url": "https://www.refactoringui.com/", "platform": "Refactoring UI"}
+                {"type": "course", "title": "Google UX Design Certificate", "url": "https://www.coursera.org/professional-certificates/google-ux-design", "platform": "Coursera", "duration": "6 months", "difficulty": "Beginner"},
+                {"type": "video", "title": "Figma Tutorial for Beginners", "url": "https://www.youtube.com/watch?v=dXQ7IHkTiMM", "platform": "YouTube", "duration": "2 hours", "difficulty": "Beginner"},
+                {"type": "article", "title": "Laws of UX: Essential Principles", "url": "https://lawsofux.com/", "platform": "Laws of UX", "duration": "30 mins", "difficulty": "Beginner"},
+                {"type": "tool", "title": "Coolors: Color Palette Generator", "url": "https://coolors.co/", "platform": "Coolors", "duration": "Tool", "difficulty": "Beginner"}
             ],
             "Phase 2 – Core Skills": [
-                {"type": "course", "title": "Advanced Figma: Components & Variants", "url": "https://www.youtube.com/results?search_query=figma+advanced+components+variants", "platform": "YouTube"},
-                {"type": "video", "title": "UX Research Methods Masterclass", "url": "https://www.youtube.com/results?search_query=ux+research+methods+masterclass", "platform": "YouTube"},
-                {"type": "tool", "title": "Maze: Remote Usability Testing", "url": "https://maze.co/", "platform": "Maze"},
-                {"type": "article", "title": "Material Design 3 Guidelines", "url": "https://m3.material.io/", "platform": "Google"},
-                {"type": "course", "title": "Nielsen Norman Group: UX Certification", "url": "https://www.nngroup.com/ux-certification/", "platform": "NNGroup"},
-                {"type": "tool", "title": "Coolors: Color Palette Generator", "url": "https://coolors.co/", "platform": "Coolors"}
+                {"type": "video", "title": "UX Research Methods Masterclass", "url": "https://www.youtube.com/watch?v=zOjov-2OZ0E", "platform": "YouTube", "duration": "1 hour", "difficulty": "Intermediate"},
+                {"type": "article", "title": "Material Design 3 Guidelines", "url": "https://m3.material.io/", "platform": "Google", "duration": "1 hour", "difficulty": "Intermediate"},
+                {"type": "tool", "title": "Maze: Remote Usability Testing", "url": "https://maze.co/", "platform": "Maze", "duration": "Tool", "difficulty": "Intermediate"}
             ],
             "Phase 3 – Projects": [
-                {"type": "video", "title": "Complete App Redesign Case Study", "url": "https://www.youtube.com/results?search_query=app+redesign+case+study+ux", "platform": "YouTube"},
-                {"type": "tool", "title": "Figma Community: Free Templates", "url": "https://www.figma.com/community", "platform": "Figma"},
-                {"type": "article", "title": "Building a Design System from Scratch", "url": "https://www.designsystems.com/", "platform": "Design Systems"},
-                {"type": "course", "title": "UX Case Study Writing Guide", "url": "https://uxdesign.cc/", "platform": "UX Collective"},
-                {"type": "tool", "title": "Framer: Interactive Prototyping", "url": "https://www.framer.com/", "platform": "Framer"},
-                {"type": "article", "title": "Atomic Design Methodology", "url": "https://bradfrost.com/blog/post/atomic-web-design/", "platform": "Brad Frost"}
+                {"type": "video", "title": "UX Case Study Presentation Tips", "url": "https://www.youtube.com/watch?v=uQ_Xit_C9pQ", "platform": "YouTube", "duration": "30 mins", "difficulty": "Intermediate"},
+                {"type": "article", "title": "Atomic Design Methodology", "url": "https://bradfrost.com/blog/post/atomic-web-design/", "platform": "Brad Frost", "duration": "45 mins", "difficulty": "Advanced"},
+                {"type": "tool", "title": "Framer: Interactive Prototyping", "url": "https://www.framer.com/", "platform": "Framer", "duration": "Tool", "difficulty": "Advanced"}
             ],
             "Phase 4 – Career Preparation": [
-                {"type": "course", "title": "Portfolio Design for UX Designers", "url": "https://www.youtube.com/results?search_query=ux+portfolio+design+tips", "platform": "YouTube"},
-                {"type": "video", "title": "UX Design Interview Preparation", "url": "https://www.youtube.com/results?search_query=ux+design+interview+preparation", "platform": "YouTube"},
-                {"type": "tool", "title": "Behance: Showcase Your Work", "url": "https://www.behance.net/", "platform": "Behance"},
-                {"type": "article", "title": "How to Present Design Work", "url": "https://medium.com/design-bootcamp/how-to-present-your-design-work-e08b1b53e23a", "platform": "Medium"},
-                {"type": "tool", "title": "Dribbble: Design Community & Jobs", "url": "https://dribbble.com/", "platform": "Dribbble"},
-                {"type": "course", "title": "ADPList: Free Design Mentorship", "url": "https://adplist.org/", "platform": "ADPList"}
+                {"type": "video", "title": "UX Portfolio Design Walkthrough", "url": "https://www.youtube.com/watch?v=dXQ7IHkTiMM", "platform": "YouTube", "duration": "1 hour", "difficulty": "Intermediate"},
+                {"type": "article", "title": "How to Present Design Work", "url": "https://medium.com/design-bootcamp/how-to-present-your-design-work-e08b1b53e23a", "platform": "Medium", "duration": "20 mins", "difficulty": "Hard"},
+                {"type": "tool", "title": "ADPList: Free Design Mentorship", "url": "https://adplist.org/", "platform": "ADPList", "duration": "Mentorship", "difficulty": "Beginner"}
             ]
-        }
+        },
     }
 
     # ==========================================
@@ -687,25 +1091,62 @@ class RoadmapEngine:
 
         # Get career-specific tools for this phase with full metadata
         TOOL_META = {
-            "VS Code": {"name": "VS Code", "desc": "The most popular code editor for modern development.", "url": "https://code.visualstudio.com", "logo": "https://upload.wikimedia.org/wikipedia/commons/9/9a/Visual_Studio_Code_1.35_icon.svg"},
-            "Git": {"name": "Git", "desc": "Distributed version control system to track changes.", "url": "https://git-scm.com", "logo": "https://git-scm.com/images/logos/downloads/Git-Icon-1788C.svg"},
-            "Figma": {"name": "Figma", "desc": "Collaborative design tool for UI/UX teams.", "url": "https://figma.com", "logo": "https://www.vectorlogo.zone/logos/figma/figma-icon.svg"},
-            "Python": {"name": "Python", "desc": "Powerful language for backend, AI, and data science.", "url": "https://python.org", "logo": "https://www.vectorlogo.zone/logos/python/python-icon.svg"},
-            "React": {"name": "React", "desc": "A JavaScript library for building user interfaces.", "url": "https://reactjs.org", "logo": "https://www.vectorlogo.zone/logos/reactjs/reactjs-icon.svg"},
-            "PostgreSQL": {"name": "PostgreSQL", "desc": "Advanced open source relational database.", "url": "https://postgresql.org", "logo": "https://www.vectorlogo.zone/logos/postgresql/postgresql-icon.svg"},
-            "Docker": {"name": "Docker", "desc": "Containerization platform for reliable deployments.", "url": "https://docker.com", "logo": "https://www.vectorlogo.zone/logos/docker/docker-icon.svg"},
-            "AWS": {"name": "AWS", "desc": "Comprehensive cloud computing platform.", "url": "https://aws.amazon.com", "logo": "https://www.vectorlogo.zone/logos/amazon_aws/amazon_aws-icon.svg"},
-            "Jupyter": {"name": "Jupyter", "desc": "Interactive tool for data science and research.", "url": "https://jupyter.org", "logo": "https://www.vectorlogo.zone/logos/jupyter/jupyter-icon.svg"},
-            "Miro": {"name": "Miro", "desc": "Online whiteboard for visual collaboration.", "url": "https://miro.com", "logo": "https://www.vectorlogo.zone/logos/miro/miro-icon.svg"},
-            "Wireshark": {"name": "Wireshark", "desc": "World's foremost network protocol analyzer.", "url": "https://wireshark.org", "logo": "https://www.vectorlogo.zone/logos/wireshark/wireshark-icon.svg"},
-            "Kali Linux": {"name": "Kali Linux", "desc": "Advanced OS for penetration testing.", "url": "https://kali.org", "logo": "https://www.vectorlogo.zone/logos/kali/kali-icon.svg"}
+            "VS Code": {"name": "VS Code", "desc": "Standard for this phase", "url": "https://code.visualstudio.com/download", "logo": "https://upload.wikimedia.org/wikipedia/commons/9/9a/Visual_Studio_Code_1.35_icon.svg"},
+            "Git": {"name": "Git", "desc": "Standard for this phase", "url": "https://git-scm.com/downloads", "logo": "https://git-scm.com/images/logos/downloads/Git-Icon-1788C.svg"},
+            "Figma": {"name": "Figma", "desc": "Collaborative design tool for UI/UX teams.", "url": "https://figma.com/downloads/", "logo": "https://www.vectorlogo.zone/logos/figma/figma-icon.svg"},
+            "Python": {"name": "Python", "desc": "Powerful language for backend, AI, and data science.", "url": "https://www.python.org/downloads/", "logo": "https://www.vectorlogo.zone/logos/python/python-icon.svg"},
+            "React": {"name": "React", "desc": "A JavaScript library for building user interfaces.", "url": "https://reactjs.org/docs/getting-started.html", "logo": "https://www.vectorlogo.zone/logos/reactjs/reactjs-icon.svg"},
+            "PostgreSQL": {"name": "PostgreSQL", "desc": "Advanced open source relational database.", "url": "https://www.postgresql.org/download/", "logo": "https://www.vectorlogo.zone/logos/postgresql/postgresql-icon.svg"},
+            "Docker": {"name": "Docker", "desc": "Containerization platform for reliable deployments.", "url": "https://www.docker.com/products/docker-desktop", "logo": "https://www.vectorlogo.zone/logos/docker/docker-icon.svg"},
+            "AWS": {"name": "AWS", "desc": "Comprehensive cloud computing platform.", "url": "https://aws.amazon.com/free/", "logo": "https://www.vectorlogo.zone/logos/amazon_aws/amazon_aws-icon.svg"},
+            "Jupyter": {"name": "Jupyter", "desc": "Interactive tool for data science and research.", "url": "https://jupyter.org/install", "logo": "https://www.vectorlogo.zone/logos/jupyter/jupyter-icon.svg"},
+            "Miro": {"name": "Miro", "desc": "Online whiteboard for visual collaboration.", "url": "https://miro.com/apps/", "logo": "https://www.vectorlogo.zone/logos/miro/miro-icon.svg"},
+            "Wireshark": {"name": "Wireshark", "desc": "World's foremost network protocol analyzer.", "url": "https://www.wireshark.org/download.html", "logo": "https://www.vectorlogo.zone/logos/wireshark/wireshark-icon.svg"},
+            "Kali Linux": {"name": "Kali Linux", "desc": "Advanced OS for penetration testing.", "url": "https://www.kali.org/get-kali/", "logo": "https://www.vectorlogo.zone/logos/kali/kali-icon.svg"},
+            "Tableau": {"name": "Tableau", "desc": "Leading platform for data visualization and BI.", "url": "https://www.tableau.com/products/desktop/download", "logo": "https://www.vectorlogo.zone/logos/tableau/tableau-icon.svg"},
+            "Power BI": {"name": "Power BI", "desc": "Microsoft's powerful business analytics service.", "url": "https://powerbi.microsoft.com/en-us/downloads/", "logo": "https://www.vectorlogo.zone/logos/microsoft_powerbi/microsoft_powerbi-icon.svg"},
+            "Behance": {"name": "Behance", "desc": "Showcase and discover creative work.", "url": "https://www.behance.net/", "logo": "https://www.vectorlogo.zone/logos/behance/behance-icon.svg"},
+            "Framer": {"name": "Framer", "desc": "Tool for building high-fidelity interactive prototypes.", "url": "https://www.framer.com/download/", "logo": "https://www.vectorlogo.zone/logos/framer/framer-icon.svg"},
+            "Splunk": {"name": "Splunk", "desc": "Data platform for search, analysis, and visualization.", "url": "https://www.splunk.com/en_us/download.html", "logo": "https://www.vectorlogo.zone/logos/splunk/splunk-icon.svg"},
+            "Notion": {"name": "Notion", "desc": "All-in-one workspace for notes and collaboration.", "url": "https://www.notion.so/desktop", "logo": "https://www.vectorlogo.zone/logos/notion/notion-icon.svg"},
+            "Postman": {"name": "Postman", "desc": "API platform for building and using APIs.", "url": "https://www.postman.com/downloads/", "logo": "https://www.vectorlogo.zone/logos/getpostman/getpostman-icon.svg"},
+            "MongoDB": {"name": "MongoDB", "desc": "The most popular NoSQL database.", "url": "https://www.mongodb.com/try/download/community", "logo": "https://www.vectorlogo.zone/logos/mongodb/mongodb-icon.svg"},
+            "IntelliJ": {"name": "IntelliJ IDEA", "desc": "The leading Java and Kotlin IDE.", "url": "https://www.jetbrains.com/idea/download/", "logo": "https://www.vectorlogo.zone/logos/jetbrains/jetbrains-icon.svg"},
+            "Anaconda": {"name": "Anaconda", "desc": "The world's most popular data science platform.", "url": "https://www.anaconda.com/download", "logo": "https://www.vectorlogo.zone/logos/anaconda/anaconda-icon.svg"},
+            "Jira": {"name": "Jira", "desc": "The #1 software development tool used by agile teams.", "url": "https://www.atlassian.com/software/jira/free", "logo": "https://www.vectorlogo.zone/logos/atlassian_jira/atlassian_jira-icon.svg"},
+            "Nmap": {"name": "Nmap", "desc": "Free and open source utility for network discovery.", "url": "https://nmap.org/download.html", "logo": "https://www.vectorlogo.zone/logos/nmap/nmap-icon.svg"},
+            "Metasploit": {"name": "Metasploit", "desc": "The world's most used penetration testing framework.", "url": "https://www.metasploit.com/download", "logo": "https://www.vectorlogo.zone/logos/metasploit/metasploit-icon.svg"}
         }
 
         phase_tools_raw = {
-            "Phase 1 – Foundations": {"Software Engineer": ["VS Code", "Git", "Python"], "Data Scientist": ["Jupyter", "Python", "Git"], "UI/UX Designer": ["Figma", "Miro"], "Cybersecurity Analyst": ["Git", "Wireshark"]},
-            "Phase 2 – Core Skills": {"Software Engineer": ["React", "PostgreSQL"], "Data Scientist": ["Jupyter", "PostgreSQL"], "UI/UX Designer": ["Figma", "Miro"], "Cybersecurity Analyst": ["Kali Linux", "Wireshark"]},
-            "Phase 3 – Projects": {"Software Engineer": ["Docker", "AWS"], "Data Scientist": ["Docker", "AWS"], "UI/UX Designer": ["Figma", "Framer"], "Cybersecurity Analyst": ["Kali Linux", "Docker"]},
-            "Phase 4 – Career Preparation": {"Software Engineer": ["Git", "VS Code"], "Data Scientist": ["Jupyter", "Git"], "UI/UX Designer": ["Figma", "Behance"], "Cybersecurity Analyst": ["Kali Linux", "Wireshark"]},
+            "Phase 1 – Foundations": {
+                "Software Engineer": ["VS Code", "Git", "Python"],
+                "Data Scientist": ["Anaconda", "Jupyter", "Python"],
+                "UI/UX Designer": ["Figma", "Miro"],
+                "Cybersecurity Analyst": ["Git", "Nmap"],
+                "Product Manager": ["Miro", "Notion"]
+            },
+            "Phase 2 – Core Skills": {
+                "Software Engineer": ["Postman", "PostgreSQL", "IntelliJ"],
+                "Data Scientist": ["Tableau", "PostgreSQL", "Anaconda"],
+                "UI/UX Designer": ["Figma", "Framer"],
+                "Cybersecurity Analyst": ["Kali Linux", "Wireshark", "Metasploit"],
+                "Product Manager": ["Notion", "Jira", "Tableau"]
+            },
+            "Phase 3 – Projects": {
+                "Software Engineer": ["Docker", "AWS", "MongoDB"],
+                "Data Scientist": ["Power BI", "AWS", "Jupyter"],
+                "UI/UX Designer": ["Framer", "Behance"],
+                "Cybersecurity Analyst": ["Kali Linux", "Docker", "Splunk"],
+                "Product Manager": ["Jira", "Figma", "Notion"]
+            },
+            "Phase 4 – Career Preparation": {
+                "Software Engineer": ["VS Code", "Git", "Postman"],
+                "Data Scientist": ["Tableau", "Power BI", "Git"],
+                "UI/UX Designer": ["Behance", "Figma"],
+                "Cybersecurity Analyst": ["Kali Linux", "Wireshark", "Splunk"],
+                "Product Manager": ["Jira", "Notion", "Power BI"]
+            },
         }
         
         tools_list = phase_tools_raw.get(phase_name, {}).get(career, ["VS Code", "Git"])
@@ -816,6 +1257,48 @@ class RoadmapEngine:
             })
             
         return personalized_roadmap
+
+    def get_projects_for_skills(self, career: str, skills: List[str]) -> List[Dict[str, Any]]:
+        """
+        Retrieves a list of project suggestions tailored to specific missing skills.
+        """
+        suggested_projects = []
+        career_projects = self.PROJECT_TEMPLATES.get(career, self.PROJECT_TEMPLATES.get("Software Engineer", {}))
+        
+        skills_lower = [s.lower() for s in skills]
+        
+        # Flatten all projects from this career
+        all_projects = []
+        for phase_projects in career_projects.values():
+            all_projects.extend(phase_projects)
+            
+        for skill in skills_lower:
+            # Find a project that matches this skill in its title or tech stack
+            found = False
+            for p in all_projects:
+                # Direct match in tech stack or title
+                if skill in p["title"].lower() or any(s.strip().lower() == skill for s in p["tech_stack"].replace("+", ",").split(",")):
+                    if p not in suggested_projects:
+                        suggested_projects.append(p)
+                        found = True
+                        break
+            
+            # If no direct match, check substrings in title
+            if not found:
+                for p in all_projects:
+                    if skill[:4] in p["title"].lower(): # Match first 4 chars
+                        if p not in suggested_projects:
+                            suggested_projects.append(p)
+                            found = True
+                            break
+
+            # If still no match, look for phase 1 projects as base
+            if not found and career_projects.get("Phase 1 – Foundations"):
+                p = career_projects["Phase 1 – Foundations"][0]
+                if p not in suggested_projects:
+                    suggested_projects.append(p)
+                    
+        return suggested_projects[:3] # Cap at 3 for UI
 
     def get_fallback_skills(self, career: str) -> List[Dict[str, Any]]:
         fallback_data = {

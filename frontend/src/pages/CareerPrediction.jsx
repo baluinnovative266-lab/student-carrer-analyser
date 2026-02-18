@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowRight, Loader2, Sparkles, Target, Zap, BarChart3, Brain } from 'lucide-react';
 import { predictCareer } from '../services/api';
+import AnalysisLoader from '../components/AnalysisLoader';
 
 const InputField = ({ label, name, type = "number", value, onChange, max, icon: Icon }) => (
     <div className="space-y-2 group">
@@ -55,16 +56,24 @@ const CareerPrediction = () => {
                 Object.entries(formData).map(([k, v]) => [k, parseInt(v) || 0])
             );
             const result = await predictCareer(apiData);
-            navigate('/results', { state: { predictionResults: result, inputData: apiData } });
+            // Persist to localStorage for gated route
+            localStorage.setItem('career_stats', JSON.stringify(result));
+
+            // Artificial delay for UX
+            setTimeout(() => {
+                navigate('/results', { state: { predictionResults: result, inputData: apiData }, replace: true });
+                setLoading(false);
+            }, 1800);
         } catch (error) {
             console.error("Prediction failed", error);
-        } finally {
             setLoading(false);
         }
     };
 
     return (
         <div className="max-w-5xl mx-auto py-8 px-4">
+            <AnalysisLoader isOpen={loading} message="Analyzing Your Career Potential..." />
+
             {/* Custom styles for number input spinners */}
             <style>{`
                 .custom-number-input::-webkit-inner-spin-button,
@@ -77,6 +86,7 @@ const CareerPrediction = () => {
                     appearance: textfield;
                 }
             `}</style>
+            {/* ... rest of the file ... */}
 
             <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}

@@ -23,6 +23,13 @@ class SkillMetadata(BaseModel):
     category: str
     description: str
 
+class ProjectMetadata(BaseModel):
+    title: str
+    overview: str
+    tech_stack: str
+    difficulty: str
+    github_link: str
+
 class CareerPredictionResponse(BaseModel):
     predicted_career: str
     confidence: Optional[float] = None
@@ -35,6 +42,7 @@ class CareerPredictionResponse(BaseModel):
     next_recommended_skill: Optional[str] = None
     probability_chart_data: List[dict] = []
     skill_comparison_data: List[dict] = []
+    featured_projects: List[ProjectMetadata] = []
 
 class SkillGapResponse(BaseModel):
     extracted_skills: List[SkillMetadata]
@@ -45,3 +53,4 @@ class SkillGapResponse(BaseModel):
     next_recommended_skill: Optional[str] = None
     probability_chart_data: List[dict] = []
     skill_comparison_data: List[dict] = []
+    featured_projects: List[ProjectMetadata] = []

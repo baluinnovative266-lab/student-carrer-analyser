@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Target, BookOpen, BarChart3, Award, ArrowRight, Brain, Sparkles, TrendingUp, Play } from 'lucide-react';
+import { Target, BookOpen, BarChart3, Award, ArrowRight, Brain, Sparkles, TrendingUp, Play, Lock, MessageSquare } from 'lucide-react';
 import FAQSection from '../components/FAQSection';
 import DemoAutoFill from '../components/DemoAutoFill';
 import GuidedTour from '../components/GuidedTour';
@@ -13,11 +13,18 @@ const pageVariants = {
     exit: { opacity: 0, x: -40, transition: { duration: 0.25, ease: 'easeIn' } },
 };
 
+import { MOCK_DEMO_RESULTS } from '../utils/constants';
+
 const Dashboard = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const [stats, setStats] = useState(null);
     const [isTourOpen, setIsTourOpen] = useState(false);
+
+    const handleStartDemo = () => {
+        localStorage.setItem('career_stats', JSON.stringify(MOCK_DEMO_RESULTS));
+        navigate('/results', { state: { resumeResults: MOCK_DEMO_RESULTS }, replace: true });
+    };
 
     // If prediction/resume data arrives here, redirect to /results
     useEffect(() => {
@@ -26,7 +33,21 @@ const Dashboard = () => {
             navigate('/results', { state: location.state, replace: true });
         } else {
             const cached = localStorage.getItem('career_stats');
-            if (cached) setStats(JSON.parse(cached));
+            if (cached) {
+                try {
+                    const parsed = JSON.parse(cached);
+                    // Ensure it's a valid analysis with expected data
+                    if (parsed && (parsed.predicted_career || parsed.career_match_score)) {
+                        setStats(parsed);
+                    } else {
+                        localStorage.removeItem('career_stats');
+                        setStats(null);
+                    }
+                } catch (e) {
+                    localStorage.removeItem('career_stats');
+                    setStats(null);
+                }
+            }
         }
     }, [location.state, navigate]);
 
@@ -105,10 +126,13 @@ const Dashboard = () => {
                         <Brain size={16} /> AI-Powered Career Guidance
                     </div>
                     <h1 className="text-4xl md:text-5xl font-black text-gray-900 mb-4" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-                        Welcome to <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-rose-500">CareerSense</span>
+                        {stats ? <>Welcome to <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-rose-500">CareerSense</span></> : "Start Your Career Analysis"}
                     </h1>
                     <p className="text-gray-500 text-lg max-w-2xl mx-auto mb-8">
-                        Your AI-powered career intelligence platform. Start by predicting your career or analyzing your resume.
+                        {stats
+                            ? "Your AI-powered career intelligence platform. Explore your personalized insights below."
+                            : "Complete career prediction or upload resume to unlock personalized insights."
+                        }
                     </p>
                     <div className="flex items-center justify-center gap-4">
                         <motion.button
@@ -117,8 +141,35 @@ const Dashboard = () => {
                             onClick={() => setIsTourOpen(true)}
                             className="bg-gray-900 text-white px-6 py-3 rounded-xl font-bold flex items-center gap-2 hover:bg-black transition-all shadow-lg"
                         >
-                            <Play size={18} className="fill-white" /> Judge Walkthrough Mode
+                            <Play size={18} className="fill-white" /> Walkthrough Mode
                         </motion.button>
+
+                        {stats && (
+                            <div className="flex flex-wrap gap-4">
+                                <motion.button
+                                    whileHover={{ scale: 1.05 }}
+                                    whileTap={{ scale: 0.95 }}
+                                    onClick={() => navigate('/community')}
+                                    className="bg-gradient-to-r from-violet-600 to-pink-600 text-white px-8 py-3 rounded-xl font-bold shadow-lg shadow-pink-500/20 hover:shadow-pink-500/40 transition-all flex items-center gap-2"
+                                >
+                                    <MessageSquare size={18} />
+                                    Community Chat
+                                </motion.button>
+
+                                <motion.button
+                                    whileHover={{ scale: 1.05 }}
+                                    whileTap={{ scale: 0.95 }}
+                                    onClick={() => {
+                                        localStorage.removeItem('career_stats');
+                                        localStorage.removeItem('current_roadmap');
+                                        setStats(null);
+                                    }}
+                                    className="bg-white text-gray-400 hover:text-red-500 px-6 py-3 rounded-xl font-bold border border-gray-100 hover:border-red-100 transition-all"
+                                >
+                                    Reset Analysis
+                                </motion.button>
+                            </div>
+                        )}
                     </div>
                 </motion.div>
 
@@ -163,55 +214,69 @@ const Dashboard = () => {
 
                 {/* ── User Journey Steps ── */}
                 <div className="flex flex-col md:flex-row items-center justify-center gap-4 mb-14">
-                    {steps.map((step, i) => (
-                        <div key={i} className="flex items-center gap-4">
-                            <Link to={step.link}>
-                                <motion.div
-                                    whileHover={{ y: -4, boxShadow: '0 12px 30px -8px rgba(236,72,153,0.2)' }}
-                                    whileTap={{ scale: 0.97 }}
-                                    className="flex items-center gap-4 bg-white border border-gray-200 rounded-2xl px-6 py-4 shadow-sm cursor-pointer group"
-                                >
-                                    <div className="w-10 h-10 rounded-xl bg-pink-50 text-pink-600 flex items-center justify-center group-hover:bg-pink-500 group-hover:text-white transition-colors">
-                                        {step.icon}
-                                    </div>
-                                    <div>
-                                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Step {step.num}</p>
-                                        <p className="font-bold text-gray-900 text-sm">{step.label}</p>
-                                        <p className="text-xs text-gray-400">{step.sub}</p>
-                                    </div>
-                                </motion.div>
-                            </Link>
-                            {i < steps.length - 1 && (
-                                <ArrowRight size={20} className="text-gray-300 shrink-0 hidden md:block" />
-                            )}
-                        </div>
-                    ))}
+                    {steps.map((step, i) => {
+                        const isLocked = !stats && i > 0;
+                        const content = (
+                            <motion.div
+                                whileHover={!isLocked ? { y: -4, boxShadow: '0 12px 30px -8px rgba(236,72,153,0.2)' } : {}}
+                                whileTap={!isLocked ? { scale: 0.97 } : {}}
+                                className={`flex items-center gap-4 bg-white border rounded-2xl px-6 py-4 shadow-sm transition-all
+                                    ${isLocked ? 'opacity-50 grayscale cursor-not-allowed border-gray-100' : 'border-gray-200 cursor-pointer group'}
+                                `}
+                            >
+                                <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors
+                                    ${isLocked ? 'bg-gray-50 text-gray-300' : 'bg-pink-50 text-pink-600 group-hover:bg-pink-500 group-hover:text-white'}
+                                `}>
+                                    {isLocked ? <Lock size={18} /> : step.icon}
+                                </div>
+                                <div>
+                                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Step {step.num}</p>
+                                    <p className={`font-bold text-sm ${isLocked ? 'text-gray-400' : 'text-gray-900'}`}>{step.label}</p>
+                                    <p className="text-xs text-gray-400">{isLocked ? 'Locked until analyzed' : step.sub}</p>
+                                </div>
+                            </motion.div>
+                        );
+
+                        return (
+                            <div key={i} className="flex items-center gap-4">
+                                {isLocked ? content : <Link to={step.link}>{content}</Link>}
+                                {i < steps.length - 1 && (
+                                    <ArrowRight size={20} className="text-gray-300 shrink-0 hidden md:block" />
+                                )}
+                            </div>
+                        );
+                    })}
                 </div>
 
 
                 {/* ── Feature Cards ── */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
-                    {features.map((f, i) => (
-                        <motion.div
-                            key={i}
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: i * 0.08 }}
-                            whileHover={{ y: -6, boxShadow: '0 20px 40px -10px rgba(0,0,0,0.1)' }}
-                            whileTap={{ scale: 0.97 }}
-                            className={`group bg-white border ${f.border} rounded-2xl p-8 shadow-sm cursor-pointer transition-all duration-300`}
-                            onClick={() => navigate(f.link)}
-                        >
-                            <div className={`w-14 h-14 rounded-2xl ${f.bg} ${f.color} flex items-center justify-center mb-5 group-hover:scale-110 transition-transform`}>
-                                {f.icon}
-                            </div>
-                            <h3 className="text-xl font-black text-gray-900 mb-2" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>{f.title}</h3>
-                            <p className="text-gray-500 text-sm leading-relaxed mb-6">{f.desc}</p>
-                            <div className={`inline-flex items-center gap-2 text-sm font-bold ${f.color} group-hover:gap-3 transition-all`}>
-                                {f.cta} <ArrowRight size={16} />
-                            </div>
-                        </motion.div>
-                    ))}
+                    {features.map((f, i) => {
+                        // Only show Results and Roadmap if stats are available
+                        if (!stats && (f.title === 'My Results' || f.title === 'My Roadmap')) return null;
+
+                        return (
+                            <motion.div
+                                key={i}
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: i * 0.08 }}
+                                whileHover={{ y: -6, boxShadow: '0 20px 40px -10px rgba(0,0,0,0.1)' }}
+                                whileTap={{ scale: 0.97 }}
+                                className={`group bg-white border ${f.border} rounded-2xl p-8 shadow-sm cursor-pointer transition-all duration-300`}
+                                onClick={() => navigate(f.link)}
+                            >
+                                <div className={`w-14 h-14 rounded-2xl ${f.bg} ${f.color} flex items-center justify-center mb-5 group-hover:scale-110 transition-transform`}>
+                                    {f.icon}
+                                </div>
+                                <h3 className="text-xl font-black text-gray-900 mb-2" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>{f.title}</h3>
+                                <p className="text-gray-500 text-sm leading-relaxed mb-6">{f.desc}</p>
+                                <div className={`inline-flex items-center gap-2 text-sm font-bold ${f.color} group-hover:gap-3 transition-all`}>
+                                    {f.cta} <ArrowRight size={16} />
+                                </div>
+                            </motion.div>
+                        );
+                    })}
                 </div>
 
                 {/* ── Quick Start CTA ── */}
@@ -243,8 +308,7 @@ const Dashboard = () => {
                 </div>
             </div>
 
-            <DemoAutoFill targetPath="/results" />
-            <GuidedTour isOpen={isTourOpen} onClose={() => setIsTourOpen(false)} />
+            <GuidedTour isOpen={isTourOpen} onClose={() => setIsTourOpen(false)} onStartDemo={handleStartDemo} />
         </motion.div>
     );
 };

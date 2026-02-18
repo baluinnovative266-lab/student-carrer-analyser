@@ -108,14 +108,7 @@ def predict_career(input_data: CareerInput, current_user: Optional[User] = Depen
     ])
 
     # Determine missing skills based on career
-    career_required_skills = {
-        "Software Engineer": ["Python", "Algorithms", "System Design", "Databases", "Cloud Computing"],
-        "Data Scientist": ["Python", "Machine Learning", "Statistics", "SQL", "Data Visualization"],
-        "Web Developer": ["React", "Node.js", "CSS", "REST APIs", "TypeScript"],
-        "UI/UX Designer": ["Figma", "User Research", "Prototyping", "Color Theory", "Wireframing"],
-        "Product Manager": ["Agile", "User Stories", "Roadmapping", "Stakeholder Mgmt", "Analytics"],
-    }
-    missing_skills = career_required_skills.get(predicted_career, ["Python", "Algorithms", "Databases", "Cloud", "Testing"])
+    missing_skills = roadmap_engine.CAREER_REQUIRED_SKILLS.get(predicted_career, ["Python", "Algorithms", "Databases", "Cloud", "Testing"])
 
     return {
         "predicted_career": predicted_career,
@@ -128,7 +121,9 @@ def predict_career(input_data: CareerInput, current_user: Optional[User] = Depen
         "career_match_score": career_match,
         "next_recommended_skill": next_recommended_skill,
         "probability_chart_data": probability_chart_data,
-        "skill_comparison_data": skill_comparison_data
+        "skill_comparison_data": skill_comparison_data,
+        "featured_projects": roadmap_engine.get_projects_for_skills(predicted_career, missing_skills),
+        "skill_details": {s.lower(): roadmap_engine.SKILL_DETAILS.get(s.lower(), {}) for s in missing_skills + [sk["name"] for sk in extracted_skills]}
     }
 
 @router.get("/get-roadmap")
@@ -208,13 +203,20 @@ async def analyze_resume(file: UploadFile = File(...), current_user: Optional[Us
 
     next_recommended_skill = roadmap[0]["steps"][0]["skill"] if roadmap and roadmap[0]["steps"] else "Advanced Python"
 
+    # Determine missing skills based on target career
+    missing_skills = [s for s in roadmap_engine.CAREER_REQUIRED_SKILLS.get(target_career, []) if s.lower() not in existing_skill_names]
+    if not missing_skills:
+        missing_skills = ["Scaling", "DevOps", "Advanced Algorithms", "System Design"]
+
     return {
         "extracted_skills": extracted_skills,
-        "missing_skills": ["Scaling", "DevOps", "Advanced Algorithms", "System Design"],
+        "missing_skills": missing_skills,
         "recommended_roadmap": roadmap,
         "radar_data": radar_data,
         "career_match_score": base_score,
         "next_recommended_skill": next_recommended_skill,
         "probability_chart_data": probability_chart_data,
-        "skill_comparison_data": skill_comparison_data
+        "skill_comparison_data": skill_comparison_data,
+        "featured_projects": roadmap_engine.get_projects_for_skills(target_career, missing_skills),
+        "skill_details": {s.lower(): roadmap_engine.SKILL_DETAILS.get(s.lower(), {}) for s in missing_skills + [sk["name"] for sk in extracted_skills]}
     }

@@ -25,7 +25,7 @@ const steps = [
     }
 ];
 
-const GuidedTour = ({ isOpen, onClose }) => {
+const GuidedTour = ({ isOpen, onClose, onStartDemo }) => {
     const [currentStep, setCurrentStep] = useState(0);
 
     if (!isOpen) return null;
@@ -34,6 +34,7 @@ const GuidedTour = ({ isOpen, onClose }) => {
         if (currentStep < steps.length - 1) {
             setCurrentStep(currentStep + 1);
         } else {
+            if (onStartDemo) onStartDemo();
             onClose();
         }
     };

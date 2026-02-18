@@ -13,6 +13,9 @@ const Navbar = () => {
 
     const handleLogout = () => {
         logout();
+        localStorage.removeItem('career_stats');
+        localStorage.removeItem('current_roadmap');
+        localStorage.removeItem('predicted_career');
         setIsProfileOpen(false);
         setIsOpen(false);
     };

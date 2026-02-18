@@ -1,43 +1,12 @@
-import React from 'react';
-import { motion } from 'framer-motion';
-import { Zap, Play } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { MOCK_DEMO_RESULTS } from '../utils/constants';
 
 const DemoAutoFill = ({ targetPath }) => {
     const navigate = useNavigate();
 
     const handleAutoFill = () => {
-        const mockResults = {
-            predicted_career: "Software Engineer",
-            match_score: 88,
-            extracted_skills: [
-                { name: "Python", category: "Technical" },
-                { name: "JavaScript", category: "Technical" },
-                { name: "React", category: "Tools & Frameworks" },
-                { name: "Communication", category: "Soft Skills" }
-            ],
-            missing_skills: ["Data Structures", "Docker", "Machine Learning"],
-            next_recommended_skill: "Data Structures",
-            career_match_score: 88,
-            probability_chart_data: [
-                { name: "Software Engineer", probability: 88 },
-                { name: "Data Scientist", probability: 65 },
-                { name: "Product Manager", probability: 42 }
-            ],
-            skill_comparison_data: [
-                { skill: "Programming", yourScore: 90, required: 85 },
-                { skill: "System Design", yourScore: 40, required: 75 },
-                { skill: "Problem Solving", yourScore: 95, required: 90 }
-            ],
-            recommended_roadmap: [
-                { id: 1, title: "Phase 1 – Foundations", status: "completed" },
-                { id: 2, title: "Phase 2 – Core Skills", status: "current" },
-                { id: 3, title: "Phase 3 – Projects", status: "locked" },
-                { id: 4, title: "Phase 4 – Career Preparation", status: "locked" }
-            ]
-        };
-
-        navigate(targetPath, { state: { resumeResults: mockResults } });
+        // Persist for AnalyzedRoute
+        localStorage.setItem('career_stats', JSON.stringify(MOCK_DEMO_RESULTS));
+        navigate(targetPath, { state: { resumeResults: MOCK_DEMO_RESULTS } });
     };
 
     return (

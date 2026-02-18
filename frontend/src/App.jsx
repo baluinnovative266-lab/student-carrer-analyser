@@ -14,7 +14,10 @@ import Register from './pages/Register';
 import Settings from './pages/Settings';
 import PhaseDetail from './pages/PhaseDetail';
 import FullRoadmap from './pages/FullRoadmap';
+import CommunityChat from './pages/CommunityChat';
 import RoadmapOverview from './pages/RoadmapOverview';
+
+import StartAnalysis from './pages/StartAnalysis';
 
 const ProtectedRoute = ({ children }) => {
     const { user, loading } = useAuth();
@@ -34,6 +37,14 @@ const ProtectedRoute = ({ children }) => {
     return children;
 };
 
+const AnalyzedRoute = ({ children }) => {
+    const stats = localStorage.getItem('career_stats');
+    if (!stats) {
+        return <Navigate to="/start-analysis" replace />;
+    }
+    return children;
+};
+
 function AppContent() {
     const location = useLocation();
 
@@ -50,7 +61,16 @@ function AppContent() {
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
 
-                {/* Dashboard (hub / empty state) */}
+                {/* Start Analysis (Hub for unanalyzed users) */}
+                <Route path="/start-analysis" element={
+                    <ProtectedRoute>
+                        <Layout>
+                            <StartAnalysis />
+                        </Layout>
+                    </ProtectedRoute>
+                } />
+
+                {/* Dashboard (hub / results summary) */}
                 <Route path="/dashboard" element={
                     <ProtectedRoute>
                         <Layout>
@@ -62,13 +82,15 @@ function AppContent() {
                 {/* Results Page — after prediction/resume analysis */}
                 <Route path="/results" element={
                     <ProtectedRoute>
-                        <Layout>
-                            <ResultsPage />
-                        </Layout>
+                        <AnalyzedRoute>
+                            <Layout>
+                                <ResultsPage />
+                            </Layout>
+                        </AnalyzedRoute>
                     </ProtectedRoute>
                 } />
 
-                {/* Career Prediction */}
+                {/* Career Prediction (Not gated) */}
                 <Route path="/career-prediction" element={
                     <ProtectedRoute>
                         <Layout>
@@ -77,7 +99,7 @@ function AppContent() {
                     </ProtectedRoute>
                 } />
 
-                {/* Resume Analysis */}
+                {/* Resume Analysis (Not gated) */}
                 <Route path="/resume-analysis" element={
                     <ProtectedRoute>
                         <Layout>
@@ -89,36 +111,51 @@ function AppContent() {
                 {/* Roadmap Overview */}
                 <Route path="/roadmap/overview" element={
                     <ProtectedRoute>
-                        <Layout>
-                            <RoadmapOverview />
-                        </Layout>
+                        <AnalyzedRoute>
+                            <Layout>
+                                <RoadmapOverview />
+                            </Layout>
+                        </AnalyzedRoute>
                     </ProtectedRoute>
                 } />
 
                 {/* Phase Detail */}
                 <Route path="/roadmap/phase/:phaseId" element={
                     <ProtectedRoute>
-                        <Layout>
-                            <PhaseDetail />
-                        </Layout>
+                        <AnalyzedRoute>
+                            <Layout>
+                                <PhaseDetail />
+                            </Layout>
+                        </AnalyzedRoute>
                     </ProtectedRoute>
                 } />
 
                 {/* Full Roadmap */}
                 <Route path="/roadmap/full" element={
                     <ProtectedRoute>
-                        <Layout>
-                            <FullRoadmap />
-                        </Layout>
+                        <AnalyzedRoute>
+                            <Layout>
+                                <FullRoadmap />
+                            </Layout>
+                        </AnalyzedRoute>
                     </ProtectedRoute>
                 } />
 
                 {/* Legacy phase route */}
                 <Route path="/roadmap/:phaseId" element={
                     <ProtectedRoute>
-                        <Layout>
-                            <PhaseDetail />
-                        </Layout>
+                        <AnalyzedRoute>
+                            <Layout>
+                                <PhaseDetail />
+                            </Layout>
+                        </AnalyzedRoute>
+                    </ProtectedRoute>
+                } />
+
+                {/* Community Chat */}
+                <Route path="/community" element={
+                    <ProtectedRoute>
+                        <CommunityChat />
                     </ProtectedRoute>
                 } />
 

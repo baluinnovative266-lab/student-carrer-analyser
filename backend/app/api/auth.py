@@ -3,6 +3,9 @@ from sqlalchemy.orm import Session
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from app.core.database import get_db
 from app.models.user import User
+from app.models.community_message import CommunityMessage
+from app.models.comment import Comment
+from app.models.roadmap import Roadmap
 from app.services.auth_service import verify_password, get_password_hash, create_access_token
 from pydantic import BaseModel
 from typing import Optional, List, Any

@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Target, Info, Lightbulb, Clock, CheckCircle2, ChevronRight, Github, ExternalLink, Code, Award } from 'lucide-react';
+import { PLATFORM_LOGOS } from '../utils/constants';
 
 const SidePanel = ({ isOpen, onClose, title, subtitle, data, type }) => {
     const career = localStorage.getItem('predicted_career') || 'Software Engineer';
@@ -116,100 +117,144 @@ const SidePanel = ({ isOpen, onClose, title, subtitle, data, type }) => {
                                     <section>
                                         <div className="flex items-center gap-2 text-gray-900 font-bold mb-4">
                                             <Info size={18} className="text-pink-600" />
-                                            Module Overview
+                                            {type === 'Build Project' ? 'Project Overview' : 'Module Overview'}
                                         </div>
                                         <p className="text-gray-600 leading-relaxed bg-gray-50 p-4 rounded-2xl border border-gray-100 italic">
-                                            "{data?.description || "Mastering this competence is key for your career growth."}"
+                                            "{data?.overview || data?.description || (type === 'Build Project' ? "Build a professional project applying what you've learned." : "Mastering this competence is key for your career growth.")}"
                                         </p>
                                     </section>
 
                                     <section className="grid grid-cols-2 gap-4">
                                         <div className="bg-pink-50 p-4 rounded-2xl border border-pink-100 shadow-sm">
                                             <Target size={18} className="text-pink-600 mb-2" />
-                                            <p className="text-[10px] text-pink-500 font-black uppercase tracking-tighter mb-1">Impact</p>
-                                            <p className="text-sm font-bold text-gray-900">{data?.importance || "High Impact"}</p>
+                                            <p className="text-[10px] text-pink-500 font-black uppercase tracking-tighter mb-1">
+                                                {type === 'Build Project' ? 'Stack' : 'Impact'}
+                                            </p>
+                                            <p className="text-sm font-bold text-gray-900 leading-tight">
+                                                {data?.tech_stack || data?.importance || "Industry Standard"}
+                                            </p>
                                         </div>
                                         <div className="bg-blue-50 p-4 rounded-2xl border border-blue-100 shadow-sm">
                                             <Clock size={18} className="text-blue-600 mb-2" />
-                                            <p className="text-[10px] text-blue-500 font-black uppercase tracking-tighter mb-1">Duration</p>
-                                            <p className="text-sm font-bold text-gray-900">{data?.learning_time || "1-2 Weeks"}</p>
+                                            <p className="text-[10px] text-blue-500 font-black uppercase tracking-tighter mb-1">
+                                                {type === 'Build Project' ? 'Difficulty' : 'Duration'}
+                                            </p>
+                                            <p className="text-sm font-bold text-gray-900 leading-tight">
+                                                {data?.difficulty || data?.learning_time || "1-2 Weeks"}
+                                            </p>
+                                        </div>
+                                    </section>
+
+                                    {/* Project Direct Link (if it's a project) */}
+                                    {type === 'Build Project' && (data?.github_link || data?.featured_project?.github_link) && (
+                                        <section>
+                                            <a
+                                                href={data?.github_link || data?.featured_project?.github_link || getFallbackLink()}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="w-full flex items-center justify-center gap-3 bg-indigo-600 text-white p-4 rounded-2xl font-black hover:bg-indigo-700 transition-all shadow-lg group"
+                                            >
+                                                <Github size={20} />
+                                                Starter Template
+                                                <ExternalLink size={16} className="opacity-0 group-hover:opacity-100 transition-opacity" />
+                                            </a>
+                                        </section>
+                                    )}
+
+                                    {/* Objectives Section for Projects/Modules */}
+                                    <section>
+                                        <div className="flex items-center gap-2 text-gray-900 font-bold mb-4">
+                                            <CheckCircle2 size={18} className="text-emerald-500" />
+                                            {type === 'Build Project' ? 'Project Objectives' : 'Key Objectives'}
+                                        </div>
+                                        <div className="space-y-3">
+                                            {(data?.objectives || (type === 'Build Project' ? ["Practical Implementation", "Portfolio Piece", "Scale Ready"] : ["Skill Mastery", "Industry Application", "Standard Practices"])).map((item, i) => (
+                                                <div key={i} className="flex gap-3 text-sm text-gray-600 bg-white p-3 rounded-xl border border-gray-100 shadow-sm">
+                                                    <ChevronRight size={14} className="text-emerald-500 shrink-0 mt-0.5" />
+                                                    {item}
+                                                </div>
+                                            ))}
                                         </div>
                                     </section>
 
                                     {/* Module Specific Resources */}
-                                    {data?.resources && data.resources.length > 0 && (
+                                    {(data?.resources || data?.module_resources) && (data.resources || data.module_resources).length > 0 && (
                                         <section>
                                             <div className="flex items-center gap-2 text-gray-900 font-bold mb-4">
                                                 <Award size={18} className="text-purple-500" />
-                                                Suggested Resources
+                                                {type === 'Build Project' ? 'Learning Resources' : 'Suggested Resources'}
                                             </div>
                                             <div className="space-y-3">
-                                                {data.resources.map((res, i) => (
+                                                {(data.resources || data.module_resources).map((res, i) => (
                                                     <a
                                                         key={i}
                                                         href={res.url || res.link}
                                                         target="_blank"
                                                         rel="noopener noreferrer"
-                                                        className="flex items-center gap-3 text-sm text-gray-600 bg-white p-3 rounded-xl border border-gray-100 shadow-sm hover:border-pink-200 hover:shadow-md transition-all group"
+                                                        className="flex items-center gap-3 text-sm text-gray-600 bg-white p-3 rounded-xl border border-gray-100 shadow-sm hover:border-indigo-200 hover:shadow-md transition-all group"
                                                     >
-                                                        <div className="w-10 h-10 rounded-lg bg-gray-50 flex items-center justify-center p-1.5 group-hover:bg-pink-50 transition-colors border border-transparent group-hover:border-pink-50">
+                                                        <div className="w-10 h-10 rounded-lg bg-gray-50 flex items-center justify-center p-1.5 group-hover:bg-indigo-50 transition-colors border border-transparent group-hover:border-indigo-50">
                                                             {PLATFORM_LOGOS[res.platform] ? (
                                                                 <img src={PLATFORM_LOGOS[res.platform]} alt={res.platform} className="w-full h-full object-contain" />
                                                             ) : (
-                                                                <ExternalLink size={14} className="text-pink-500" />
+                                                                <ExternalLink size={14} className="text-indigo-500" />
                                                             )}
                                                         </div>
                                                         <div className="flex-1 min-w-0">
-                                                            <p className="font-bold text-gray-900 truncate group-hover:text-pink-600 transition-colors">{res.title}</p>
+                                                            <p className="font-bold text-gray-900 truncate group-hover:text-indigo-600 transition-colors">{res.title}</p>
                                                             <div className="flex items-center gap-2">
                                                                 <p className="text-[9px] text-gray-400 uppercase font-black tracking-tight">{res.platform || res.type}</p>
                                                                 {res.duration && <span className="text-[9px] text-gray-300">•</span>}
                                                                 {res.duration && <p className="text-[9px] text-emerald-500 font-bold">{res.duration}</p>}
                                                             </div>
                                                         </div>
-                                                        <ChevronRight size={14} className="text-gray-300 group-hover:text-pink-400 group-hover:translate-x-0.5 transition-all" />
+                                                        <ChevronRight size={14} className="text-gray-300 group-hover:text-indigo-400 group-hover:translate-x-0.5 transition-all" />
                                                     </a>
                                                 ))}
                                             </div>
                                         </section>
                                     )}
 
-                                    {/* Featured Project Section */}
-                                    <section className="bg-gradient-to-br from-gray-900 to-gray-800 p-6 rounded-3xl text-white shadow-xl relative overflow-hidden group">
-                                        <div className="absolute top-0 right-0 w-32 h-32 bg-pink-500/10 rounded-full blur-3xl -mr-16 -mt-16 group-hover:bg-pink-500/20 transition-all" />
+                                    {/* Featured Project Section (Only for Modules, hidden if we are already viewing a Project) */}
+                                    {type !== 'Build Project' && (
+                                        <section className="bg-gradient-to-br from-gray-900 to-gray-800 p-6 rounded-3xl text-white shadow-xl relative overflow-hidden group">
+                                            <div className="absolute top-0 right-0 w-32 h-32 bg-pink-500/10 rounded-full blur-3xl -mr-16 -mt-16 group-hover:bg-pink-500/20 transition-all" />
 
-                                        <div className="flex items-center gap-2 text-pink-400 font-bold mb-4">
-                                            <Code size={18} />
-                                            <span className="text-[10px] uppercase font-black tracking-widest">Hands-on Practice</span>
-                                        </div>
-
-                                        <h3 className="text-lg font-black mb-2">{data?.featured_project?.title || "Career Lab Project"}</h3>
-                                        <p className="text-xs text-gray-400 mb-6 leading-relaxed">
-                                            {data?.featured_project?.overview || "Build a professional project applying what you've learned in this module."}
-                                        </p>
-
-                                        <div className="grid grid-cols-2 gap-3 mb-6">
-                                            <div className="bg-white/5 p-3 rounded-xl border border-white/10">
-                                                <p className="text-[10px] text-gray-500 font-bold uppercase mb-1">Stack</p>
-                                                <p className="text-[11px] font-bold text-gray-200">{data?.featured_project?.tech_stack || "Node + React"}</p>
+                                            <div className="flex items-center gap-2 text-pink-400 font-bold mb-4">
+                                                <Code size={18} />
+                                                <span className="text-[10px] uppercase font-black tracking-widest">Hands-on Practice</span>
                                             </div>
-                                            <div className="bg-white/5 p-3 rounded-xl border border-white/10">
-                                                <p className="text-[10px] text-gray-500 font-bold uppercase mb-1">Difficulty</p>
-                                                <p className="text-[11px] font-bold text-gray-200">{data?.featured_project?.difficulty || "Moderate"}</p>
-                                            </div>
-                                        </div>
 
-                                        <a
-                                            href={data?.featured_project?.github_link || data?.github_link || getFallbackLink()}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="w-full flex items-center justify-center gap-3 bg-pink-600 text-white p-4 rounded-2xl font-black hover:bg-pink-500 transition-all shadow-lg group"
-                                        >
-                                            <Github size={20} />
-                                            Starter Template
-                                            <ExternalLink size={16} className="opacity-0 group-hover:opacity-100 transition-opacity" />
-                                        </a>
-                                    </section>
+                                            <h3 className="text-lg font-black mb-2">
+                                                {data?.featured_project?.title || data?.title || "Career Lab Project"}
+                                            </h3>
+                                            <p className="text-xs text-gray-400 mb-6 leading-relaxed">
+                                                {data?.featured_project?.overview || data?.overview || "Build a professional project applying what you've learned in this module."}
+                                            </p>
+
+                                            <div className="grid grid-cols-2 gap-3 mb-6">
+                                                <div className="bg-white/5 p-3 rounded-xl border border-white/10">
+                                                    <p className="text-[10px] text-gray-500 font-bold uppercase mb-1">Stack</p>
+                                                    <p className="text-[11px] font-bold text-gray-200">{data?.featured_project?.tech_stack || data?.tech_stack || "Node + React"}</p>
+                                                </div>
+                                                <div className="bg-white/5 p-3 rounded-xl border border-white/10">
+                                                    <p className="text-[10px] text-gray-500 font-bold uppercase mb-1">Difficulty</p>
+                                                    <p className="text-[11px] font-bold text-gray-200">{data?.featured_project?.difficulty || data?.difficulty || "Moderate"}</p>
+                                                </div>
+                                            </div>
+
+                                            <a
+                                                href={data?.featured_project?.github_link || data?.github_link || getFallbackLink()}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="w-full flex items-center justify-center gap-3 bg-pink-600 text-white p-4 rounded-2xl font-black hover:bg-pink-500 transition-all shadow-lg group"
+                                            >
+                                                <Github size={20} />
+                                                Starter Template
+                                                <ExternalLink size={16} className="opacity-0 group-hover:opacity-100 transition-opacity" />
+                                            </a>
+                                        </section>
+                                    )}
                                 </>
                             )}
                         </div>

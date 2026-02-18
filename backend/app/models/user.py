@@ -15,3 +15,4 @@ class User(Base):
 
     roadmaps = relationship("Roadmap", back_populates="user")
     comments = relationship("Comment", back_populates="user")
+    community_messages = relationship("CommunityMessage", back_populates="user")

@@ -1,14 +1,14 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useNavigate, useParams, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-    ChevronLeft, Share2, MessageSquare, ThumbsUp,
-    PlayCircle, FileText, Code, CheckCircle, ChevronDown, ChevronRight,
-    Send, BookOpen, ExternalLink, Video, Lightbulb, Globe,
-    Star, Target, TrendingUp, ArrowRight, CornerDownRight,
-    Award, Hash, Zap, Brain, Grid, List as ListIcon, Sparkles,
-    Loader2, AlertCircle, X
+    ArrowLeft, Calendar, Clock, Target, BookOpen, Video, PlayCircle,
+    FileText, Globe, Code, Zap, ChevronRight, MessageSquare, ThumbsUp,
+    Send, CheckCircle2, MoreHorizontal, Share2, Award, ExternalLink,
+    ChevronLeft, Grid, AlertCircle, X, CornerDownRight, ChevronDown,
+    ArrowRight, Loader2, Sparkles
 } from 'lucide-react';
+import { PLATFORM_LOGOS } from '../utils/constants';
 import PhaseGrid from '../components/PhaseGrid';
 import Breadcrumbs from '../components/Breadcrumbs';
 import SidePanel from '../components/SidePanel';
@@ -164,20 +164,7 @@ const resourceIcons = {
     tool: <Zap className="text-pink-500" size={18} />
 };
 
-const PLATFORM_LOGOS = {
-    'YouTube': 'https://www.vectorlogo.zone/logos/youtube/youtube-icon.svg',
-    'Coursera': 'https://www.vectorlogo.zone/logos/coursera/coursera-icon.svg',
-    'Udemy': 'https://www.vectorlogo.zone/logos/udemy/udemy-icon.svg',
-    'Figma': 'https://www.vectorlogo.zone/logos/figma/figma-icon.svg',
-    'GitHub': 'https://www.vectorlogo.zone/logos/github/github-icon.svg',
-    'Medium': 'https://www.vectorlogo.zone/logos/medium/medium-icon.svg',
-    'LinkedIn': 'https://www.vectorlogo.zone/logos/linkedin/linkedin-icon.svg',
-    'Google': 'https://www.vectorlogo.zone/logos/google/google-icon.svg',
-    'Microsoft': 'https://www.vectorlogo.zone/logos/microsoft/microsoft-icon.svg',
-    'Amazon': 'https://www.vectorlogo.zone/logos/amazon/amazon-icon.svg',
-    'Product School': 'https://www.vectorlogo.zone/logos/productschool/productschool-icon.svg',
-    'Interaction Design Foundation': 'https://www.interaction-design.org/img/logos/idf-logo-square.png'
-};
+// PLATFORM_LOGOS moved to src/utils/constants.js
 
 // =============================================
 // COMMENT COMPONENT (with threading)
@@ -435,22 +422,40 @@ const PhaseDetail = () => {
                 const userCareer = response.data.career || 'Software Engineer';
                 setCareer(userCareer);
 
-                // Find the matching phase
-                const phaseTitle = phaseId ? phaseId.replace(/-/g, ' ') : '';
-                const matched = roadmapData.find(p => {
-                    const phaseLower = p.phase.toLowerCase().replace(/[-–]/g, ' ').replace(/\s+/g, ' ');
-                    const idLower = phaseTitle.toLowerCase().replace(/\s+/g, ' ');
-                    return phaseLower.includes(idLower) || idLower.includes(phaseLower) ||
-                        phaseLower.replace(/phase \d+/, '').trim() === idLower.replace(/phase \d+/, '').trim();
-                });
+                const phaseTitle = phaseId ? phaseId.toLowerCase().replace(/[-_]/g, ' ') : '';
+
+                // Normalize helper: lowercase, replace dashes/emdashes, collapse spaces
+                const normalize = (s) => s.toLowerCase().replace(/[-–—_]/g, ' ').replace(/\s+/g, ' ').trim();
+                const idNormalized = normalize(phaseTitle);
+
+                // Strategy 1: Exact normalized match
+                let matched = roadmapData.find(p => normalize(p.phase) === idNormalized);
+
+                // Strategy 2: Extract phase number from URL (e.g. "phase 1 foundations" → 1)
+                if (!matched) {
+                    const phaseNumMatch = idNormalized.match(/phase\s*(\d+)/);
+                    if (phaseNumMatch) {
+                        const targetNum = phaseNumMatch[1];
+                        matched = roadmapData.find(p => {
+                            const pNum = normalize(p.phase).match(/phase\s*(\d+)/);
+                            return pNum && pNum[1] === targetNum;
+                        });
+                    }
+                }
+
+                // Strategy 3: Substring match as final fallback
+                if (!matched) {
+                    matched = roadmapData.find(p => {
+                        const pNorm = normalize(p.phase);
+                        return pNorm === idNormalized || idNormalized === pNorm;
+                    });
+                }
 
                 if (matched) {
                     setPhaseData(matched);
                 } else if (roadmapData.length > 0) {
-                    // Fallback
-                    const idx = 0;
-                    const fallback = roadmapData[idx];
-                    setPhaseData(fallback);
+                    // Ultimate fallback: first phase
+                    setPhaseData(roadmapData[0]);
                 }
             } catch (err) {
                 console.error("Failed to load phase data", err);
@@ -700,12 +705,19 @@ const PhaseDetail = () => {
                         {activeTab === 'roadmap' && (
                             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="space-y-8">
 
-                                {/* Objectives Grid */}
+                                {/* Dynamic Workspace Tools */}
                                 {phaseData?.tools && phaseData.tools.length > 0 && (
-                                    <div className="space-y-4">
-                                        <div className="flex items-center gap-2 mb-4">
-                                            <Grid size={18} className="text-indigo-500" />
-                                            <h3 className="font-bold text-gray-900">Recommended Tools</h3>
+                                    <div className="space-y-6">
+                                        <div className="flex items-center justify-between">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                                                    <Grid size={20} />
+                                                </div>
+                                                <div>
+                                                    <h3 className="font-black text-gray-900 uppercase tracking-tight" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>Workspace Tools</h3>
+                                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Required setup for this phase</p>
+                                                </div>
+                                            </div>
                                         </div>
                                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                             {phaseData.tools.map((tool, i) => (
@@ -715,25 +727,78 @@ const PhaseDetail = () => {
                                                     target="_blank"
                                                     rel="noopener noreferrer"
                                                     whileHover={{ y: -4, scale: 1.02 }}
-                                                    className="flex items-center gap-4 bg-white p-4 rounded-2xl border border-gray-100 shadow-sm hover:shadow-xl hover:border-indigo-100 transition-all group"
+                                                    className="flex items-center gap-4 bg-white p-5 rounded-[1.5rem] border border-gray-100 shadow-sm hover:shadow-xl hover:border-indigo-100 transition-all group relative overflow-hidden"
                                                 >
-                                                    <div className="w-12 h-12 rounded-xl bg-gray-50 flex items-center justify-center p-2 group-hover:bg-indigo-50 transition-colors">
+                                                    <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-gray-50 flex items-center justify-center p-2 group-hover:bg-indigo-50 transition-colors">
                                                         {tool.logo ? (
-                                                            <img src={tool.logo} alt={tool.name} className="w-full h-full object-contain" />
+                                                            <img src={tool.logo} alt={tool.name} className="w-full h-full object-contain filter group-hover:drop-shadow-sm" />
                                                         ) : (
                                                             <Zap className="text-indigo-500" size={20} />
                                                         )}
                                                     </div>
                                                     <div className="flex-1 min-w-0">
-                                                        <h4 className="text-sm font-black text-gray-900 truncate group-hover:text-indigo-600">{tool.name}</h4>
-                                                        <p className="text-[10px] text-gray-400 line-clamp-1">{tool.desc || 'Essential workspace tool.'}</p>
+                                                        <h4 className="text-sm font-black text-gray-900 truncate group-hover:text-indigo-600" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>{tool.name}</h4>
+                                                        <p className="text-[10px] font-bold text-gray-400 line-clamp-1">{tool.desc || 'Direct download available'}</p>
                                                     </div>
-                                                    <ExternalLink size={14} className="text-gray-300 group-hover:text-indigo-400 opacity-0 group-hover:opacity-100 transition-all" />
+                                                    <div className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-indigo-500 group-hover:text-white transition-all">
+                                                        <ExternalLink size={14} />
+                                                    </div>
                                                 </motion.a>
                                             ))}
                                         </div>
                                     </div>
                                 )}
+
+                                {/* Mastery Checklist & AI Companion */}
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <motion.div
+                                        initial={{ opacity: 0, x: -20 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        className="bg-white p-6 rounded-[2rem] border border-pink-100 shadow-sm relative overflow-hidden group"
+                                    >
+                                        <div className="absolute top-0 right-0 w-32 h-32 bg-pink-50 rounded-full blur-3xl -mr-16 -mt-16 opacity-50 group-hover:opacity-80 transition-opacity" />
+                                        <div className="relative z-10">
+                                            <div className="flex items-center gap-3 mb-4">
+                                                <div className="w-10 h-10 rounded-xl bg-pink-500 text-white flex items-center justify-center shadow-lg shadow-pink-500/20">
+                                                    <CheckCircle2 size={20} />
+                                                </div>
+                                                <h3 className="font-black text-gray-900 uppercase tracking-tight" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>Mastery Checklist</h3>
+                                            </div>
+                                            <ul className="space-y-3">
+                                                {(phaseData?.objectives || []).slice(0, 3).map((obj, i) => (
+                                                    <li key={i} className="flex items-start gap-3 text-xs font-bold text-gray-600">
+                                                        <div className="mt-1 w-1.5 h-1.5 rounded-full bg-pink-400 shrink-0" />
+                                                        {obj}
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    </motion.div>
+
+                                    <motion.div
+                                        initial={{ opacity: 0, x: 20 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        className="bg-indigo-600 p-6 rounded-[2rem] text-white shadow-xl shadow-indigo-600/20 relative overflow-hidden group cursor-pointer"
+                                        whileHover={{ y: -5 }}
+                                        onClick={() => setActiveTab('discussion')}
+                                    >
+                                        <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -mr-16 -mt-16" />
+                                        <div className="relative z-10">
+                                            <div className="flex items-center gap-3 mb-4">
+                                                <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center">
+                                                    <Sparkles size={20} />
+                                                </div>
+                                                <h3 className="font-black uppercase tracking-tight" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>AI Study Companion</h3>
+                                            </div>
+                                            <p className="text-xs font-bold text-indigo-100 mb-4 leading-relaxed">
+                                                "Ready to deep dive? Open the AI Discussion hub for personalized tips and study resources."
+                                            </p>
+                                            <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest bg-white/10 w-fit px-3 py-1.5 rounded-lg border border-white/20">
+                                                Launch Companion <ArrowRight size={12} />
+                                            </div>
+                                        </div>
+                                    </motion.div>
+                                </div>
 
                                 {objectives.length > 0 && (
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -1004,13 +1069,16 @@ const PhaseDetail = () => {
                         <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
                             <Grid size={18} className="text-indigo-500" /> Recommended Tools
                         </h3>
-                        <div className="grid grid-cols-2 gap-3">
-                            {['VS Code', 'GitHub', 'Figma', 'Notion'].map((tool, i) => (
-                                <div key={i} className="flex items-center gap-2 p-2 rounded-lg hover:bg-gray-50 transition-colors">
-                                    <div className="w-8 h-8 rounded bg-gray-100 flex items-center justify-center text-xs font-bold text-gray-500">
-                                        {tool.charAt(0)}
+                        <div className="grid grid-cols-1 gap-3">
+                            {(phaseData?.tools || ['VS Code', 'GitHub', 'Figma', 'Notion']).map((tool, i) => (
+                                <div key={i} className="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 border border-transparent hover:border-gray-100 transition-all group">
+                                    <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-xs font-black text-indigo-500 group-hover:bg-indigo-50 transition-colors">
+                                        <Zap size={16} />
                                     </div>
-                                    <span className="text-xs font-bold text-gray-700">{tool}</span>
+                                    <div className="flex-1 min-w-0">
+                                        <span className="text-xs font-black text-gray-700 block truncate">{typeof tool === 'object' ? tool.name : tool}</span>
+                                        <p className="text-[10px] text-gray-400 font-bold truncate">Standard for this phase</p>
+                                    </div>
                                 </div>
                             ))}
                         </div>

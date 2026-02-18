@@ -97,9 +97,9 @@ const MindMap = ({ phaseData, career }) => {
         const projects = phaseData.examples || [];
 
         const items = [
-            ...skills.map(s => ({ type: 'Skill', label: s.title, subtext: s.outcome })),
-            ...tools.map(t => ({ type: 'Tool', label: t, subtext: 'Essential Software' })),
-            ...projects.map(p => ({ type: 'Project', label: p, subtext: 'Real-world Example' }))
+            ...skills.map(s => ({ type: 'Skill', label: s.title || s.name || s, subtext: s.outcome || s.description })),
+            ...tools.map(t => ({ type: 'Tool', label: t.name || t, subtext: t.desc || t.description || 'Essential Software' })),
+            ...projects.map(p => ({ type: 'Project', label: p.title || p.name || p, subtext: p.desc || p.description || 'Real-world Example' }))
         ];
 
         const radius = 350; // Increased radius
@@ -149,18 +149,34 @@ const MindMap = ({ phaseData, career }) => {
     const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
     const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
     const [selectedNode, setSelectedNode] = useState(null);
+    const [isFullscreen, setIsFullscreen] = useState(false);
 
     const onNodeClick = useCallback((event, node) => {
         setSelectedNode(node);
     }, []);
 
+    const toggleFullscreen = () => setIsFullscreen(!isFullscreen);
+
     return (
-        <div className="flex h-full w-full bg-slate-950/90 rounded-3xl border border-white/5 overflow-hidden relative group">
+        <div className={`
+            flex w-full bg-slate-950/90 rounded-3xl border border-white/5 overflow-hidden relative group transition-all duration-500
+            ${isFullscreen ? 'fixed inset-4 z-[100] h-[calc(100vh-32px)]' : 'h-full'}
+        `}>
             <div className="flex-1 relative">
                 <div className="absolute top-6 left-6 z-10 flex flex-col gap-2">
                     <div className="bg-white/10 backdrop-blur-xl px-4 py-2 rounded-2xl border border-white/10 text-xs text-white/60 font-black uppercase tracking-widest shadow-2xl">
                         Career Path Visualization • {career}
                     </div>
+                </div>
+
+                <div className="absolute top-6 right-6 z-10 flex gap-2">
+                    <button
+                        onClick={toggleFullscreen}
+                        className="p-3 bg-white/10 backdrop-blur-md rounded-2xl border border-white/10 text-white/60 hover:text-white hover:bg-white/20 transition-all shadow-xl"
+                        title={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
+                    >
+                        {isFullscreen ? <X size={18} /> : <Sparkles size={18} />}
+                    </button>
                 </div>
 
                 <ReactFlow
@@ -171,12 +187,26 @@ const MindMap = ({ phaseData, career }) => {
                     onNodeClick={onNodeClick}
                     nodeTypes={nodeTypes}
                     fitView
-                    minZoom={0.2}
-                    maxZoom={1.5}
+                    minZoom={0.1}
+                    maxZoom={2}
                     style={{ background: 'transparent' }}
                 >
                     <Background color="#ec4899" gap={40} size={1} opacity={0.1} />
-                    <Controls className="!bg-white/5 !border-white/10 !fill-white rounded-xl overflow-hidden" />
+                    <Controls className="!bg-slate-900/80 !border-white/10 !fill-white rounded-xl overflow-hidden shadow-2xl" />
+                    <MiniMap
+                        style={{
+                            background: 'rgba(15, 23, 42, 0.8)',
+                            borderRadius: '20px',
+                            border: '1px solid rgba(255, 255, 255, 0.1)'
+                        }}
+                        nodeColor={(n) => {
+                            if (n.data.isCenter) return '#ec4899';
+                            if (n.data.isTool) return '#818cf8';
+                            if (n.data.isProject) return '#10b981';
+                            return '#4b5563';
+                        }}
+                        maskColor="rgba(0, 0, 0, 0.3)"
+                    />
                 </ReactFlow>
             </div>
 

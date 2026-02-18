@@ -145,7 +145,7 @@ const RoadmapOverview = () => {
                                     <div className="flex items-center justify-between text-xs font-semibold text-gray-500 mb-3">
                                         <span className="flex items-center gap-1.5">
                                             <BookOpen size={14} className="text-pink-400" />
-                                            {phase.steps.length} Modules
+                                            {(phase.steps || []).length} Modules
                                         </span>
                                         <span className="flex items-center gap-1.5">
                                             <Star size={14} className="text-yellow-400" />
@@ -191,6 +191,7 @@ const RoadmapOverview = () => {
                             <div className="sticky top-0 bg-white/90 backdrop-blur-md z-10 p-6 border-b border-gray-100 flex items-center justify-between">
                                 <div>
                                     <span className="text-xs font-bold text-pink-600 uppercase tracking-widest">Phase Detail</span>
+                                    <p className="text-sm font-bold text-pink-600">{(selectedPhase.steps || []).length} Modules Included</p>
                                     <h2 className="text-2xl font-black text-gray-900 leading-none mt-1">{selectedPhase.phase}</h2>
                                 </div>
                                 <button
@@ -209,10 +210,10 @@ const RoadmapOverview = () => {
                                 <div className="space-y-4">
                                     <div className="flex items-center justify-between mb-4">
                                         <h3 className="font-bold text-lg text-gray-900">Modules Breakdown</h3>
-                                        <span className="text-xs font-bold text-gray-400 bg-gray-100 px-2 py-1 rounded-md">{selectedPhase.steps.length} Steps</span>
+                                        <span className="text-xs font-bold text-gray-400 bg-gray-100 px-2 py-1 rounded-md">{(selectedPhase.steps || []).length} Steps</span>
                                     </div>
 
-                                    {selectedPhase.steps.map((step, idx) => (
+                                    {(selectedPhase.steps || []).map((step, idx) => (
                                         <div key={idx} className="group bg-white rounded-xl p-5 border border-gray-100 shadow-sm hover:shadow-md hover:border-pink-100 transition-all">
                                             <div className="flex justify-between items-start mb-2">
                                                 <h4 className="font-bold text-base text-gray-800 group-hover:text-pink-600 transition-colors">{step.title}</h4>

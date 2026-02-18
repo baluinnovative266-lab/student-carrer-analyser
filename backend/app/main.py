@@ -29,6 +29,7 @@ from app.api import auth
 from app.models.user import User
 from app.models.roadmap import Roadmap
 from app.models.comment import Comment
+from app.models.community_message import CommunityMessage
 
 # Create tables
 Base.metadata.create_all(bind=engine)
@@ -37,5 +38,6 @@ app.include_router(routes.router, prefix="/api")
 app.include_router(auth.router, prefix="/api/auth", tags=["Authentication"])
 app.include_router(chat.router, prefix="/api", tags=["Chat"])
 
-from app.api import comments
+from app.api import comments, community
 app.include_router(comments.router, prefix="/api", tags=["Comments"])
+app.include_router(community.router, prefix="/api", tags=["Community"])
