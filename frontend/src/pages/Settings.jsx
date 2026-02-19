@@ -6,10 +6,14 @@ import axios from 'axios';
 import { getAvatarRecommendations } from '../services/api';
 
 const Settings = () => {
-    const { user, updateProfile } = useAuth();
+    const { user, updateProfile, changePassword } = useAuth();
     const [activeTab, setActiveTab] = useState('profile');
     const [fullName, setFullName] = useState(user?.full_name || '');
     const [selectedAvatar, setSelectedAvatar] = useState(user?.avatar_url || '');
+
+    // Password State
+    const [passwords, setPasswords] = useState({ current: '', new: '', confirm: '' });
+
     const [recommendations, setRecommendations] = useState([]);
     const [loadingRecs, setLoadingRecs] = useState(false);
     const [saving, setSaving] = useState(false);
@@ -48,6 +52,32 @@ const Settings = () => {
         setSaving(false);
         if (result.success) {
             alert("Profile updated successfully!");
+        } else {
+            alert(result.error);
+        }
+    };
+
+    const handlePasswordUpdate = async () => {
+        if (!passwords.current || !passwords.new || !passwords.confirm) {
+            alert("Please fill in all password fields.");
+            return;
+        }
+        if (passwords.new !== passwords.confirm) {
+            alert("New passwords do not match.");
+            return;
+        }
+        if (passwords.new.length < 8) {
+            alert("New password must be at least 8 characters.");
+            return;
+        }
+
+        setSaving(true);
+        const result = await changePassword(passwords.current, passwords.new);
+        setSaving(false);
+
+        if (result.success) {
+            alert("Password updated successfully!");
+            setPasswords({ current: '', new: '', confirm: '' });
         } else {
             alert(result.error);
         }
@@ -218,20 +248,36 @@ const Settings = () => {
                                     <h3 className="text-xl font-bold text-gray-800">Password & Security</h3>
 
                                     <div className="space-y-6 max-w-md">
-                                        {[
-                                            { label: 'Current Password', placeholder: '••••••••' },
-                                            { label: 'New Password', placeholder: 'Min 8 characters' },
-                                            { label: 'Confirm New Password', placeholder: '••••••••' }
-                                        ].map((field, i) => (
-                                            <div key={i} className="space-y-2">
-                                                <label className="text-sm font-black text-gray-400 uppercase tracking-widest pl-1">{field.label}</label>
-                                                <input
-                                                    type="password"
-                                                    placeholder={field.placeholder}
-                                                    className="w-full px-4 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary font-bold shadow-inner"
-                                                />
-                                            </div>
-                                        ))}
+                                        <div className="space-y-2">
+                                            <label className="text-sm font-black text-gray-400 uppercase tracking-widest pl-1">Current Password</label>
+                                            <input
+                                                type="password"
+                                                value={passwords.current}
+                                                onChange={(e) => setPasswords({ ...passwords, current: e.target.value })}
+                                                placeholder="••••••••"
+                                                className="w-full px-4 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary font-bold shadow-inner"
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-sm font-black text-gray-400 uppercase tracking-widest pl-1">New Password</label>
+                                            <input
+                                                type="password"
+                                                value={passwords.new}
+                                                onChange={(e) => setPasswords({ ...passwords, new: e.target.value })}
+                                                placeholder="Min 8 characters"
+                                                className="w-full px-4 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary font-bold shadow-inner"
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-sm font-black text-gray-400 uppercase tracking-widest pl-1">Confirm New Password</label>
+                                            <input
+                                                type="password"
+                                                value={passwords.confirm}
+                                                onChange={(e) => setPasswords({ ...passwords, confirm: e.target.value })}
+                                                placeholder="••••••••"
+                                                className="w-full px-4 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary font-bold shadow-inner"
+                                            />
+                                        </div>
                                     </div>
 
                                     <div className="bg-orange-50/50 p-6 rounded-3xl border border-orange-100">
@@ -243,8 +289,12 @@ const Settings = () => {
                                     </div>
 
                                     <div className="flex justify-end pt-4 border-t border-gray-50">
-                                        <button className="bg-primary text-white px-8 py-4 rounded-2xl font-black shadow-lg shadow-primary/20 hover:bg-red-600 transition-all">
-                                            Update Password
+                                        <button
+                                            onClick={handlePasswordUpdate}
+                                            disabled={saving}
+                                            className="bg-primary text-white px-8 py-4 rounded-2xl font-black shadow-lg shadow-primary/20 hover:bg-red-600 transition-all disabled:opacity-50"
+                                        >
+                                            {saving ? 'Updating...' : 'Update Password'}
                                         </button>
                                     </div>
                                 </div>

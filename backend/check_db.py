@@ -1,13 +1,17 @@
-from app.core.database import engine, Base
-from app.models.user import User
-from app.models.roadmap import Roadmap
-from app.models.comment import Comment
+import sqlite3
+import os
 
-try:
-    print("Attempting to create tables...")
-    Base.metadata.create_all(bind=engine)
-    print("SUCCESS: Tables created or already exist.")
-except Exception as e:
-    print(f"ERROR: {e}")
-    import traceback
-    traceback.print_exc()
+db_path = "backend/careersense.db"
+if not os.path.exists(db_path):
+    # Try relative to script if run from project root
+    db_path = "careersense.db"
+
+if os.path.exists(db_path):
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+    cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
+    tables = cursor.fetchall()
+    print(f"Tables in {db_path}: {[t[0] for t in tables]}")
+    conn.close()
+else:
+    print(f"Database not found at {db_path}")

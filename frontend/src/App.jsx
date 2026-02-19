@@ -18,6 +18,7 @@ import CommunityChat from './pages/CommunityChat';
 import RoadmapOverview from './pages/RoadmapOverview';
 
 import StartAnalysis from './pages/StartAnalysis';
+import AgeCheck from './pages/AgeCheck';
 
 const ProtectedRoute = ({ children }) => {
     const { user, loading } = useAuth();
@@ -45,6 +46,14 @@ const AnalyzedRoute = ({ children }) => {
     return children;
 };
 
+const AgeVerifiedRoute = ({ children }) => {
+    const age = localStorage.getItem('user_age');
+    if (!age) {
+        return <Navigate to="/age-check" replace />;
+    }
+    return children;
+};
+
 function AppContent() {
     const location = useLocation();
 
@@ -61,21 +70,32 @@ function AppContent() {
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
 
+                {/* Age Check (before dashboard, after login) */}
+                <Route path="/age-check" element={
+                    <ProtectedRoute>
+                        <AgeCheck />
+                    </ProtectedRoute>
+                } />
+
                 {/* Start Analysis (Hub for unanalyzed users) */}
                 <Route path="/start-analysis" element={
                     <ProtectedRoute>
-                        <Layout>
-                            <StartAnalysis />
-                        </Layout>
+                        <AgeVerifiedRoute>
+                            <Layout>
+                                <StartAnalysis />
+                            </Layout>
+                        </AgeVerifiedRoute>
                     </ProtectedRoute>
                 } />
 
                 {/* Dashboard (hub / results summary) */}
                 <Route path="/dashboard" element={
                     <ProtectedRoute>
-                        <Layout>
-                            <Dashboard />
-                        </Layout>
+                        <AgeVerifiedRoute>
+                            <Layout>
+                                <Dashboard />
+                            </Layout>
+                        </AgeVerifiedRoute>
                     </ProtectedRoute>
                 } />
 
@@ -93,78 +113,94 @@ function AppContent() {
                 {/* Career Prediction (Not gated) */}
                 <Route path="/career-prediction" element={
                     <ProtectedRoute>
-                        <Layout>
-                            <CareerPrediction />
-                        </Layout>
+                        <AgeVerifiedRoute>
+                            <Layout>
+                                <CareerPrediction />
+                            </Layout>
+                        </AgeVerifiedRoute>
                     </ProtectedRoute>
                 } />
 
                 {/* Resume Analysis (Not gated) */}
                 <Route path="/resume-analysis" element={
                     <ProtectedRoute>
-                        <Layout>
-                            <ResumeAnalysis />
-                        </Layout>
+                        <AgeVerifiedRoute>
+                            <Layout>
+                                <ResumeAnalysis />
+                            </Layout>
+                        </AgeVerifiedRoute>
                     </ProtectedRoute>
                 } />
 
                 {/* Roadmap Overview */}
                 <Route path="/roadmap/overview" element={
                     <ProtectedRoute>
-                        <AnalyzedRoute>
-                            <Layout>
-                                <RoadmapOverview />
-                            </Layout>
-                        </AnalyzedRoute>
+                        <AgeVerifiedRoute>
+                            <AnalyzedRoute>
+                                <Layout>
+                                    <RoadmapOverview />
+                                </Layout>
+                            </AnalyzedRoute>
+                        </AgeVerifiedRoute>
                     </ProtectedRoute>
                 } />
 
                 {/* Phase Detail */}
                 <Route path="/roadmap/phase/:phaseId" element={
                     <ProtectedRoute>
-                        <AnalyzedRoute>
-                            <Layout>
-                                <PhaseDetail />
-                            </Layout>
-                        </AnalyzedRoute>
+                        <AgeVerifiedRoute>
+                            <AnalyzedRoute>
+                                <Layout>
+                                    <PhaseDetail />
+                                </Layout>
+                            </AnalyzedRoute>
+                        </AgeVerifiedRoute>
                     </ProtectedRoute>
                 } />
 
                 {/* Full Roadmap */}
                 <Route path="/roadmap/full" element={
                     <ProtectedRoute>
-                        <AnalyzedRoute>
-                            <Layout>
-                                <FullRoadmap />
-                            </Layout>
-                        </AnalyzedRoute>
+                        <AgeVerifiedRoute>
+                            <AnalyzedRoute>
+                                <Layout>
+                                    <FullRoadmap />
+                                </Layout>
+                            </AnalyzedRoute>
+                        </AgeVerifiedRoute>
                     </ProtectedRoute>
                 } />
 
                 {/* Legacy phase route */}
                 <Route path="/roadmap/:phaseId" element={
                     <ProtectedRoute>
-                        <AnalyzedRoute>
-                            <Layout>
-                                <PhaseDetail />
-                            </Layout>
-                        </AnalyzedRoute>
+                        <AgeVerifiedRoute>
+                            <AnalyzedRoute>
+                                <Layout>
+                                    <PhaseDetail />
+                                </Layout>
+                            </AnalyzedRoute>
+                        </AgeVerifiedRoute>
                     </ProtectedRoute>
                 } />
 
                 {/* Community Chat */}
                 <Route path="/community" element={
                     <ProtectedRoute>
-                        <CommunityChat />
+                        <AgeVerifiedRoute>
+                            <CommunityChat />
+                        </AgeVerifiedRoute>
                     </ProtectedRoute>
                 } />
 
                 {/* Settings */}
                 <Route path="/settings" element={
                     <ProtectedRoute>
-                        <Layout>
-                            <Settings />
-                        </Layout>
+                        <AgeVerifiedRoute>
+                            <Layout>
+                                <Settings />
+                            </Layout>
+                        </AgeVerifiedRoute>
                     </ProtectedRoute>
                 } />
 

@@ -20,6 +20,10 @@ export const AuthProvider = ({ children }) => {
                     timeout: 5000 // 5 second timeout
                 });
                 setUser(response.data);
+                // Auto-sync age to localStorage for returning users
+                if (response.data.age) {
+                    localStorage.setItem('user_age', String(response.data.age));
+                }
             } catch (err) {
                 console.error("Failed to fetch profile", err);
                 // If it's a 401, clear everything
@@ -59,7 +63,7 @@ export const AuthProvider = ({ children }) => {
             // Decode token or fetch user details here if needed. 
             // For now just setting a flag or email
             setUser({ email });
-            navigate('/dashboard');
+            navigate('/age-check');
             return { success: true };
         } catch (error) {
             console.error("Login failed", error);
@@ -77,7 +81,7 @@ export const AuthProvider = ({ children }) => {
             const accessToken = response.data.access_token;
             setToken(accessToken);
             setUser({ email, fullName });
-            navigate('/dashboard');
+            navigate('/age-check');
             return { success: true };
         } catch (error) {
             console.error("Registration failed", error);
@@ -88,6 +92,7 @@ export const AuthProvider = ({ children }) => {
     const logout = () => {
         setToken(null);
         setUser(null);
+        localStorage.removeItem('user_age');
         navigate('/');
     };
 
@@ -104,8 +109,21 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
+    const changePassword = async (oldPassword, newPassword) => {
+        try {
+            await axios.post('/api/auth/change-password', {
+                old_password: oldPassword,
+                new_password: newPassword
+            });
+            return { success: true };
+        } catch (error) {
+            console.error("Change password failed", error);
+            return { success: false, error: error.response?.data?.detail || "Change password failed" };
+        }
+    };
+
     return (
-        <AuthContext.Provider value={{ user, token, login, register, logout, updateProfile, loading }}>
+        <AuthContext.Provider value={{ user, token, login, register, logout, updateProfile, changePassword, loading }}>
             {!loading ? children : (
                 <div className="flex h-screen items-center justify-center bg-slate-900 text-white flex-col gap-4">
                     <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>

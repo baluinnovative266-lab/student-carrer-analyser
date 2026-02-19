@@ -95,7 +95,8 @@ def read_users_me(current_user: User = Depends(get_current_user)):
         "email": current_user.email,
         "full_name": current_user.full_name,
         "avatar_url": current_user.avatar_url,
-        "predicted_career": current_user.predicted_career
+        "predicted_career": current_user.predicted_career,
+        "age": current_user.age
     }
 
 class ProfileUpdate(BaseModel):
@@ -111,6 +112,17 @@ def update_profile(data: ProfileUpdate, current_user: User = Depends(get_current
     db.commit()
     return {"message": "Profile updated successfully"}
 
+class SetAge(BaseModel):
+    age: int
+
+@router.post("/set-age")
+def set_age(data: SetAge, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    if data.age < 1 or data.age > 120:
+        raise HTTPException(status_code=400, detail="Age must be between 1 and 120")
+    current_user.age = data.age
+    db.commit()
+    return {"message": "Age saved successfully", "age": data.age}
+
 @router.get("/avatar-recommendations")
 def get_avatar_recommendations(current_user: User = Depends(get_current_user)):
     career = current_user.predicted_career or "Student"
@@ -123,3 +135,19 @@ def get_avatar_recommendations(current_user: User = Depends(get_current_user)):
     }
     folder = mapping.get(career, "student")
     return [f"/avatars/{folder}/{i}.svg" for i in range(1, 5)]
+
+class PasswordChange(BaseModel):
+    old_password: str
+    new_password: str
+
+@router.post("/change-password")
+def change_password(data: PasswordChange, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    if not verify_password(data.old_password, current_user.hashed_password):
+        raise HTTPException(status_code=400, detail="Incorrect current password")
+    
+    if len(data.new_password) < 8:
+        raise HTTPException(status_code=400, detail="Password must be at least 8 characters long")
+
+    current_user.hashed_password = get_password_hash(data.new_password)
+    db.commit()
+    return {"message": "Password updated successfully"}

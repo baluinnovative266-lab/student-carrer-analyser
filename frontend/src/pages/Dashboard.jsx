@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Target, BookOpen, BarChart3, Award, ArrowRight, Brain, Sparkles, TrendingUp, Play, Lock, MessageSquare } from 'lucide-react';
+import { Target, BookOpen, BarChart3, Award, ArrowRight, Brain, Sparkles, TrendingUp, Play, Lock, MessageSquare, MapPin, Navigation } from 'lucide-react';
 import FAQSection from '../components/FAQSection';
 import DemoAutoFill from '../components/DemoAutoFill';
 import GuidedTour from '../components/GuidedTour';
@@ -20,6 +20,30 @@ const Dashboard = () => {
     const navigate = useNavigate();
     const [stats, setStats] = useState(null);
     const [isTourOpen, setIsTourOpen] = useState(false);
+    const [locationStatus, setLocationStatus] = useState('prompt'); // prompt, loading, active, denied
+    const [coords, setCoords] = useState(null);
+
+    useEffect(() => {
+        if (!navigator.geolocation) {
+            setLocationStatus('denied');
+            return;
+        }
+
+        setLocationStatus('loading');
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                setLocationStatus('active');
+                setCoords({
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude
+                });
+            },
+            (error) => {
+                console.error("Location error:", error);
+                setLocationStatus('denied');
+            }
+        );
+    }, []);
 
     const handleStartDemo = () => {
         localStorage.setItem('career_stats', JSON.stringify(MOCK_DEMO_RESULTS));
@@ -143,6 +167,31 @@ const Dashboard = () => {
                         >
                             <Play size={18} className="fill-white" /> Walkthrough Mode
                         </motion.button>
+
+                        {/* GPS Badge */}
+                        <div className={`flex items-center gap-2 px-4 py-3 rounded-xl font-bold border transition-all ${locationStatus === 'active'
+                                ? 'bg-emerald-50 text-emerald-600 border-emerald-100'
+                                : locationStatus === 'denied'
+                                    ? 'bg-red-50 text-red-600 border-red-100'
+                                    : 'bg-gray-50 text-gray-500 border-gray-100'
+                            }`}>
+                            {locationStatus === 'active' ? (
+                                <>
+                                    <Navigation size={18} className="fill-current" />
+                                    <span>GPS Active</span>
+                                </>
+                            ) : locationStatus === 'denied' ? (
+                                <>
+                                    <MapPin size={18} />
+                                    <span>Location Denied</span>
+                                </>
+                            ) : (
+                                <>
+                                    <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                                    <span>Locating...</span>
+                                </>
+                            )}
+                        </div>
 
                         {stats && (
                             <div className="flex flex-wrap gap-4">
