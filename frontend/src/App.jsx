@@ -19,6 +19,7 @@ import RoadmapOverview from './pages/RoadmapOverview';
 
 import StartAnalysis from './pages/StartAnalysis';
 import AgeCheck from './pages/AgeCheck';
+import JobOpportunities from './pages/JobOpportunities';
 
 const ProtectedRoute = ({ children }) => {
     const { user, loading } = useAuth();
@@ -200,6 +201,19 @@ function AppContent() {
                             <Layout>
                                 <Settings />
                             </Layout>
+                        </AgeVerifiedRoute>
+                    </ProtectedRoute>
+                } />
+
+                {/* Job Opportunities */}
+                <Route path="/jobs" element={
+                    <ProtectedRoute>
+                        <AgeVerifiedRoute>
+                            <AnalyzedRoute>
+                                <Layout>
+                                    <JobOpportunities />
+                                </Layout>
+                            </AnalyzedRoute>
                         </AgeVerifiedRoute>
                     </ProtectedRoute>
                 } />

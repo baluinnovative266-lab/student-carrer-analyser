@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { Target, BookOpen, BarChart3, Award, ArrowRight, Brain, Sparkles, TrendingUp, Play, Lock, MessageSquare, MapPin, Navigation } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Target, BookOpen, BarChart3, Award, ArrowRight, Brain, Sparkles, TrendingUp, Play, Lock, MessageSquare, MapPin, Navigation, Briefcase, X } from 'lucide-react';
 import FAQSection from '../components/FAQSection';
 import DemoAutoFill from '../components/DemoAutoFill';
 import GuidedTour from '../components/GuidedTour';
@@ -22,6 +22,25 @@ const Dashboard = () => {
     const [isTourOpen, setIsTourOpen] = useState(false);
     const [locationStatus, setLocationStatus] = useState('prompt'); // prompt, loading, active, denied
     const [coords, setCoords] = useState(null);
+    const [locationName, setLocationName] = useState('');
+    const [showLocationModal, setShowLocationModal] = useState(false);
+
+    const fetchLocationName = async (lat, lng) => {
+        try {
+            const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=10&addressdetails=1`);
+            const data = await response.json();
+            if (data && data.display_name) {
+                // Try to get a shorter name (City, Country)
+                const addr = data.address;
+                const city = addr.city || addr.town || addr.village || addr.suburb || '';
+                const country = addr.country || '';
+                setLocationName(city && country ? `${city}, ${country}` : data.display_name);
+            }
+        } catch (error) {
+            console.error("Reverse geocoding error:", error);
+            setLocationName("Location found (Name unavailable)");
+        }
+    };
 
     useEffect(() => {
         if (!navigator.geolocation) {
@@ -33,15 +52,18 @@ const Dashboard = () => {
         navigator.geolocation.getCurrentPosition(
             (position) => {
                 setLocationStatus('active');
-                setCoords({
+                const newCoords = {
                     lat: position.coords.latitude,
                     lng: position.coords.longitude
-                });
+                };
+                setCoords(newCoords);
+                fetchLocationName(newCoords.lat, newCoords.lng);
             },
             (error) => {
                 console.error("Location error:", error);
                 setLocationStatus('denied');
-            }
+            },
+            { enableHighAccuracy: true, timeout: 10000 }
         );
     }, []);
 
@@ -122,6 +144,17 @@ const Dashboard = () => {
             link: '/roadmap/overview',
             cta: 'View Roadmap',
         },
+        {
+            icon: <Briefcase size={28} />,
+            title: 'Job Opportunities',
+            desc: 'Connect your skills to real hiring companies and open roles.',
+            color: 'text-rose-600',
+            bg: 'bg-rose-50',
+            border: 'border-rose-100',
+            hover: 'hover:bg-rose-600',
+            link: '/jobs',
+            cta: 'Find Jobs',
+        },
     ];
 
     const steps = [
@@ -169,16 +202,21 @@ const Dashboard = () => {
                         </motion.button>
 
                         {/* GPS Badge */}
-                        <div className={`flex items-center gap-2 px-4 py-3 rounded-xl font-bold border transition-all ${locationStatus === 'active'
-                                ? 'bg-emerald-50 text-emerald-600 border-emerald-100'
+                        <motion.button
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            onClick={() => setShowLocationModal(true)}
+                            className={`flex items-center gap-2 px-4 py-3 rounded-xl font-bold border transition-all ${locationStatus === 'active'
+                                ? 'bg-emerald-50 text-emerald-600 border-emerald-100 hover:bg-emerald-100'
                                 : locationStatus === 'denied'
-                                    ? 'bg-red-50 text-red-600 border-red-100'
+                                    ? 'bg-red-50 text-red-600 border-red-100 hover:bg-red-100'
                                     : 'bg-gray-50 text-gray-500 border-gray-100'
-                            }`}>
+                                }`}
+                        >
                             {locationStatus === 'active' ? (
                                 <>
                                     <Navigation size={18} className="fill-current" />
-                                    <span>GPS Active</span>
+                                    <span>{locationName || 'GPS Active'}</span>
                                 </>
                             ) : locationStatus === 'denied' ? (
                                 <>
@@ -191,7 +229,7 @@ const Dashboard = () => {
                                     <span>Locating...</span>
                                 </>
                             )}
-                        </div>
+                        </motion.button>
 
                         {stats && (
                             <div className="flex flex-wrap gap-4">
@@ -358,6 +396,96 @@ const Dashboard = () => {
             </div>
 
             <GuidedTour isOpen={isTourOpen} onClose={() => setIsTourOpen(false)} onStartDemo={handleStartDemo} />
+
+            {/* Location Details Modal */}
+            <AnimatePresence>
+                {showLocationModal && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-sm">
+                        <motion.div
+                            initial={{ scale: 0.9, opacity: 0, y: 20 }}
+                            animate={{ scale: 1, opacity: 1, y: 0 }}
+                            exit={{ scale: 0.9, opacity: 0, y: 20 }}
+                            className="bg-white rounded-[2.5rem] p-8 max-w-md w-full shadow-2xl relative overflow-hidden"
+                        >
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-pink-500/5 rounded-full blur-3xl -mr-16 -mt-16" />
+
+                            <button
+                                onClick={() => setShowLocationModal(false)}
+                                className="absolute top-6 right-6 p-2 rounded-xl hover:bg-gray-100 text-gray-400 hover:text-gray-900 transition-all"
+                            >
+                                <X size={20} />
+                            </button>
+
+                            <div className="flex items-center gap-4 mb-8">
+                                <div className={`p-4 rounded-2xl ${locationStatus === 'active' ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-600'}`}>
+                                    <MapPin size={32} />
+                                </div>
+                                <div>
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">Geolocation Intelligence</p>
+                                    <h3 className="text-2xl font-black text-gray-900 tracking-tight">
+                                        {locationStatus === 'active' ? 'Position Locked' : 'Location Required'}
+                                    </h3>
+                                </div>
+                            </div>
+
+                            <div className="space-y-6">
+                                {locationStatus === 'active' ? (
+                                    <>
+                                        <div className="bg-gray-50 rounded-2xl p-6 border border-gray-100">
+                                            <p className="text-xs font-bold text-gray-400 uppercase mb-3 tracking-widest">Detected Address</p>
+                                            <p className="text-lg font-bold text-gray-800 leading-tight">
+                                                {locationName || 'Resolving address...'}
+                                            </p>
+                                        </div>
+
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div className="bg-gray-50 rounded-2xl p-4 border border-gray-100">
+                                                <p className="text-[10px] font-bold text-gray-400 uppercase mb-1 tracking-widest">Latitude</p>
+                                                <p className="text-sm font-black text-gray-800">{coords?.lat.toFixed(6)}</p>
+                                            </div>
+                                            <div className="bg-gray-50 rounded-2xl p-4 border border-gray-100">
+                                                <p className="text-[10px] font-bold text-gray-400 uppercase mb-1 tracking-widest">Longitude</p>
+                                                <p className="text-sm font-black text-gray-800">{coords?.lng.toFixed(6)}</p>
+                                            </div>
+                                        </div>
+
+                                        <a
+                                            href={`https://www.google.com/maps?q=${coords?.lat},${coords?.lng}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="w-full py-4 bg-gray-900 text-white rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-black transition-all shadow-lg"
+                                        >
+                                            <Navigation size={18} className="fill-white" />
+                                            View on Google Maps
+                                        </a>
+                                    </>
+                                ) : (
+                                    <div className="bg-red-50/50 rounded-2xl p-6 border border-red-100">
+                                        <p className="text-sm font-medium text-red-800 leading-relaxed mb-4">
+                                            {locationStatus === 'denied'
+                                                ? "We couldn't access your location. Please enable location permissions in your browser settings to see career opportunities near you."
+                                                : "We're currently determining your precise coordinates..."}
+                                        </p>
+                                        <button
+                                            onClick={() => window.location.reload()}
+                                            className="text-xs font-black text-red-600 uppercase tracking-widest hover:underline"
+                                        >
+                                            Try Again
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+
+                            <button
+                                onClick={() => setShowLocationModal(false)}
+                                className="w-full mt-6 py-4 bg-white border border-gray-200 text-gray-500 font-bold rounded-2xl hover:bg-gray-50 transition-all"
+                            >
+                                Close Details
+                            </button>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
         </motion.div>
     );
 };

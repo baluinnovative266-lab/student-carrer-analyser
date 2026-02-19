@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState, useEffect } from 'react';
 import ReactFlow, {
     Background,
     Controls,
@@ -7,11 +7,16 @@ import ReactFlow, {
     useEdgesState,
     MarkerType,
     Handle,
-    Position
+    Position,
+    useReactFlow,
+    ReactFlowProvider
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Info, Target, Zap, Book, ShieldCheck, X, Award, Sparkles } from 'lucide-react';
+import {
+    Info, Target, Zap, Book, ShieldCheck, X, Award,
+    Sparkles, ZoomIn, ZoomOut, Maximize2
+} from 'lucide-react';
 
 // Custom Node Component for a more "Figma/Miro" look
 const CustomNode = ({ data, selected }) => {
@@ -29,7 +34,7 @@ const CustomNode = ({ data, selected }) => {
                         ? 'bg-indigo-900/40 border-indigo-500/50 text-indigo-100'
                         : data.isProject
                             ? 'bg-emerald-900/40 border-emerald-500/50 text-emerald-100'
-                            : 'bg-white/5 border-pink-500/30 text-white'}
+                            : 'bg-white/10 border-pink-500/30 text-white'}
             `}
         >
             <Handle type="target" position={Position.Top} className="opacity-0" />
@@ -70,7 +75,49 @@ const nodeTypes = {
     custom: CustomNode,
 };
 
-const MindMap = ({ phaseData, career }) => {
+const ControlsOverlay = ({ toggleFullscreen, isFullscreen }) => {
+    const reactFlowInstance = useReactFlow();
+
+    return (
+        <>
+            <div className="absolute top-6 right-6 z-10 flex gap-2">
+                <button
+                    onClick={toggleFullscreen}
+                    className="p-3 bg-white/10 backdrop-blur-md rounded-2xl border border-white/10 text-white/60 hover:text-white hover:bg-white/20 transition-all shadow-xl"
+                    title={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
+                >
+                    {isFullscreen ? <X size={18} /> : <Sparkles size={18} />}
+                </button>
+            </div>
+
+            <div className="absolute bottom-6 left-6 z-10 flex gap-2">
+                <button
+                    onClick={() => reactFlowInstance.zoomIn()}
+                    className="p-3 bg-white/10 backdrop-blur-md rounded-2xl border border-white/10 text-white/60 hover:text-white hover:bg-white/20 transition-all shadow-xl"
+                    title="Zoom In"
+                >
+                    <ZoomIn size={18} />
+                </button>
+                <button
+                    onClick={() => reactFlowInstance.zoomOut()}
+                    className="p-3 bg-white/10 backdrop-blur-md rounded-2xl border border-white/10 text-white/60 hover:text-white hover:bg-white/20 transition-all shadow-xl"
+                    title="Zoom Out"
+                >
+                    <ZoomOut size={18} />
+                </button>
+                <button
+                    onClick={() => reactFlowInstance.fitView({ duration: 800 })}
+                    className="p-3 bg-white/10 backdrop-blur-md rounded-2xl border border-white/10 text-white/60 hover:text-white hover:bg-white/20 transition-all shadow-xl"
+                    title="Fit to View"
+                >
+                    <Maximize2 size={18} />
+                </button>
+            </div>
+        </>
+    );
+};
+
+const MindMapContent = ({ phaseData, career }) => {
     // Generate nodes and edges based on phaseData
     const { initialNodes, initialEdges } = useMemo(() => {
         if (!phaseData) return { initialNodes: [], initialEdges: [] };
@@ -88,22 +135,22 @@ const MindMap = ({ phaseData, career }) => {
                 isCenter: true,
                 subtext: "Mastery Hub"
             },
-            position: { x: 250, y: 250 },
+            position: { x: 500, y: 300 }, // Shifted for better radial start
         });
 
         // 2. Radial Construction
         const skills = phaseData.steps || [];
         const tools = phaseData.tools || [];
-        const projects = phaseData.examples || [];
+        const projects = phaseData.featured_projects || phaseData.examples || [];
 
         const items = [
             ...skills.map(s => ({ type: 'Skill', label: s.title || s.name || s, subtext: s.outcome || s.description })),
-            ...tools.map(t => ({ type: 'Tool', label: t.name || t, subtext: t.desc || t.description || 'Essential Software' })),
-            ...projects.map(p => ({ type: 'Project', label: p.title || p.name || p, subtext: p.desc || p.description || 'Real-world Example' }))
+            ...tools.map(t => ({ type: 'Tool', label: t.name || t.title || t, subtext: t.desc || t.description || 'Essential Tool' })),
+            ...projects.map(p => ({ type: 'Project', label: p.title || p.name || p, subtext: p.desc || p.description || 'Professional Case Study' }))
         ];
 
-        const radius = 350; // Increased radius
-        const angleStep = (2 * Math.PI) / items.length;
+        const radius = 380;
+        const angleStep = items.length > 0 ? (2 * Math.PI) / items.length : 0;
 
         items.forEach((item, index) => {
             const angle = index * angleStep;
@@ -157,26 +204,23 @@ const MindMap = ({ phaseData, career }) => {
 
     const toggleFullscreen = () => setIsFullscreen(!isFullscreen);
 
+    // Update state when initialNodes change
+    useEffect(() => {
+        setNodes(initialNodes);
+        setEdges(initialEdges);
+    }, [initialNodes, initialEdges, setNodes, setEdges]);
+
     return (
         <div className={`
-            flex w-full bg-slate-950/90 rounded-3xl border border-white/5 overflow-hidden relative group transition-all duration-500
-            ${isFullscreen ? 'fixed inset-4 z-[100] h-[calc(100vh-32px)]' : 'h-full'}
+            flex w-full bg-slate-950/90 rounded-[2.5rem] border border-white/5 overflow-hidden relative group transition-all duration-700
+            ${isFullscreen ? 'fixed inset-4 z-[100] h-[calc(100vh-32px)]' : 'h-full shadow-2xl'}
         `}>
             <div className="flex-1 relative">
                 <div className="absolute top-6 left-6 z-10 flex flex-col gap-2">
-                    <div className="bg-white/10 backdrop-blur-xl px-4 py-2 rounded-2xl border border-white/10 text-xs text-white/60 font-black uppercase tracking-widest shadow-2xl">
+                    <div className="bg-white/10 backdrop-blur-xl px-4 py-2 rounded-2xl border border-white/10 text-xs text-white/60 font-black uppercase tracking-widest shadow-2xl flex items-center gap-2">
+                        <div className="w-2 h-2 rounded-full bg-pink-500 animate-pulse" />
                         Career Path Visualization • {career}
                     </div>
-                </div>
-
-                <div className="absolute top-6 right-6 z-10 flex gap-2">
-                    <button
-                        onClick={toggleFullscreen}
-                        className="p-3 bg-white/10 backdrop-blur-md rounded-2xl border border-white/10 text-white/60 hover:text-white hover:bg-white/20 transition-all shadow-xl"
-                        title={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
-                    >
-                        {isFullscreen ? <X size={18} /> : <Sparkles size={18} />}
-                    </button>
                 </div>
 
                 <ReactFlow
@@ -191,13 +235,19 @@ const MindMap = ({ phaseData, career }) => {
                     maxZoom={2}
                     style={{ background: 'transparent' }}
                 >
-                    <Background color="#ec4899" gap={40} size={1} opacity={0.1} />
-                    <Controls className="!bg-slate-900/80 !border-white/10 !fill-white rounded-xl overflow-hidden shadow-2xl" />
+                    <Background color="#ec4899" gap={40} size={1} opacity={0.15} />
+                    <ControlsOverlay toggleFullscreen={toggleFullscreen} isFullscreen={isFullscreen} />
+
+                    {/* Native controls hidden but functional for shortcuts, but our custom ones are better */}
+                    <Controls className="!hidden" />
+
                     <MiniMap
                         style={{
                             background: 'rgba(15, 23, 42, 0.8)',
-                            borderRadius: '20px',
-                            border: '1px solid rgba(255, 255, 255, 0.1)'
+                            borderRadius: '24px',
+                            border: '1px solid rgba(255, 255, 255, 0.1)',
+                            bottom: '24px',
+                            right: '24px'
                         }}
                         nodeColor={(n) => {
                             if (n.data.isCenter) return '#ec4899';
@@ -205,68 +255,81 @@ const MindMap = ({ phaseData, career }) => {
                             if (n.data.isProject) return '#10b981';
                             return '#4b5563';
                         }}
-                        maskColor="rgba(0, 0, 0, 0.3)"
+                        maskColor="rgba(0, 0, 0, 0.5)"
                     />
                 </ReactFlow>
             </div>
 
-            {/* Right Panel */}
+            {/* Right Side Info Panel */}
             <AnimatePresence>
                 {selectedNode && (
                     <motion.div
-                        initial={{ x: 300, opacity: 0 }}
+                        initial={{ x: 400, opacity: 0 }}
                         animate={{ x: 0, opacity: 1 }}
-                        exit={{ x: 300, opacity: 0 }}
-                        className="w-[320px] bg-slate-900/80 backdrop-blur-2xl border-l border-white/10 p-8 flex flex-col gap-6 z-20 shadow-2xl"
+                        exit={{ x: 400, opacity: 0 }}
+                        className="w-[380px] bg-slate-900/40 backdrop-blur-3xl border-l border-white/10 p-10 flex flex-col gap-8 z-20 shadow-[ -20px_0_50px_rgba(0,0,0,0.3) ]"
                     >
                         <div className="flex justify-between items-center">
-                            <div className="p-3 bg-pink-500/20 rounded-2xl text-pink-400">
+                            <div className="p-3 bg-pink-500/20 rounded-2xl text-pink-400 border border-pink-500/30 shadow-lg shadow-pink-500/10">
                                 <Sparkles size={24} />
                             </div>
                             <button
                                 onClick={() => setSelectedNode(null)}
                                 className="p-2 hover:bg-white/10 rounded-xl transition-colors text-white/40"
                             >
-                                <X size={20} />
+                                <X size={24} />
                             </button>
                         </div>
 
-                        <div>
-                            <p className="text-[10px] font-black text-pink-500 uppercase tracking-[0.2em] mb-2">Module Detail</p>
-                            <h2 className="text-2xl font-black text-white tracking-tight leading-none mb-4">
+                        <div className="space-y-4">
+                            <p className="text-[10px] font-black text-pink-500 uppercase tracking-[0.3em] mb-2 opacity-80">Module Analysis</p>
+                            <h2 className="text-3xl font-black text-white tracking-tighter leading-none mb-4">
                                 {selectedNode.data.label}
                             </h2>
-                            <p className="text-sm text-white/60 leading-relaxed font-medium">
-                                {selectedNode.data.subtext || "No description available for this module."}
+                            <div className="h-1 w-12 bg-pink-500 rounded-full mb-6" />
+                            <p className="text-base text-white/70 leading-relaxed font-medium">
+                                {selectedNode.data.subtext || "Unlock professional insights into this specific module. Mastering this component is critical for achieving your career goals in this phase."}
                             </p>
                         </div>
 
-                        <div className="space-y-4 pt-4">
-                            <div className="bg-white/5 rounded-2xl p-4 border border-white/5">
-                                <div className="flex items-center gap-2 mb-2 text-indigo-400">
-                                    <ShieldCheck size={16} />
-                                    <span className="text-[10px] font-black uppercase tracking-widest">Difficulty</span>
+                        <div className="grid grid-cols-1 gap-4 mt-4">
+                            <div className="bg-white/5 rounded-3xl p-5 border border-white/5 hover:bg-white/10 transition-colors group cursor-default">
+                                <div className="flex items-center gap-3 mb-2 text-indigo-400">
+                                    <ShieldCheck size={18} />
+                                    <span className="text-[10px] font-black uppercase tracking-widest opacity-80">Complexity Level</span>
                                 </div>
-                                <p className="text-sm font-bold text-white">{selectedNode.data.difficulty || 'Intermediate'}</p>
+                                <p className="text-sm font-bold text-white group-hover:text-indigo-300 transition-colors uppercase tracking-tight">{selectedNode.data.difficulty || 'Advanced Professional'}</p>
                             </div>
 
-                            <div className="bg-white/5 rounded-2xl p-4 border border-white/5">
-                                <div className="flex items-center gap-2 mb-2 text-emerald-400">
-                                    <Award size={16} />
-                                    <span className="text-[10px] font-black uppercase tracking-widest">Importance</span>
+                            <div className="bg-white/5 rounded-3xl p-5 border border-white/5 hover:bg-white/10 transition-colors group cursor-default">
+                                <div className="flex items-center gap-3 mb-2 text-emerald-400">
+                                    <Award size={18} />
+                                    <span className="text-[10px] font-black uppercase tracking-widest opacity-80">Strategic Impact</span>
                                 </div>
-                                <p className="text-sm font-bold text-white">Essential for Career Success</p>
+                                <p className="text-sm font-bold text-white group-hover:text-emerald-300 transition-colors uppercase tracking-tight">Essential for Interview Success</p>
                             </div>
                         </div>
 
-                        <button className="mt-auto w-full py-4 bg-gradient-to-r from-pink-500 to-rose-600 text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-lg shadow-pink-500/20 hover:shadow-pink-500/40 transition-all">
-                            Explore Module
-                        </button>
+                        <div className="mt-auto pt-10">
+                            <motion.button
+                                whileHover={{ scale: 1.02 }}
+                                whileTap={{ scale: 0.98 }}
+                                className="w-full py-5 bg-gradient-to-r from-pink-600 to-rose-600 text-white rounded-[1.5rem] font-black text-xs uppercase tracking-widest shadow-xl shadow-pink-600/20 hover:shadow-pink-600/40 transition-all border border-pink-400/20"
+                            >
+                                Deep Dive Module
+                            </motion.button>
+                        </div>
                     </motion.div>
                 )}
             </AnimatePresence>
         </div>
     );
 };
+
+const MindMap = (props) => (
+    <ReactFlowProvider>
+        <MindMapContent {...props} />
+    </ReactFlowProvider>
+);
 
 export default MindMap;

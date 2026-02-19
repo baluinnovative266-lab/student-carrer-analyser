@@ -1,8 +1,48 @@
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Search, MapPin, ChevronRight, Briefcase, FileText, TrendingUp, Award, Brain } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Search, MapPin, ChevronRight, Briefcase, FileText, TrendingUp, Award, Brain, Navigation } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
 
 const Home = () => {
+    const navigate = useNavigate();
+    const [locationName, setLocationName] = useState('Global Opportunities');
+    const [isLocating, setIsLocating] = useState(false);
+
+    const handleDetectLocation = () => {
+        if (!navigator.geolocation) {
+            alert("Geolocation is not supported by your browser.");
+            return;
+        }
+
+        setIsLocating(true);
+        navigator.geolocation.getCurrentPosition(
+            async (position) => {
+                try {
+                    const { latitude, longitude } = position.coords;
+                    const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=10`);
+                    const data = await response.json();
+
+                    if (data && data.address) {
+                        const city = data.address.city || data.address.town || data.address.village || '';
+                        const country = data.address.country || '';
+                        setLocationName(city ? `${city}, ${country}` : 'Location Detected');
+                    } else {
+                        setLocationName('Location Detected');
+                    }
+                } catch (error) {
+                    console.error("Home location fetch error:", error);
+                    setLocationName('Location Active');
+                } finally {
+                    setIsLocating(false);
+                }
+            },
+            (error) => {
+                console.error("Home location error:", error);
+                alert("Location access denied. Please enable it to see local opportunities.");
+                setIsLocating(false);
+            }
+        );
+    };
     return (
         <div className="min-h-screen bg-gray-50 pt-20">
             {/* Hero Section */}
@@ -42,11 +82,19 @@ const Home = () => {
                         transition={{ delay: 0.2 }}
                         className="w-full max-w-3xl bg-white rounded-xl p-3 flex items-center shadow-2xl"
                     >
-                        <div className="flex items-center gap-2 px-4 border-r border-gray-200 text-gray-500 w-1/3 py-2 hidden md:flex">
-                            <MapPin size={20} className="text-primary" />
-                            <span>Global Opportunities</span>
-                            <ChevronRight size={16} className="ml-auto" />
-                        </div>
+                        <button
+                            onClick={handleDetectLocation}
+                            disabled={isLocating}
+                            className={`flex items-center gap-2 px-4 border-r border-gray-200 text-gray-500 w-1/3 py-2 hidden md:flex hover:bg-gray-50 transition-colors rounded-l-xl ${isLocating ? 'animate-pulse' : ''}`}
+                        >
+                            {isLocating ? (
+                                <Navigation size={20} className="text-primary animate-spin" />
+                            ) : (
+                                <MapPin size={20} className="text-primary" />
+                            )}
+                            <span className="truncate">{locationName}</span>
+                            <ChevronRight size={16} className="ml-auto shrink-0" />
+                        </button>
                         <div className="flex-1 flex items-center px-4 gap-3">
                             <Search size={24} className="text-gray-400" />
                             <input

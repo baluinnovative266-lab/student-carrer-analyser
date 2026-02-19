@@ -18,6 +18,58 @@ const Settings = () => {
     const [loadingRecs, setLoadingRecs] = useState(false);
     const [saving, setSaving] = useState(false);
 
+    // 2FA State
+    const [twoFAEnabled, setTwoFAEnabled] = useState(user?.two_fa_enabled || false);
+    const [showTwoFAModal, setShowTwoFAModal] = useState(false);
+    const [twoFASetupData, setTwoFASetupData] = useState(null);
+    const [twoFAVerifyCode, setTwoFAVerifyCode] = useState('');
+    const [twoFALoading, setTwoFALoading] = useState(false);
+
+    useEffect(() => {
+        setTwoFAEnabled(user?.two_fa_enabled || false);
+    }, [user]);
+
+    const handleSetup2FA = async () => {
+        setTwoFALoading(true);
+        try {
+            const response = await axios.post('/api/auth/2fa/setup');
+            setTwoFASetupData(response.data);
+            setShowTwoFAModal(true);
+        } catch (error) {
+            alert("Failed to setup 2FA");
+        } finally {
+            setTwoFALoading(false);
+        }
+    };
+
+    const handleEnable2FA = async () => {
+        setTwoFALoading(true);
+        try {
+            await axios.post('/api/auth/2fa/enable', { code: twoFAVerifyCode });
+            alert("2FA enabled successfully!");
+            setShowTwoFAModal(false);
+            setTwoFAEnabled(true);
+        } catch (error) {
+            alert(error.response?.data?.detail || "Failed to enable 2FA");
+        } finally {
+            setTwoFALoading(false);
+        }
+    };
+
+    const handleDisable2FA = async () => {
+        if (!window.confirm("Are you sure you want to disable 2FA? This will reduce your account security.")) return;
+        setTwoFALoading(true);
+        try {
+            await axios.post('/api/auth/2fa/disable');
+            alert("2FA disabled successfully");
+            setTwoFAEnabled(false);
+        } catch (error) {
+            alert("Failed to disable 2FA");
+        } finally {
+            setTwoFALoading(false);
+        }
+    };
+
     const tabs = [
         { id: 'profile', label: 'Profile Settings', icon: UserCircle },
         { id: 'security', label: 'Security', icon: Lock },
@@ -280,13 +332,103 @@ const Settings = () => {
                                         </div>
                                     </div>
 
-                                    <div className="bg-orange-50/50 p-6 rounded-3xl border border-orange-100">
-                                        <h4 className="font-bold text-orange-800 flex items-center gap-2">
-                                            <Shield size={18} /> Two-Factor Authentication
-                                        </h4>
-                                        <p className="text-sm text-orange-700/80 mt-2 font-medium">Add an extra layer of security to your account by enabling 2FA.</p>
-                                        <button className="mt-4 text-sm font-black text-orange-800 hover:underline">Enable now →</button>
+                                    <div className="bg-orange-50/50 p-6 rounded-3xl border border-orange-100 relative overflow-hidden">
+                                        <div className="relative z-10">
+                                            <h4 className="font-bold text-orange-800 flex items-center gap-2">
+                                                <Shield size={18} /> Two-Factor Authentication
+                                            </h4>
+                                            <p className="text-sm text-orange-700/80 mt-2 font-medium">Add an extra layer of security to your account by enabling 2FA.</p>
+
+                                            {twoFAEnabled ? (
+                                                <div className="mt-4 flex flex-col gap-3">
+                                                    <div className="flex items-center gap-2 text-green-600 font-bold text-sm bg-green-50 w-fit px-3 py-1 rounded-full border border-green-100">
+                                                        <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                                                        2FA is currently active
+                                                    </div>
+                                                    <button
+                                                        onClick={handleDisable2FA}
+                                                        className="text-sm font-black text-red-600 hover:underline text-left"
+                                                    >
+                                                        Disable 2FA
+                                                    </button>
+                                                </div>
+                                            ) : (
+                                                <button
+                                                    onClick={handleSetup2FA}
+                                                    disabled={twoFALoading}
+                                                    className="mt-4 text-sm font-black text-orange-800 hover:underline"
+                                                >
+                                                    {twoFALoading ? 'Setting up...' : 'Enable now →'}
+                                                </button>
+                                            )}
+                                        </div>
+                                        <div className="absolute top-1/2 -right-4 -translate-y-1/2 opacity-[0.03] rotate-12">
+                                            <Shield size={120} />
+                                        </div>
                                     </div>
+
+                                    {/* 2FA Setup Modal */}
+                                    {showTwoFAModal && (
+                                        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-sm">
+                                            <motion.div
+                                                initial={{ scale: 0.9, opacity: 0 }}
+                                                animate={{ scale: 1, opacity: 1 }}
+                                                className="bg-white rounded-[2.5rem] p-10 max-w-md w-full shadow-2xl relative"
+                                            >
+                                                <button
+                                                    onClick={() => setShowTwoFAModal(false)}
+                                                    className="absolute top-6 right-6 text-gray-400 hover:text-gray-600"
+                                                >
+                                                    ✕
+                                                </button>
+
+                                                <h3 className="text-2xl font-bold text-gray-800 mb-2">Setup 2-Step Verification</h3>
+                                                <p className="text-gray-500 mb-8 font-medium">Scan the QR code or enter the secret manually into your authenticator app.</p>
+
+                                                <div className="bg-gray-50 p-6 rounded-3xl border border-gray-100 flex flex-col items-center gap-6 mb-8">
+                                                    {twoFASetupData?.qr_code ? (
+                                                        <img
+                                                            src={`data:image/png;base64,${twoFASetupData.qr_code}`}
+                                                            alt="2FA QR Code"
+                                                            className="w-48 h-48 rounded-xl shadow-md"
+                                                        />
+                                                    ) : (
+                                                        <div className="w-48 h-48 bg-gray-200 rounded-xl flex items-center justify-center text-gray-400">
+                                                            QR Code Error
+                                                        </div>
+                                                    )}
+
+                                                    <div className="w-full">
+                                                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest text-center mb-1">Manual Setup Secret</p>
+                                                        <div className="bg-white border border-gray-200 py-3 px-4 rounded-xl text-center font-mono font-bold text-gray-800 tracking-wider text-sm">
+                                                            {twoFASetupData?.secret}
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div className="space-y-4">
+                                                    <div className="space-y-2">
+                                                        <label className="text-sm font-black text-gray-400 uppercase tracking-widest pl-1">Verification Code</label>
+                                                        <input
+                                                            type="text"
+                                                            maxLength={6}
+                                                            placeholder="000000"
+                                                            value={twoFAVerifyCode}
+                                                            onChange={(e) => setTwoFAVerifyCode(e.target.value.replace(/\D/g, ''))}
+                                                            className="w-full px-4 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary font-bold shadow-inner text-center text-xl tracking-[0.5em]"
+                                                        />
+                                                    </div>
+                                                    <button
+                                                        onClick={handleEnable2FA}
+                                                        disabled={twoFALoading || twoFAVerifyCode.length !== 6}
+                                                        className="w-full bg-primary text-white py-4 rounded-2xl font-black shadow-lg shadow-primary/20 hover:bg-red-600 transition-all active:scale-95 disabled:opacity-50"
+                                                    >
+                                                        {twoFALoading ? 'Verifying...' : 'Finish Enable'}
+                                                    </button>
+                                                </div>
+                                            </motion.div>
+                                        </div>
+                                    )}
 
                                     <div className="flex justify-end pt-4 border-t border-gray-50">
                                         <button

@@ -952,66 +952,146 @@ class RoadmapEngine:
     }
 
     # ==========================================
-    # PHASE-SPECIFIC OBJECTIVES & EXPECTATIONS
+    # CAREER-SPECIFIC OBJECTIVES & EXPECTATIONS
     # ==========================================
     PHASE_OBJECTIVES = {
-        "Phase 1 – Foundations": {
-            "focus": "Building foundational knowledge and mental models",
-            "objectives": [
-                "Understand core terminology and concepts",
-                "Set up your development environment", 
-                "Complete introductory exercises and tutorials",
-                "Build confidence in basic tools and workflows"
-            ],
-            "expectations": [
-                "Comfortable with fundamental concepts",
-                "Able to complete guided exercises independently",
-                "Ready to move into intermediate topics"
-            ]
+        "Software Engineer": {
+            "Phase 1 – Foundations": {
+                "focus": "Algorithmic Logic & Syntax",
+                "objectives": ["Master control flows & data types", "Set up IDE & Git", "Solve basic logic puzzles", "Understand memory basics"],
+                "expectations": ["Syntax proficiency", "Clean code habits", "Independent problem solving"]
+            },
+            "Phase 2 – Core Skills": {
+                "focus": "Backend & Database Architecture",
+                "objectives": ["Master SQL & NoSQL design", "Build RESTful APIs", "Understand HTTP protocols", "Optimize query performance"],
+                "expectations": ["System design awareness", "Robust API development", "Data persistence mastery"]
+            },
+            "Phase 3 – Projects": {
+                "focus": "Full Stack Mastery & Scaling",
+                "objectives": ["Deploy scalable web apps", "Implement Auth & Security", "Master CI/CD pipelines", "Containerize applications"],
+                "expectations": ["Deployable projects", "Infrastructure knowledge", "Team workflow proficiency"]
+            },
+            "Phase 4 – Career Preparation": {
+                "focus": "Technical Interviews & Portfolio",
+                "objectives": ["Optimize GitHub & Resume", "Master System Design cases", "Acing DSA rounds", "Mock interview practice"],
+                "expectations": ["Interview confidence", "Professional network set", "Job market readiness"]
+            }
         },
-        "Phase 2 – Core Skills": {
-            "focus": "Deepening technical expertise with industry-standard tools",
-            "objectives": [
-                "Master key frameworks and technical stacks",
-                "Solve intermediate-level challenges independently",
-                "Study real-world architecture and case studies",
-                "Develop systematic problem-solving approaches"
-            ],
-            "expectations": [
-                "Can build small-to-medium applications",
-                "Understands trade-offs between different approaches",
-                "Ready to tackle real-world project complexity"
-            ]
+        "Data Scientist": {
+            "Phase 1 – Foundations": {
+                "focus": "Statistical Thinking & Python",
+                "objectives": ["Master NumPy & Pandas", "Understand probability & stats", "Data cleaning workflows", "Basic visualization"],
+                "expectations": ["Data manipulation skills", "Statistical intuition", "Clean notebook habits"]
+            },
+            "Phase 2 – Core Skills": {
+                "focus": "Machine Learning Algorithms",
+                "objectives": ["Supervised learning models", "Model evaluation metrics", "Feature engineering", "Advanced SQL for Data Science"],
+                "expectations": ["Predictive modeling", "Metric selection", "Advanced data querying"]
+            },
+            "Phase 3 – Projects": {
+                "focus": "Deep Learning & Model Deployment",
+                "objectives": ["Build Neural Networks", "Deploy models via APIs", "Analyze big data sets", "Experiment tracking"],
+                "expectations": ["DL implementation", "Model productionization", "Insightful storytelling"]
+            },
+            "Phase 4 – Career Preparation": {
+                "focus": "Business Impact & Portfolio",
+                "objectives": ["Build Kaggle portfolio", "Solve business case studies", "ML system design rounds", "Resume optimization"],
+                "expectations": ["Business-alignment", "Portfolio excellence", "Job-ready presence"]
+            }
         },
-        "Phase 3 – Projects": {
-            "focus": "Applying skills to real-world projects and building portfolio",
-            "objectives": [
-                "Build at least 2-3 portfolio-worthy projects",
-                "Learn version control and collaborative workflows",
-                "Practice deployment and production best practices",
-                "Document work effectively for recruiters"
-            ],
-            "expectations": [
-                "Has a visible portfolio on GitHub/personal site",
-                "Can explain technical decisions and trade-offs",
-                "Experienced with end-to-end development lifecycle"
-            ]
+        "Web Developer": {
+            "Phase 1 – Foundations": {
+                "focus": "UI Fundamentals & JS Logic",
+                "objectives": ["HTML5/CSS3 Mastery", "Responsive Design Rules", "ES6+ JavaScript Logic", "DOM Manipulation"],
+                "expectations": ["Layout precision", "Dynamic interaction", "Cross-browser awareness"]
+            },
+            "Phase 2 – Core Skills": {
+                "focus": "Frontend Frameworks & Backend basics",
+                "objectives": ["React Component Arch", "State Management (Redux/Zustand)", "Node.js API Basics", "Third-party Integrations"],
+                "expectations": ["Framework proficiency", "Full-stack basics", "API consumption"]
+            },
+            "Phase 3 – Projects": {
+                "focus": "Enterprise Apps & Deployment",
+                "objectives": ["Design Systems", "E-commerce/SaaS Logic", "Vercel/AWS Deployment", "Performance Tuning"],
+                "expectations": ["Production-ready apps", "Deployment knowledge", "UI polish mastery"]
+            },
+            "Phase 4 – Career Preparation": {
+                "focus": "Interview Readiness & Portfolio",
+                "objectives": ["ATS Friendly Resume", "Frontend Interview prep", "Portfolio site deployment", "LinkedIn networking"],
+                "expectations": ["Interview confidence", "Live portfolio", "Job search strategy"]
+            }
         },
-        "Phase 4 – Career Preparation": {
-            "focus": "Polishing profile and preparing for the job market",
-            "objectives": [
-                "Optimize resume for ATS and recruiters",
-                "Practice mock interviews (technical + behavioral)",
-                "Earn at least one industry certification",
-                "Build professional network on relevant platforms"
-            ],
-            "expectations": [
-                "Interview-ready with practiced responses",
-                "Professional online presence established",
-                "Clear understanding of target roles and companies"
-            ]
+        "UI/UX Designer": {
+            "Phase 1 – Foundations": {
+                "focus": "Visual Design & Theory",
+                "objectives": ["Color Theory & Typography", "Gestalt Principles", "Figma Fundamentals", "Layout & Grids"],
+                "expectations": ["High visual quality", "Tool proficiency", "Consistency mastery"]
+            },
+            "Phase 2 – Core Skills": {
+                "focus": "Interaction & Research",
+                "objectives": ["User Interview methods", "Prototyping in Figma", "Usability Testing", "Information Architecture"],
+                "expectations": ["Research-backed design", "Interactive prototypes", "User-flow clarity"]
+            },
+            "Phase 3 – Projects": {
+                "focus": "Case Studies & Design Systems",
+                "objectives": ["Build 2 deep Case Studies", "Atomic Design systems", "Mobile-first experience", "Handoff workflows"],
+                "expectations": ["Strong portfolio pieces", "Systematic thinking", "Dev handoff skills"]
+            },
+            "Phase 4 – Career Preparation": {
+                "focus": "Career Branding & Presentation",
+                "objectives": ["Behance/Dribbble Polish", "Mock Design Critiques", "Visual Resume", "Freelancing basics"],
+                "expectations": ["Professional brand", "Critique confidence", "Job market ready"]
+            }
+        },
+        "Cybersecurity Analyst": {
+            "Phase 1 – Foundations": {
+                "focus": "Networking & SysAdmin",
+                "objectives": ["Linux/Bash CLI", "TCP/IP & OSI Model", "Network Security basics", "Security mindset"],
+                "expectations": ["Command line comfort", "Networking protocols", "Threat awareness"]
+            },
+            "Phase 2 – Core Skills": {
+                "focus": "Vulnerability & Tooling",
+                "objectives": ["Penetration Testing labs", "Nmap/Wireshark mastery", "OWASP Top 10", "Python for Security"],
+                "expectations": ["Scanner proficiency", "Exploit understanding", "Analytical thinking"]
+            },
+            "Phase 3 – Projects": {
+                "focus": "Defense & Monitoring",
+                "objectives": ["SIEM/IDS Config", "Incident Response drills", "Cloud Security", "Encryption implementations"],
+                "expectations": ["SOC readiness", "Defense implementation", "Compliance knowledge"]
+            },
+            "Phase 4 – Career Preparation": {
+                "focus": "Certs & Job Readiness",
+                "objectives": ["Security+ Prep", "Incident Report writing", "Mock Security interviews", "Resume sharpening"],
+                "expectations": ["Certification path set", "Communication skill", "Pro tech presence"]
+            }
+        },
+        "Product Manager": {
+            "Phase 1 – Foundations": {
+                "focus": "Product Thinking & UX",
+                "objectives": ["Problem/Solution fit", "User Personas", "Product Management basics", "Agile Foundations"],
+                "expectations": ["Strategic mindset", "Empathy foundation", "Iterative thinking"]
+            },
+            "Phase 2 – Core Skills": {
+                "focus": "Analytics & Tech Literacy",
+                "objectives": ["SQL for PMs", "Interpreting Analytics", "PRD Writing", "Prioritization Frameworks"],
+                "expectations": ["Data-driven decisions", "Clear documentation", "Prioritization skill"]
+            },
+            "Phase 3 – Projects": {
+                "focus": "Strategy & Roadmap",
+                "objectives": ["Create Q3 Roadmap", "Stakeholder Mgmt Plan", "Feature Launch Strategy", "Competitive Analysis"],
+                "expectations": ["Vision clarity", "Cross-team leadership", "Market understanding"]
+            },
+            "Phase 4 – Career Preparation": {
+                "focus": "PM Case Study & Networking",
+                "objectives": ["PM Case Round prep", "Interview Estimation", "Product Blog/Brand", "Job applications"],
+                "expectations": ["Estimation confidence", "Strong PM brand", "Job funnel set"]
+            }
         }
     }
+
+    # ==========================================
+    # MODULE-SPECIFIC RESOURCES (Used for side panels)
+    # ==========================================
 
     # ==========================================
     # MODULE-SPECIFIC RESOURCES (Used for side panels)
@@ -1040,8 +1120,9 @@ class RoadmapEngine:
         """
         Build rich phase metadata including objectives, expectations, resources, and mindmap.
         """
-        # Base objectives for the phase
-        phase_obj = self.PHASE_OBJECTIVES.get(phase_name, {})
+        # Get career-specific objectives or fallback to Software Engineer
+        career_objs = self.PHASE_OBJECTIVES.get(career, self.PHASE_OBJECTIVES.get("Software Engineer", {}))
+        phase_obj = career_objs.get(phase_name, {})
         
         # Career-specific description
         career_descriptions = {

@@ -58,16 +58,32 @@ export const AuthProvider = ({ children }) => {
             }
             );
 
+            if (response.data.two_fa_required) {
+                return { success: true, two_fa_required: true, email: response.data.email };
+            }
+
             const accessToken = response.data.access_token;
             setToken(accessToken);
-            // Decode token or fetch user details here if needed. 
-            // For now just setting a flag or email
             setUser({ email });
             navigate('/age-check');
             return { success: true };
         } catch (error) {
             console.error("Login failed", error);
             return { success: false, error: error.response?.data?.detail || "Login failed" };
+        }
+    };
+
+    const verify2FA = async (email, code) => {
+        try {
+            const response = await axios.post('/api/auth/login/verify-2fa', { email, code });
+            const accessToken = response.data.access_token;
+            setToken(accessToken);
+            setUser({ email });
+            navigate('/age-check');
+            return { success: true };
+        } catch (error) {
+            console.error("2FA verification failed", error);
+            return { success: false, error: error.response?.data?.detail || "Invalid 2FA code" };
         }
     };
 
@@ -123,7 +139,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ user, token, login, register, logout, updateProfile, changePassword, loading }}>
+        <AuthContext.Provider value={{ user, token, login, register, logout, updateProfile, changePassword, verify2FA, loading }}>
             {!loading ? children : (
                 <div className="flex h-screen items-center justify-center bg-slate-900 text-white flex-col gap-4">
                     <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>

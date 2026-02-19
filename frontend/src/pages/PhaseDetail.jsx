@@ -686,13 +686,13 @@ const PhaseDetail = () => {
 
                     {/* Tabs */}
                     <div className="flex gap-8 border-b border-gray-200">
-                        {['roadmap', 'mindmap', 'resources', 'discussion'].map(tab => (
+                        {['roadmap', 'mindmap', 'resources', 'career', 'discussion'].map(tab => (
                             <button
                                 key={tab}
                                 onClick={() => setActiveTab(tab)}
                                 className={`pb-3 text-xs font-bold uppercase tracking-wider transition-colors relative ${activeTab === tab ? 'text-pink-600' : 'text-gray-400 hover:text-gray-600'}`}
                             >
-                                {tab}
+                                {tab === 'career' ? 'Career Opportunities' : tab}
                                 {activeTab === tab && (
                                     <motion.div layoutId="underline" className="absolute bottom-0 left-0 w-full h-0.5 bg-pink-600" />
                                 )}
@@ -942,6 +942,73 @@ const PhaseDetail = () => {
                             </motion.div>
                         )}
 
+                        {activeTab === 'career' && (
+                            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-8">
+                                <div className="p-8 rounded-[2.5rem] bg-indigo-50 border border-indigo-100 relative overflow-hidden">
+                                    <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-100/50 rounded-full blur-3xl -mr-32 -mt-32" />
+                                    <div className="relative z-10">
+                                        <div className="flex items-center gap-3 mb-4">
+                                            <div className="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center">
+                                                <Briefcase size={20} />
+                                            </div>
+                                            <h3 className="text-xl font-black text-slate-900 tracking-tight" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>Career Opportunities</h3>
+                                        </div>
+                                        <p className="text-sm text-slate-600 mb-6 max-w-2xl leading-relaxed font-medium">
+                                            Based on your progress in <span className="text-indigo-600 font-bold">{displayTitle}</span>, we've identified roles at top companies where your skills are in high demand. Complete this phase to improve your match score.
+                                        </p>
+                                        <Link
+                                            to="/jobs"
+                                            className="inline-flex items-center gap-3 px-6 py-3 bg-indigo-600 text-white rounded-2xl font-bold text-sm shadow-xl shadow-indigo-100 hover:bg-indigo-700 transition-all"
+                                        >
+                                            View Full Job Board <ArrowRight size={16} />
+                                        </Link>
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    {/* Quick Match Preview */}
+                                    <div className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm">
+                                        <h4 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">Best Role Match</h4>
+                                        <div className="flex items-center gap-4 mb-4">
+                                            <div className="w-12 h-12 rounded-xl bg-slate-50 flex items-center justify-center border border-slate-100">
+                                                <Building className="text-slate-400" size={24} />
+                                            </div>
+                                            <div>
+                                                <p className="text-lg font-black text-slate-900 leading-tight">Software Engineer</p>
+                                                <p className="text-xs font-bold text-slate-400 uppercase">Google</p>
+                                            </div>
+                                            <div className="ml-auto flex flex-col items-center">
+                                                <span className="text-xl font-black text-emerald-500">85%</span>
+                                                <span className="text-[10px] font-bold text-slate-400 uppercase">Match</span>
+                                            </div>
+                                        </div>
+                                        <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
+                                            <div className="h-full bg-emerald-500 w-[85%]" />
+                                        </div>
+                                    </div>
+
+                                    <div className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm">
+                                        <h4 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">Growth Path</h4>
+                                        <div className="flex items-center gap-4 mb-4">
+                                            <div className="w-12 h-12 rounded-xl bg-slate-50 flex items-center justify-center border border-slate-100">
+                                                <Target className="text-amber-500" size={24} />
+                                            </div>
+                                            <div>
+                                                <p className="text-lg font-black text-slate-900 leading-tight">Cloud Architect</p>
+                                                <p className="text-xs font-bold text-slate-400 uppercase">Amazon</p>
+                                            </div>
+                                            <div className="ml-auto flex flex-col items-center">
+                                                <span className="text-xl font-black text-amber-500">60%</span>
+                                                <span className="text-[10px] font-bold text-slate-400 uppercase">Match</span>
+                                            </div>
+                                        </div>
+                                        <div className="h-1.5 w-full bg-slate-100 rounded-full overflow-hidden">
+                                            <div className="h-full bg-amber-500 w-[60%]" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </motion.div>
+                        )}
                         {activeTab === 'discussion' && (
                             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
                                 {/* Discussion Grid - AI & Comments */}
@@ -1104,7 +1171,7 @@ const PhaseDetail = () => {
                     />
                 )}
             </AnimatePresence>
-        </div>
+        </div >
     );
 };
 

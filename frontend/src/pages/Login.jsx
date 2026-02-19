@@ -9,10 +9,12 @@ import { useAuth } from '../context/AuthContext';
 const Login = () => {
     const navigate = useNavigate();
     const [formData, setFormData] = useState({ email: '', password: '' });
+    const [twoFACode, setTwoFACode] = useState('');
+    const [showTwoFA, setShowTwoFA] = useState(false);
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
 
-    const { login } = useAuth();
+    const { login, verify2FA } = useAuth();
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -23,7 +25,22 @@ const Login = () => {
         setLoading(true);
         setError('');
 
+        if (showTwoFA) {
+            const result = await verify2FA(formData.email, twoFACode);
+            if (!result.success) {
+                setError(result.error);
+                setLoading(false);
+            }
+            return;
+        }
+
         const result = await login(formData.email, formData.password);
+
+        if (result.two_fa_required) {
+            setShowTwoFA(true);
+            setLoading(false);
+            return;
+        }
 
         if (!result.success) {
             const detail = result.error;
@@ -104,44 +121,68 @@ const Login = () => {
                     )}
 
                     <form onSubmit={handleSubmit} className="space-y-6">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
-                            <div className="relative">
-                                <Mail className="absolute left-4 top-3.5 text-gray-400" size={20} />
-                                <input
-                                    type="email"
-                                    name="email"
-                                    required
-                                    className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
-                                    placeholder="name@example.com"
-                                    onChange={handleChange}
-                                />
-                            </div>
-                        </div>
+                        {!showTwoFA ? (
+                            <>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
+                                    <div className="relative">
+                                        <Mail className="absolute left-4 top-3.5 text-gray-400" size={20} />
+                                        <input
+                                            type="email"
+                                            name="email"
+                                            required
+                                            className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                                            placeholder="name@example.com"
+                                            onChange={handleChange}
+                                        />
+                                    </div>
+                                </div>
 
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Password</label>
-                            <div className="relative">
-                                <Lock className="absolute left-4 top-3.5 text-gray-400" size={20} />
-                                <input
-                                    type="password"
-                                    name="password"
-                                    required
-                                    className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
-                                    placeholder="••••••••"
-                                    onChange={handleChange}
-                                />
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                                    <div className="relative">
+                                        <Lock className="absolute left-4 top-3.5 text-gray-400" size={20} />
+                                        <input
+                                            type="password"
+                                            name="password"
+                                            required
+                                            className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                                            placeholder="••••••••"
+                                            onChange={handleChange}
+                                        />
+                                    </div>
+                                </div>
+                            </>
+                        ) : (
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">2-Step Verification Code</label>
+                                <div className="relative">
+                                    <Shield className="absolute left-4 top-3.5 text-gray-400" size={20} />
+                                    <input
+                                        type="text"
+                                        name="twoFACode"
+                                        required
+                                        maxLength={6}
+                                        className="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-center text-2xl font-bold tracking-widest"
+                                        placeholder="000000"
+                                        value={twoFACode}
+                                        onChange={(e) => setTwoFACode(e.target.value.replace(/\D/g, ''))}
+                                    />
+                                </div>
+                                <p className="text-xs text-gray-500 mt-2 text-center">Enter the 6-digit code from your authenticator app.</p>
                             </div>
-                        </div>
+                        )}
 
                         <div className="flex items-center justify-between">
                             <div className="flex items-center">
                                 <input id="remember-me" type="checkbox" className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded" />
                                 <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-500">Remember me</label>
                             </div>
-                            <div className="text-sm">
-                                <a href="#" className="font-medium text-primary hover:text-red-700">Forgot password?</a>
-                            </div>
+                            {!showTwoFA && (
+                                <div className="text-sm">
+                                    <a href="#" className="font-medium text-primary hover:text-red-700">Forgot password?</a>
+                                </div>
+                            )}
                         </div>
 
                         <button
@@ -149,10 +190,22 @@ const Login = () => {
                             disabled={loading}
                             className="w-full bg-primary text-white py-4 rounded-xl font-bold text-lg hover:bg-red-600 transition-colors shadow-lg shadow-red-500/30 flex items-center justify-center gap-2"
                         >
-                            {loading ? 'Logging in...' : (
-                                <>Login <ArrowRight size={20} /></>
+                            {loading ? 'Verifying...' : (
+                                <>
+                                    {showTwoFA ? 'Verify Code' : 'Login'} <ArrowRight size={20} />
+                                </>
                             )}
                         </button>
+
+                        {showTwoFA && (
+                            <button
+                                type="button"
+                                onClick={() => setShowTwoFA(false)}
+                                className="w-full text-gray-500 text-sm font-medium hover:underline"
+                            >
+                                Back to Login
+                            </button>
+                        )}
                     </form>
 
                     <div className="mt-8 text-center text-gray-500">

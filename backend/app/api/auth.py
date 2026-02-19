@@ -51,6 +51,8 @@ def get_current_user_optional(token: str = Depends(oauth2_scheme_optional), db: 
     except JWTError:
         return None
 
+from app.services.two_fa_service import two_fa_service
+
 class UserCreate(BaseModel):
     email: str
     password: str
@@ -59,6 +61,10 @@ class UserCreate(BaseModel):
 class Token(BaseModel):
     access_token: str
     token_type: str
+
+class TwoFAVerify(BaseModel):
+    email: str
+    code: str
 
 @router.post("/register", response_model=Token)
 def register(user: UserCreate, db: Session = Depends(get_db)):
@@ -75,7 +81,7 @@ def register(user: UserCreate, db: Session = Depends(get_db)):
     access_token = create_access_token(data={"sub": new_user.email})
     return {"access_token": access_token, "token_type": "bearer"}
 
-@router.post("/login", response_model=Token)
+@router.post("/login")
 def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     user = db.query(User).filter(User.email == form_data.username).first()
     if not user or not verify_password(form_data.password, user.hashed_password):
@@ -85,8 +91,65 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
             headers={"WWW-Authenticate": "Bearer"},
         )
     
+    if user.two_fa_enabled:
+        return {"two_fa_required": True, "email": user.email}
+    
     access_token = create_access_token(data={"sub": user.email})
     return {"access_token": access_token, "token_type": "bearer"}
+
+@router.post("/login/verify-2fa", response_model=Token)
+def verify_2fa_login(data: TwoFAVerify, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.email == data.email).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    if not two_fa_service.verify_code(user.two_fa_secret, data.code):
+        raise HTTPException(status_code=401, detail="Invalid 2FA code")
+    
+    access_token = create_access_token(data={"sub": user.email})
+    return {"access_token": access_token, "token_type": "bearer"}
+
+@router.post("/2fa/setup")
+def setup_2fa(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    secret = two_fa_service.generate_secret()
+    current_user.two_fa_secret = secret
+    db.commit()
+    
+    uri = two_fa_service.get_provisioning_uri(current_user.email, secret)
+    # Since we might not have 'qrcode' dependency working perfectly in all environments or
+    # the user might just want the secret, we return both.
+    try:
+        qr_code_base64 = two_fa_service.get_qr_base64(uri)
+    except Exception:
+        qr_code_base64 = None
+        
+    return {
+        "secret": secret,
+        "qr_code": qr_code_base64,
+        "uri": uri
+    }
+
+class TwoFAConfirm(BaseModel):
+    code: str
+
+@router.post("/2fa/enable")
+def enable_2fa(data: TwoFAConfirm, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    if not current_user.two_fa_secret:
+        raise HTTPException(status_code=400, detail="2FA setup not initiated")
+    
+    if two_fa_service.verify_code(current_user.two_fa_secret, data.code):
+        current_user.two_fa_enabled = True
+        db.commit()
+        return {"message": "2FA enabled successfully"}
+    else:
+        raise HTTPException(status_code=400, detail="Invalid verification code")
+
+@router.post("/2fa/disable")
+def disable_2fa(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    current_user.two_fa_enabled = False
+    current_user.two_fa_secret = None
+    db.commit()
+    return {"message": "2FA disabled successfully"}
 
 @router.get("/me")
 def read_users_me(current_user: User = Depends(get_current_user)):
