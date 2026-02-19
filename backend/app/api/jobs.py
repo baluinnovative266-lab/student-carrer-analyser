@@ -19,21 +19,31 @@ def get_job_matches(current_user: User = Depends(get_current_user), db: Session 
     if not roadmap:
         return {"matches": [], "message": "No active roadmap found. Complete analysis first."}
     
-    # Extract "completed" skills from roadmap phases
-    # For now, we'll look at the content field which is a list of phases
-    completed_skills = []
-    # If the user has a career path, they have a baseline
+    # Extract real skills from user record (these are saved during analysis)
+    # The user model has 'extracted_skills' as a JSON field
+    user_skills = current_user.extracted_skills or []
+    
+    # Fallback/Safety: If no skills extracted yet, use a baseline related to career path
+    if not user_skills:
+        user_skills = ["Python", "General Knowledge"]
+    
     career_path = roadmap.career_path
     
-    # Logic: If phase is "completed" (needs a new field in Roadmap model or handled via frontend state)
-    # Since we don't have a 'completed' flag on phases in DB yet, we'll mock based on predicted_career
-    # In a real scenario, we'd check which steps are checked off.
-    
-    # Let's assume the user has some baseline skills from their 'extracted_skills' if they did analysis
-    # For this mock implementation, we'll provide a few skills if they have an active roadmap
-    user_skills = ["Python", "JavaScript", "HTML/CSS"] # Baseline
-    
-    matches = job_service.get_matches(career_path, user_skills)
+    # Calculate current phase based on roadmap content
+    # If content has 'roadmap' key which is a list of phases
+    current_phase = 1
+    if roadmap.content and isinstance(roadmap.content.get('roadmap'), list):
+        phases = roadmap.content['roadmap']
+        # Find the highest phase number that has some progress or is completed
+        # For simplicity in this mock, we'll check how many phases have completed steps
+        completed_phases = 0
+        for p in phases:
+            steps = p.get('steps', [])
+            if any(s.get('is_completed') or s.get('status') == 'completed' for s in steps):
+                completed_phases += 1
+        current_phase = max(1, completed_phases)
+
+    matches = job_service.get_matches(career_path, user_skills, current_phase)
     
     return {
         "career_path": career_path,

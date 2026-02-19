@@ -3,11 +3,11 @@ import { motion } from 'framer-motion';
 import { Check, RefreshCw } from 'lucide-react';
 
 const careerSeeds = {
-    'Software Engineer': ['Felix', 'Max', 'Leo', 'Sam', 'Dev', 'Zack', 'Aiden', 'Mason'],
-    'Data Scientist': ['Aneka', 'Luna', 'Ivy', 'Mira', 'Nova', 'Aria', 'Zoe', 'Lena'],
-    'Web Developer': ['Bob', 'Jake', 'Ryan', 'Cole', 'Drew', 'Alex', 'Eli', 'Kai'],
-    'UI/UX Designer': ['Caitlyn', 'Lily', 'Rose', 'Jade', 'Ruby', 'Pearl', 'Iris', 'Eve'],
-    'Product Manager': ['Willow', 'Sophie', 'Grace', 'Emma', 'Nora', 'Maya', 'Ava', 'Ella'],
+    'Software Engineer': ['Felix', 'Aneka', 'Max', 'Luna', 'Leo', 'Ivy', 'Sam', 'Mira'],
+    'Data Scientist': ['Aneka', 'Zack', 'Luna', 'Dev', 'Ivy', 'Leo', 'Mira', 'Max'],
+    'Web Developer': ['Bob', 'Rose', 'Jake', 'Lily', 'Ryan', 'Pearl', 'Cole', 'Iris'],
+    'UI/UX Designer': ['Caitlyn', 'Drew', 'Lily', 'Alex', 'Rose', 'Eli', 'Jade', 'Kai'],
+    'Product Manager': ['Willow', 'Samuel', 'Sophie', 'Arthur', 'Grace', 'Victor', 'Emma', 'Julian'],
 };
 
 const defaultSeeds = ['Charlie', 'Bailey', 'Max', 'Bella', 'Cooper', 'Lucy', 'Duke', 'Daisy'];
@@ -39,7 +39,7 @@ const AvatarSelector = ({ currentCareer = 'Software Engineer' }) => {
 
             <div className="grid grid-cols-4 gap-4">
                 {currentAvatars.map((seed, index) => {
-                    const url = `https://api.dicebear.com/7.x/avataaars/svg?seed=${seed}`;
+                    const url = `https://api.dicebear.com/7.x/micah/svg?seed=${seed}&backgroundType=gradientLinear&backgroundColor=b6e3f4,c0aede,d1d4f9`;
                     return (
                         <motion.div
                             key={`${avatarSet}-${seed}`}

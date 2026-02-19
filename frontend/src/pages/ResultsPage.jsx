@@ -285,9 +285,13 @@ const ResultsPage = () => {
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative z-10">
                         {['Technical', 'Soft Skills', 'Tools'].map((category) => {
-                            const skillsInCategory = (stats.extracted_skills || []).filter(
-                                s => s.category === category || (category === 'Tools' && s.category === 'Tools & Frameworks')
-                            );
+                            const skillsInCategory = (stats.extracted_skills || []).filter(s => {
+                                const sCat = (s.category || '').toLowerCase().trim();
+                                const targetCat = category.toLowerCase().trim();
+                                return sCat === targetCat ||
+                                    (targetCat === 'tools' && (sCat === 'tools & frameworks' || sCat === 'tool')) ||
+                                    (targetCat === 'soft skills' && (sCat === 'soft skill' || sCat === 'softskills' || sCat === 'soft-skills'));
+                            });
                             const iconMap = {
                                 'Technical': <Layout className="text-indigo-600" />,
                                 'Soft Skills': <Sparkles className="text-pink-600" />,
@@ -400,7 +404,10 @@ const ResultsPage = () => {
                                                 <div>
                                                     <p className="text-[10px] text-indigo-200 font-black uppercase tracking-widest mb-1">Capstone Project</p>
                                                     <p className="font-black text-lg leading-tight">
-                                                        {stats.featured_projects?.[i]?.title || `Mastery Project ${i + 1}`}
+                                                        {stats.featured_projects?.[i]?.title || (stats.missing_skills?.[i] ? `${stats.missing_skills[i]} System` : `Mastery Project ${i + 1}`)}
+                                                    </p>
+                                                    <p className="text-[11px] text-indigo-100/70 mt-1 line-clamp-2 leading-tight">
+                                                        {stats.featured_projects?.[i]?.overview || "Build a professional implementation to master this skill gap."}
                                                     </p>
                                                     <div className="flex items-center gap-2 mt-2 text-[10px] font-bold text-indigo-300">
                                                         <Sparkles size={12} /> Personalized Learning Path

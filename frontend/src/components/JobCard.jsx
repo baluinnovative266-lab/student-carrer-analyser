@@ -90,19 +90,19 @@ const JobCard = ({ job }) => {
                     <span className="text-[10px] font-bold">Remote</span>
                 </div>
                 <motion.a
-                    whileHover={{ scale: 1.05 }}
+                    whileHover={is_eligible ? { scale: 1.05 } : { x: [0, -2, 2, -2, 2, 0] }}
                     whileTap={{ scale: 0.95 }}
-                    href={apply_url}
-                    target="_blank"
+                    href={is_eligible ? apply_url : '#'}
+                    target={is_eligible ? "_blank" : "_self"}
                     rel="noopener noreferrer"
-                    className={`flex items-center gap-2 px-5 py-2 rounded-xl font-bold text-sm shadow-lg transition-all ${is_eligible
-                            ? 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-indigo-200'
-                            : 'bg-white/80 text-gray-600 border border-white shadow-sm cursor-not-allowed opacity-50'
+                    className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-black text-sm shadow-xl transition-all ${is_eligible
+                        ? 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-indigo-100'
+                        : 'bg-slate-100 text-slate-400 border border-slate-200 cursor-not-allowed'
                         }`}
                     onClick={(e) => !is_eligible && e.preventDefault()}
                 >
                     {is_eligible ? 'Apply Now' : 'Skills Needed'}
-                    <ExternalLink size={14} />
+                    <ChevronRight size={16} />
                 </motion.a>
             </div>
         </motion.div>

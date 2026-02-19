@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Briefcase, Building, Sparkles, SlidersHorizontal, ChevronRight, Search, Target } from 'lucide-react';
+import { Briefcase, Building, Sparkles, SlidersHorizontal, ChevronRight, Search, Target, X } from 'lucide-react';
 import JobCard from '../components/JobCard';
 
 const JobOpportunities = () => {
     const [matches, setMatches] = useState([]);
     const [careerPath, setCareerPath] = useState('');
+    const [hiringCompanies, setHiringCompanies] = useState([]);
+    const [selectedCompany, setSelectedCompany] = useState(null);
     const [loading, setLoading] = useState(true);
     const [filter, setFilter] = useState('all'); // all, eligible, growth
 
@@ -17,13 +19,23 @@ const JobOpportunities = () => {
     const fetchJobs = async () => {
         setLoading(true);
         try {
+            const token = localStorage.getItem('token');
             const response = await axios.get('/api/jobs/match', {
-                headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+                headers: { Authorization: `Bearer ${token}` }
             });
             setMatches(response.data.matches || []);
-            setCareerPath(response.data.career_path || '');
+            const cp = response.data.career_path || '';
+            setCareerPath(cp);
+
+            // Fetch companies for this career path
+            if (cp) {
+                const compRes = await axios.get(`/api/jobs/companies/by-skill?career_path=${encodeURIComponent(cp)}`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                setHiringCompanies(compRes.data || []);
+            }
         } catch (error) {
-            console.error("Failed to fetch jobs", error);
+            console.error("Failed to fetch jobs/companies", error);
         } finally {
             setLoading(false);
         }
@@ -58,10 +70,10 @@ const JobOpportunities = () => {
                             animate={{ opacity: 1, y: 0 }}
                             className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight"
                         >
-                            My Job Opportunities <span className="text-indigo-600">.</span>
+                            Professional <span className="text-indigo-600">Job Board .</span>
                         </motion.h1>
-                        <p className="text-slate-500 mt-4 text-lg font-medium max-w-2xl">
-                            Real-world roles matching your <span className="text-indigo-600 font-bold">{careerPath}</span> roadmap. Complete more phases to unlock premium applications.
+                        <p className="text-slate-500 mt-4 text-lg font-medium max-w-2xl leading-relaxed">
+                            Discover high-impact roles tailored to your progress in <span className="text-indigo-600 font-bold bg-indigo-50 px-2 py-0.5 rounded-lg border border-indigo-100">{careerPath}</span>. Complete more roadmap phases to unlock exclusive opportunities.
                         </p>
                     </div>
 
@@ -71,8 +83,8 @@ const JobOpportunities = () => {
                                 key={f}
                                 onClick={() => setFilter(f)}
                                 className={`px-6 py-2.5 rounded-xl font-bold text-sm transition-all capitalize ${filter === f
-                                        ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200'
-                                        : 'text-slate-400 hover:text-slate-600 hover:bg-slate-50'
+                                    ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200'
+                                    : 'text-slate-400 hover:text-slate-600 hover:bg-slate-50'
                                     }`}
                             >
                                 {f}
@@ -109,7 +121,7 @@ const JobOpportunities = () => {
                 )}
 
                 {/* Recommendations Section */}
-                {!loading && (
+                {!loading && hiringCompanies.length > 0 && (
                     <motion.div
                         initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -123,21 +135,77 @@ const JobOpportunities = () => {
                                 Companies Hiring for {careerPath}
                             </h2>
                             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
-                                {['Google', 'Microsoft', 'Amazon', 'Meta', 'Netflix', 'IBM', 'Adobe', 'Stripe', 'Airbnb', 'Shopify'].map((company, idx) => (
-                                    <div
+                                {hiringCompanies.map((company, idx) => (
+                                    <motion.div
                                         key={idx}
+                                        whileHover={{ scale: 1.05 }}
+                                        whileTap={{ scale: 0.95 }}
+                                        onClick={() => setSelectedCompany(company)}
                                         className="h-24 bg-indigo-800/40 backdrop-blur-sm border border-indigo-700/50 rounded-2xl flex items-center justify-center hover:bg-indigo-700/60 transition-all cursor-pointer group"
                                     >
-                                        <span className="text-indigo-200 font-black text-sm uppercase tracking-tighter group-hover:text-white group-hover:scale-110 transition-all">
-                                            {company}
+                                        <span className="text-indigo-200 font-black text-sm uppercase tracking-tighter group-hover:text-white transition-all text-center px-2">
+                                            {company.name}
                                         </span>
-                                    </div>
+                                    </motion.div>
                                 ))}
                             </div>
                         </div>
                     </motion.div>
                 )}
             </div>
+
+            {/* Company Details Modal */}
+            <AnimatePresence>
+                {selectedCompany && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+                        <motion.div
+                            initial={{ scale: 0.9, opacity: 0, y: 20 }}
+                            animate={{ scale: 1, opacity: 1, y: 0 }}
+                            exit={{ scale: 0.9, opacity: 0, y: 20 }}
+                            className="bg-white rounded-[2.5rem] p-8 max-w-md w-full shadow-2xl relative overflow-hidden"
+                        >
+                            <button
+                                onClick={() => setSelectedCompany(null)}
+                                className="absolute top-6 right-6 p-2 rounded-xl hover:bg-slate-100 text-slate-400 hover:text-slate-900 transition-all"
+                            >
+                                <X size={20} />
+                            </button>
+
+                            <div className="flex items-center gap-4 mb-8">
+                                <div className="w-16 h-16 rounded-2xl bg-indigo-50 p-3 flex items-center justify-center border border-indigo-100">
+                                    {selectedCompany.logo ? (
+                                        <img src={selectedCompany.logo} alt={selectedCompany.name} className="w-full h-full object-contain" />
+                                    ) : (
+                                        <Building className="text-indigo-600" size={32} />
+                                    )}
+                                </div>
+                                <div>
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-indigo-500">Hiring Partner</p>
+                                    <h3 className="text-2xl font-black text-slate-900 tracking-tight">{selectedCompany.name}</h3>
+                                </div>
+                            </div>
+
+                            <div className="space-y-6">
+                                <div className="bg-slate-50 rounded-2xl p-6 border border-slate-100">
+                                    <p className="text-xs font-bold text-slate-400 uppercase mb-3 tracking-widest leading-none">About Company</p>
+                                    <p className="text-slate-600 font-medium leading-relaxed">
+                                        {selectedCompany.desc || "A top-tier firm constantly looking for skilled professionals to join their innovative teams globally."}
+                                    </p>
+                                </div>
+
+                                <a
+                                    href={selectedCompany.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="w-full py-4 bg-indigo-600 text-white rounded-2xl font-black text-center flex items-center justify-center gap-2 hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-200"
+                                >
+                                    Browse Careers <ChevronRight size={18} />
+                                </a>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
         </div>
     );
 };

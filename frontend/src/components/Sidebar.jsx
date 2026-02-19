@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom';
-import { Home, Brain, FileText, BarChart2, Map, TrendingUp } from 'lucide-react';
+import { Home, Brain, FileText, BarChart2, Map, TrendingUp, Briefcase } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const Sidebar = ({ mobile }) => {
@@ -9,6 +9,7 @@ const Sidebar = ({ mobile }) => {
         { path: '/resume-analysis', label: 'Resume Analysis', icon: FileText },
         { path: '/results', label: 'My Results', icon: BarChart2 },
         { path: '/roadmap/overview', label: 'My Roadmap', icon: Map },
+        { path: '/job-board', label: 'Job Board', icon: Briefcase },
     ];
 
 

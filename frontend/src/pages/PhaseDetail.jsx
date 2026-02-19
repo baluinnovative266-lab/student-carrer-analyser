@@ -6,7 +6,7 @@ import {
     FileText, Globe, Code, Zap, ChevronRight, MessageSquare, ThumbsUp,
     Send, CheckCircle2, MoreHorizontal, Share2, Award, ExternalLink,
     ChevronLeft, Grid, AlertCircle, X, CornerDownRight, ChevronDown,
-    ArrowRight, Loader2, Sparkles
+    ArrowRight, Loader2, Sparkles, Briefcase, Building
 } from 'lucide-react';
 import { PLATFORM_LOGOS } from '../utils/constants';
 import PhaseGrid from '../components/PhaseGrid';
@@ -414,7 +414,7 @@ const PhaseDetail = () => {
         const fetchPhaseData = async () => {
             try {
                 const token = localStorage.getItem('token');
-                const response = await axios.get('http://localhost:8000/api/get-roadmap', {
+                const response = await axios.get('/api/get-roadmap', {
                     headers: token ? { 'Authorization': `Bearer ${token}` } : {}
                 });
 
@@ -478,7 +478,7 @@ const PhaseDetail = () => {
     useEffect(() => {
         const fetchComments = async () => {
             try {
-                const response = await axios.get(`http://localhost:8000/api/comments/${phaseId || 'general'}`);
+                const response = await axios.get(`/api/comments/${phaseId || 'general'}`);
                 setComments(response.data);
             } catch (err) {
                 console.error("Failed to fetch comments", err);
@@ -494,7 +494,7 @@ const PhaseDetail = () => {
     const fetchAIInsights = async (question = '') => {
         setInsightsLoading(true);
         try {
-            const response = await axios.post('http://localhost:8000/api/discussion-insights', {
+            const response = await axios.post('/api/discussion-insights', {
                 career: career || 'Software Engineer',
                 phase: phaseData?.phase || 'Phase 1 – Foundations',
                 question
@@ -525,7 +525,7 @@ const PhaseDetail = () => {
         setSubmitting(true);
         try {
             const token = localStorage.getItem('token');
-            await axios.post('http://localhost:8000/api/comments', {
+            await axios.post('/api/comments', {
                 phase_id: phaseId || 'general',
                 content: newComment.content || '(no comment)',
                 pros: newComment.pros,
@@ -536,7 +536,7 @@ const PhaseDetail = () => {
             });
 
             // Refresh comments
-            const refresh = await axios.get(`http://localhost:8000/api/comments/${phaseId || 'general'}`);
+            const refresh = await axios.get(`/api/comments/${phaseId || 'general'}`);
             setComments(refresh.data);
             setNewComment({ content: '', pros: '', cons: '', tags: '' });
             setSelectedTags([]);
@@ -573,7 +573,7 @@ const PhaseDetail = () => {
     // Upvote
     const handleUpvote = async (commentId) => {
         try {
-            await axios.post(`http://localhost:8000/api/comments/${commentId}/upvote`);
+            await axios.post(`/api/comments/${commentId}/upvote`);
             const refresh = await axios.get(`http://localhost:8000/api/comments/${phaseId || 'general'}`);
             setComments(refresh.data);
         } catch (err) {
@@ -601,6 +601,7 @@ const PhaseDetail = () => {
     const displayTitle = phaseData?.phase || (phaseId ? phaseId.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : "Phase Detail");
     const displayDesc = phaseData?.description || "Review and master the core concepts required for this stage.";
     const objectives = phaseData?.objectives || [];
+    const masteryChecklist = phaseData?.mastery_checklist || [];
     const improvementAreas = phaseData?.improvement_areas || [];
     const steps = phaseData?.steps || [];
     const phaseFocus = phaseData?.focus || "Building expertise";
@@ -765,7 +766,7 @@ const PhaseDetail = () => {
                                                 <h3 className="font-black text-gray-900 uppercase tracking-tight" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>Mastery Checklist</h3>
                                             </div>
                                             <ul className="space-y-3">
-                                                {(phaseData?.objectives || []).slice(0, 3).map((obj, i) => (
+                                                {(masteryChecklist.length > 0 ? masteryChecklist : objectives).slice(0, 3).map((obj, i) => (
                                                     <li key={i} className="flex items-start gap-3 text-xs font-bold text-gray-600">
                                                         <div className="mt-1 w-1.5 h-1.5 rounded-full bg-pink-400 shrink-0" />
                                                         {obj}
@@ -957,7 +958,7 @@ const PhaseDetail = () => {
                                             Based on your progress in <span className="text-indigo-600 font-bold">{displayTitle}</span>, we've identified roles at top companies where your skills are in high demand. Complete this phase to improve your match score.
                                         </p>
                                         <Link
-                                            to="/jobs"
+                                            to="/job-board"
                                             className="inline-flex items-center gap-3 px-6 py-3 bg-indigo-600 text-white rounded-2xl font-bold text-sm shadow-xl shadow-indigo-100 hover:bg-indigo-700 transition-all"
                                         >
                                             View Full Job Board <ArrowRight size={16} />
@@ -1123,7 +1124,7 @@ const PhaseDetail = () => {
                             <Award size={18} className="text-pink-500" /> Skills to Master
                         </h3>
                         <div className="flex flex-wrap gap-2">
-                            {['Python', 'Figma', 'System Design', 'React', 'Communication'].map((skill, i) => (
+                            {Array.from(new Set((phaseData?.steps || []).map(s => s.skill))).map((skill, i) => (
                                 <span key={i} className="px-3 py-1.5 bg-gray-50 text-gray-900/80 text-xs font-semibold rounded-lg border border-gray-100 hover:border-pink-200 hover:text-pink-600 transition-colors cursor-default">
                                     {skill}
                                 </span>

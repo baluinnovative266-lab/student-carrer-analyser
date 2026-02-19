@@ -54,3 +54,9 @@ class SkillGapResponse(BaseModel):
     probability_chart_data: List[dict] = []
     skill_comparison_data: List[dict] = []
     featured_projects: List[ProjectMetadata] = []
+
+class HelpDeskTicketCreate(BaseModel):
+    name: str
+    email: str
+    issue_type: str
+    description: str

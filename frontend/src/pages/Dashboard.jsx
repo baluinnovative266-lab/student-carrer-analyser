@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Target, BookOpen, BarChart3, Award, ArrowRight, Brain, Sparkles, TrendingUp, Play, Lock, MessageSquare, MapPin, Navigation, Briefcase, X } from 'lucide-react';
+import { Target, BookOpen, BarChart3, Award, ArrowRight, Brain, Sparkles, TrendingUp, Play, Lock, MessageSquare, MapPin, Navigation, Briefcase, X, LifeBuoy } from 'lucide-react';
 import FAQSection from '../components/FAQSection';
 import DemoAutoFill from '../components/DemoAutoFill';
 import GuidedTour from '../components/GuidedTour';
@@ -152,7 +152,7 @@ const Dashboard = () => {
             bg: 'bg-rose-50',
             border: 'border-rose-100',
             hover: 'hover:bg-rose-600',
-            link: '/jobs',
+            link: '/job-board',
             cta: 'Find Jobs',
         },
     ];
@@ -241,6 +241,16 @@ const Dashboard = () => {
                                 >
                                     <MessageSquare size={18} />
                                     Community Chat
+                                </motion.button>
+
+                                <motion.button
+                                    whileHover={{ scale: 1.05 }}
+                                    whileTap={{ scale: 0.95 }}
+                                    onClick={() => navigate('/help-desk')}
+                                    className="bg-white text-gray-700 px-8 py-3 rounded-xl font-bold border border-gray-200 shadow-sm hover:bg-gray-50 transition-all flex items-center gap-2"
+                                >
+                                    <LifeBuoy size={18} className="text-primary" />
+                                    Help Desk
                                 </motion.button>
 
                                 <motion.button
@@ -463,15 +473,23 @@ const Dashboard = () => {
                                     <div className="bg-red-50/50 rounded-2xl p-6 border border-red-100">
                                         <p className="text-sm font-medium text-red-800 leading-relaxed mb-4">
                                             {locationStatus === 'denied'
-                                                ? "We couldn't access your location. Please enable location permissions in your browser settings to see career opportunities near you."
+                                                ? "Location access is blocked. To see local opportunities, please click the lock icon in your browser's address bar and set Location to 'Allow'."
                                                 : "We're currently determining your precise coordinates..."}
                                         </p>
-                                        <button
-                                            onClick={() => window.location.reload()}
-                                            className="text-xs font-black text-red-600 uppercase tracking-widest hover:underline"
-                                        >
-                                            Try Again
-                                        </button>
+                                        <div className="flex flex-col gap-2">
+                                            <button
+                                                onClick={() => window.location.reload()}
+                                                className="w-full py-3 bg-red-600 text-white rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-red-700 transition-all shadow-lg shadow-red-200"
+                                            >
+                                                Reload & Try Again
+                                            </button>
+                                            <button
+                                                onClick={() => window.open('https://support.google.com/chrome/answer/142065', '_blank')}
+                                                className="text-[10px] font-black text-gray-400 uppercase tracking-widest hover:text-gray-600 transition-all"
+                                            >
+                                                How to enable location?
+                                            </button>
+                                        </div>
                                     </div>
                                 )}
                             </div>

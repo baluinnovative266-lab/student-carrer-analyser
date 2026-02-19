@@ -5,7 +5,7 @@ import {
     Send, Hash, Search, TrendingUp, Sparkles, Pin,
     Smile, Paperclip, ArrowLeft, Users, MessageSquare,
     ThumbsUp, Heart, Flame, MessageCircle, Info, ChevronRight,
-    Loader2
+    Loader2, X
 } from 'lucide-react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
@@ -36,6 +36,7 @@ const CommunityChat = () => {
     const [typingUsers, setTypingUsers] = useState([]);
     const chatEndRef = useRef(null);
     const [isAtBottom, setIsAtBottom] = useState(true);
+    const [showKarmaInfo, setShowKarmaInfo] = useState(false);
 
     const scrollToBottom = () => {
         chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -45,7 +46,7 @@ const CommunityChat = () => {
     useEffect(() => {
         const fetchMessages = async () => {
             try {
-                const response = await axios.get(`http://localhost:8000/api/community/messages/${activeChannel}`);
+                const response = await axios.get(`/api/community/messages/${activeChannel}`);
                 setMessages(response.data);
                 setLoading(false);
             } catch (err) {
@@ -69,7 +70,7 @@ const CommunityChat = () => {
         setSending(true);
         try {
             const token = localStorage.getItem('token');
-            await axios.post('http://localhost:8000/api/community/send', {
+            await axios.post('/api/community/send', {
                 message: newMessage,
                 channel: activeChannel
             }, {
@@ -88,7 +89,7 @@ const CommunityChat = () => {
     const handleReact = async (messageId, emojiType) => {
         try {
             const token = localStorage.getItem('token');
-            await axios.post('http://localhost:8000/api/community/react', {
+            await axios.post('/api/community/react', {
                 message_id: messageId,
                 type: emojiType
             }, {
@@ -358,12 +359,77 @@ const CommunityChat = () => {
                         <p className="text-xs text-white/80 font-medium leading-relaxed mb-6">
                             Marking messages as helpful increases your Community Karma score and unlocks premium badges.
                         </p>
-                        <button className="w-full py-3 bg-white/20 hover:bg-white/30 backdrop-blur-md rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all">
+                        <button
+                            onClick={() => setShowKarmaInfo(true)}
+                            className="w-full py-3 bg-white/20 hover:bg-white/30 backdrop-blur-md rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all"
+                        >
                             Learn More
                         </button>
                     </div>
                 </div>
             </div>
+
+            {/* Karma Info Modal */}
+            <AnimatePresence>
+                {showKarmaInfo && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-sm">
+                        <motion.div
+                            initial={{ scale: 0.9, opacity: 0, y: 20 }}
+                            animate={{ scale: 1, opacity: 1, y: 0 }}
+                            exit={{ scale: 0.9, opacity: 0, y: 20 }}
+                            className="bg-white rounded-[2.5rem] p-8 max-w-md w-full shadow-2xl relative overflow-hidden"
+                        >
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-violet-500/5 rounded-full blur-3xl -mr-16 -mt-16" />
+
+                            <button
+                                onClick={() => setShowKarmaInfo(false)}
+                                className="absolute top-6 right-6 p-2 rounded-xl hover:bg-gray-100 text-gray-400 hover:text-gray-900 transition-all"
+                            >
+                                <X size={20} />
+                            </button>
+
+                            <div className="flex items-center gap-4 mb-8">
+                                <div className="p-4 rounded-2xl bg-indigo-50 text-indigo-600">
+                                    <Sparkles size={32} />
+                                </div>
+                                <div>
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">Community Reward System</p>
+                                    <h3 className="text-2xl font-black text-gray-900 tracking-tight">Community Karma</h3>
+                                </div>
+                            </div>
+
+                            <div className="space-y-4 text-sm text-gray-600 font-medium leading-relaxed">
+                                <p>Karma points are earned by participating in discussions and helping fellow students. Here's how to earn them:</p>
+                                <ul className="space-y-2">
+                                    <li className="flex items-start gap-2">
+                                        <div className="mt-1.5 w-1.5 h-1.5 rounded-full bg-indigo-500 shrink-0" />
+                                        <span>Receive a "Helpful" reaction on your messages (+5 points)</span>
+                                    </li>
+                                    <li className="flex items-start gap-2">
+                                        <div className="mt-1.5 w-1.5 h-1.5 rounded-full bg-indigo-500 shrink-0" />
+                                        <span>Answer a question in Roadmap channels (+10 points)</span>
+                                    </li>
+                                    <li className="flex items-start gap-2">
+                                        <div className="mt-1.5 w-1.5 h-1.5 rounded-full bg-indigo-500 shrink-0" />
+                                        <span>Reach daily activity milestones (+2 points)</span>
+                                    </li>
+                                </ul>
+                                <div className="bg-indigo-50 p-4 rounded-2xl border border-indigo-100 mt-4">
+                                    <p className="text-indigo-900 font-bold mb-1">Badge Rewards</p>
+                                    <p className="text-xs">Higher scores unlock Silver, Gold, and Platinum badges on your profile!</p>
+                                </div>
+                            </div>
+
+                            <button
+                                onClick={() => setShowKarmaInfo(false)}
+                                className="w-full mt-8 py-4 bg-indigo-600 text-white rounded-2xl font-bold hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-200"
+                            >
+                                Got it!
+                            </button>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
         </div>
     );
 };

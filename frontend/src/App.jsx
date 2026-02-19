@@ -16,6 +16,8 @@ import PhaseDetail from './pages/PhaseDetail';
 import FullRoadmap from './pages/FullRoadmap';
 import CommunityChat from './pages/CommunityChat';
 import RoadmapOverview from './pages/RoadmapOverview';
+import HelpDesk from './pages/HelpDesk';
+import Footer from './components/Footer';
 
 import StartAnalysis from './pages/StartAnalysis';
 import AgeCheck from './pages/AgeCheck';
@@ -66,6 +68,7 @@ function AppContent() {
                     <div className="flex flex-col min-h-screen bg-slate-900 text-white">
                         <Navbar />
                         <Home />
+                        <Footer />
                     </div>
                 } />
                 <Route path="/login" element={<Login />} />
@@ -206,7 +209,7 @@ function AppContent() {
                 } />
 
                 {/* Job Opportunities */}
-                <Route path="/jobs" element={
+                <Route path="/job-board" element={
                     <ProtectedRoute>
                         <AgeVerifiedRoute>
                             <AnalyzedRoute>
@@ -214,6 +217,17 @@ function AppContent() {
                                     <JobOpportunities />
                                 </Layout>
                             </AnalyzedRoute>
+                        </AgeVerifiedRoute>
+                    </ProtectedRoute>
+                } />
+
+                {/* Help Desk */}
+                <Route path="/help-desk" element={
+                    <ProtectedRoute>
+                        <AgeVerifiedRoute>
+                            <Layout>
+                                <HelpDesk />
+                            </Layout>
                         </AgeVerifiedRoute>
                     </ProtectedRoute>
                 } />

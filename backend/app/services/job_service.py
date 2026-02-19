@@ -4,51 +4,53 @@ class JobService:
     # Curated dataset of companies and their primary hiring categories
     COMPANIES = {
         "Software Engineer": [
-            {"name": "Google", "logo": "https://upload.wikimedia.org/wikipedia/commons/5/53/Google_Icons_By_Google.png", "url": "https://www.google.com/about/careers/applications/jobs/results/"},
-            {"name": "Microsoft", "logo": "https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg", "url": "https://careers.microsoft.com/us/en/search-results"},
-            {"name": "Amazon", "logo": "https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg", "url": "https://www.amazon.jobs/en/search"},
-            {"name": "Meta", "logo": "https://upload.wikimedia.org/wikipedia/commons/7/7b/Meta_Platforms_Inc._logo.svg", "url": "https://www.metacareers.com/jobs"},
-            {"name": "Netflix", "logo": "https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg", "url": "https://jobs.netflix.com/search"}
+            {"name": "Google", "logo": "https://upload.wikimedia.org/wikipedia/commons/5/53/Google_Icons_By_Google.png", "url": "https://www.google.com/about/careers/applications/jobs/results/", "desc": "Leading global tech company specializing in search, AI, and cloud computing."},
+            {"name": "Microsoft", "logo": "https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg", "url": "https://careers.microsoft.com/us/en/search-results", "desc": "Empowering every person and organization on the planet to achieve more."},
+            {"name": "Amazon", "logo": "https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg", "url": "https://www.amazon.jobs/en/search", "desc": "The world's largest online retailer and cloud services provider (AWS)."},
+            {"name": "Meta", "logo": "https://upload.wikimedia.org/wikipedia/commons/7/7b/Meta_Platforms_Inc._logo.svg", "url": "https://www.metacareers.com/jobs", "desc": "Building tools that help people connect, find communities, and grow businesses."},
+            {"name": "Netflix", "logo": "https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg", "url": "https://jobs.netflix.com/search", "desc": "The world's leading entertainment service with over 200 million memberships."}
         ],
         "Data Scientist": [
-            {"name": "IBM", "logo": "https://upload.wikimedia.org/wikipedia/commons/5/51/IBM_logo.svg", "url": "https://www.ibm.com/careers"},
-            {"name": "Deloitte", "logo": "https://upload.wikimedia.org/wikipedia/commons/5/56/Deloitte.svg", "url": "https://www2.deloitte.com/ui/en/careers/careers.html"},
-            {"name": "Accenture", "logo": "https://upload.wikimedia.org/wikipedia/commons/c/cd/Accenture.svg", "url": "https://www.accenture.com/in-en/careers"},
-            {"name": "Adobe", "logo": "https://upload.wikimedia.org/wikipedia/commons/7/7b/Adobe_Systems_logo_and_wordmark.svg", "url": "https://www.adobe.com/careers.html"}
+            {"name": "IBM", "logo": "https://upload.wikimedia.org/wikipedia/commons/5/51/IBM_logo.svg", "url": "https://www.ibm.com/careers", "desc": "A global technology and innovation company headquartered in Armonk, NY."},
+            {"name": "Deloitte", "logo": "https://upload.wikimedia.org/wikipedia/commons/5/56/Deloitte.svg", "url": "https://www2.deloitte.com/ui/en/careers/careers.html", "desc": "Leading professional services network providing audit, consulting, and tax services."},
+            {"name": "Accenture", "logo": "https://upload.wikimedia.org/wikipedia/commons/c/cd/Accenture.svg", "url": "https://www.accenture.com/in-en/careers", "desc": "Global professional services company with leading capabilities in digital, cloud and security."},
+            {"name": "Adobe", "logo": "https://upload.wikimedia.org/wikipedia/commons/7/7b/Adobe_Systems_logo_and_wordmark.svg", "url": "https://www.adobe.com/careers.html", "desc": "Changing the world through digital experiences with creative and document software."}
         ],
         "Web Developer": [
-            {"name": "Shopify", "logo": "https://upload.wikimedia.org/wikipedia/commons/0/0e/Shopify_logo_2018.svg", "url": "https://www.shopify.com/careers"},
-            {"name": "Airbnb", "logo": "https://upload.wikimedia.org/wikipedia/commons/6/69/Airbnb_Logo_B%C3%A9lo.svg", "url": "https://careers.airbnb.com/"},
-            {"name": "Stripe", "logo": "https://upload.wikimedia.org/wikipedia/commons/b/ba/Stripe_Logo%2C_revised_2016.svg", "url": "https://stripe.com/jobs/search"},
-            {"name": "Atlassian", "logo": "https://upload.wikimedia.org/wikipedia/commons/0/01/Atlassian_Logo.svg", "url": "https://www.atlassian.com/company/careers"}
+            {"name": "Shopify", "logo": "https://upload.wikimedia.org/wikipedia/commons/0/0e/Shopify_logo_2018.svg", "url": "https://www.shopify.com/careers", "desc": "A leading global commerce company, providing trusted tools to start and grow a business."},
+            {"name": "Airbnb", "logo": "https://upload.wikimedia.org/wikipedia/commons/6/69/Airbnb_Logo_B%C3%A9lo.svg", "url": "https://careers.airbnb.com/", "desc": "Online marketplace for lodging, primary homestays for vacation rentals, and tourism activities."},
+            {"name": "Stripe", "logo": "https://upload.wikimedia.org/wikipedia/commons/b/ba/Stripe_Logo%2C_revised_2016.svg", "url": "https://stripe.com/jobs/search", "desc": "Financial services and software as a service company dual-headquartered in SF and Dublin."},
+            {"name": "Atlassian", "logo": "https://upload.wikimedia.org/wikipedia/commons/0/01/Atlassian_Logo.svg", "url": "https://www.atlassian.com/company/careers", "desc": "Software company that develops products for software developers and project managers."}
         ],
         "UI/UX Designer": [
-            {"name": "Figma", "logo": "https://upload.wikimedia.org/wikipedia/commons/3/33/Figma-logo.svg", "url": "https://www.figma.com/careers/"},
-            {"name": "Canva", "logo": "https://upload.wikimedia.org/wikipedia/commons/0/08/Canva_icon_2021.svg", "url": "https://www.canva.com/careers/"},
-            {"name": "Uber", "logo": "https://upload.wikimedia.org/wikipedia/commons/c/cc/Uber_logo_2018.png", "url": "https://www.uber.com/careers/"}
+            {"name": "Figma", "logo": "https://upload.wikimedia.org/wikipedia/commons/3/33/Figma-logo.svg", "url": "https://www.figma.com/careers/", "desc": "The collaborative interface design tool that brings teams together."},
+            {"name": "Canva", "logo": "https://upload.wikimedia.org/wikipedia/commons/0/08/Canva_icon_2021.svg", "url": "https://www.canva.com/careers/", "desc": "Online design and visual communication platform with a mission to empower the world to design."},
+            {"name": "Uber", "logo": "https://upload.wikimedia.org/wikipedia/commons/c/cc/Uber_logo_2018.png", "url": "https://www.uber.com/careers/", "desc": "Technology platform that enables moves of people and things in revolutionary ways."}
         ]
     }
 
     # Curated dataset of job roles and their required skills
     JOB_ROLES = {
         "Software Engineer": [
-            {"role": "Full Stack Developer", "level": "Entry", "required_skills": ["React", "Node.js", "Python", "SQL"]},
-            {"role": "Backend Engineer", "level": "Intermediate", "required_skills": ["Python", "Algorithms", "System Design", "Databases"]},
-            {"role": "Frontend Engineer", "level": "Entry", "required_skills": ["React", "CSS", "TypeScript", "REST APIs"]},
-            {"role": "Cloud Architect", "level": "Expert", "required_skills": ["Cloud Computing", "System Design", "Networking", "DevOps"]}
+            {"role": "Frontend Developer Intern", "level": "Entry", "required_skills": ["HTML/CSS", "JavaScript", "React"], "phase_requirement": 1},
+            {"role": "Junior Full Stack Developer", "level": "Entry", "required_skills": ["React", "Node.js", "SQL"], "phase_requirement": 2},
+            {"role": "Software Engineer I", "level": "Intermediate", "required_skills": ["Python", "Algorithms", "System Design"], "phase_requirement": 3},
+            {"role": "Senior Backend Engineer", "level": "Expert", "required_skills": ["System Design", "Databases", "Cloud Computing", "DevOps"], "phase_requirement": 4}
         ],
         "Data Scientist": [
-            {"role": "Machine Learning Engineer", "level": "Intermediate", "required_skills": ["Python", "Machine Learning", "Statistics", "SQL"]},
-            {"role": "Data Analyst", "level": "Entry", "required_skills": ["SQL", "Statistics", "Data Visualization", "Python"]},
-            {"role": "AI Researcher", "level": "Expert", "required_skills": ["Machine Learning", "Deep Learning", "Math", "Python"]}
+            {"role": "Data Analyst Intern", "level": "Entry", "required_skills": ["Excel", "SQL", "Statistics"], "phase_requirement": 1},
+            {"role": "Junior Data Scientist", "level": "Entry", "required_skills": ["Python", "SQL", "Data Visualization"], "phase_requirement": 2},
+            {"role": "Machine Learning Engineer", "level": "Intermediate", "required_skills": ["Python", "Machine Learning", "Statistics"], "phase_requirement": 3},
+            {"role": "AI Research Scientist", "level": "Expert", "required_skills": ["Machine Learning", "Deep Learning", "Math", "Python"], "phase_requirement": 4}
         ],
         "Web Developer": [
-            {"role": "Junior Web Developer", "level": "Entry", "required_skills": ["HTML/CSS", "JavaScript", "React"]},
-            {"role": "E-commerce Specialist", "level": "Intermediate", "required_skills": ["React", "Node.js", "REST APIs", "Database"]}
+            {"role": "Junior Web Developer", "level": "Entry", "required_skills": ["HTML/CSS", "JavaScript", "React"], "phase_requirement": 1},
+            {"role": "E-commerce Specialist", "level": "Intermediate", "required_skills": ["React", "Node.js", "REST APIs"], "phase_requirement": 2}
         ],
         "UI/UX Designer": [
-            {"role": "Product Designer", "level": "Intermediate", "required_skills": ["Figma", "User Research", "Prototyping", "UI/UX Design"]},
-            {"role": "UX Researcher", "level": "Entry", "required_skills": ["User Research", "Wireframing", "Communication"]}
+            {"role": "UX Researcher Intern", "level": "Entry", "required_skills": ["User Research", "Communication"], "phase_requirement": 1},
+            {"role": "Junior Product Designer", "level": "Entry", "required_skills": ["Figma", "Wireframing", "Prototyping"], "phase_requirement": 2},
+            {"role": "Product Designer", "level": "Intermediate", "required_skills": ["Figma", "User Research", "UI/UX Design"], "phase_requirement": 3}
         ]
     }
 
@@ -70,10 +72,14 @@ class JobService:
         }
 
     @classmethod
-    def get_matches(cls, career_path: str, user_skills: List[str]) -> List[Dict[str, Any]]:
-        """Find matching jobs for a user based on career path and skills."""
-        roles = cls.JOB_ROLES.get(career_path, [])
+    def get_matches(cls, career_path: str, user_skills: List[str], current_phase: int = 1) -> List[Dict[str, Any]]:
+        """Find matching jobs for a user based on career path, skills, and current phase progress."""
+        all_roles = cls.JOB_ROLES.get(career_path, [])
         companies = cls.COMPANIES.get(career_path, [])
+        
+        # Filter roles strictly by current phase or lower
+        # (Completing Phase 1 unlocks Phase 1 jobs, etc.)
+        roles = [r for r in all_roles if r.get("phase_requirement", 1) <= current_phase]
         
         matches = []
         for role in roles:

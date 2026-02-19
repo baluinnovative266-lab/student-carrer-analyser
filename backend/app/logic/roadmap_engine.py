@@ -424,6 +424,48 @@ class RoadmapEngine:
             "use_cases": ["Penetration Testing", "Zero Trust Architecture", "SOC Analysis"],
             "objectives": ["Network Security", "Identity Management", "Threat Modeling"],
             "learning_time": "5 Weeks"
+        },
+        "communication": {
+            "description": "The ability to convey information effectively and efficiently to others.",
+            "importance": "Critical for team collaboration, stakeholder management, and project success.",
+            "use_cases": ["Team Meetings", "Stakeholder Updates", "Documentation"],
+            "objectives": ["Active Listening", "Clear Articulation", "Conflict Resolution"],
+            "learning_time": "2 Weeks"
+        },
+        "problem solving": {
+            "description": "The process of finding solutions to difficult or complex issues.",
+            "importance": "Core skill for identifying bugs, optimizing systems, and creating innovative solutions.",
+            "use_cases": ["Debugging", "Architecture Design", "Algorithm Optimization"],
+            "objectives": ["Root Cause Analysis", "Logical Reasoning", "Creative Solutioning"],
+            "learning_time": "Ongoing"
+        },
+        "leadership": {
+            "description": "The action of leading a group of people or an organization.",
+            "importance": "Essential for career growth into management and senior technical roles.",
+            "use_cases": ["Team Management", "Project Lead", "Mentorship"],
+            "objectives": ["Strategic Thinking", "Delegation", "Emotional Intelligence"],
+            "learning_time": "Ongoing"
+        },
+        "team collaboration": {
+            "description": "Working together with others to achieve a common goal.",
+            "importance": "Projects are rarely built by one person; collective effort is key.",
+            "use_cases": ["Agile Sprints", "Pair Programming", "Cross-functional Projects"],
+            "objectives": ["Knowledge Sharing", "Reliability", "Cooperation"],
+            "learning_time": "Ongoing"
+        },
+        "critical thinking": {
+            "description": "The objective analysis and evaluation of an issue in order to form a judgment.",
+            "importance": "Helps in making better technical decisions and identifying edge cases.",
+            "use_cases": ["Code Review", "Risk Assessment", "System Audit"],
+            "objectives": ["Objective Analysis", "Evidence Evaluation", "Logic Application"],
+            "learning_time": "Ongoing"
+        },
+        "agile": {
+            "description": "A set of principles for software development under which requirements and solutions evolve through the collaborative effort of self-organizing and cross-functional teams.",
+            "importance": "Modern software development standard for rapid and high-quality delivery.",
+            "use_cases": ["Sprint Planning", "Daily Standups", "Retrospectives"],
+            "objectives": ["Scrum Mastery", "Kanban Methodology", "Sprint Execution"],
+            "learning_time": "3 Weeks"
         }
     }
 
@@ -564,6 +606,28 @@ class RoadmapEngine:
                         {"platform": "PyTorch", "title": "Sequence Models & LSTM", "url": "https://pytorch.org/tutorials/beginner/nlp/sequence_models_tutorial.html"}
                     ],
                     "objectives": ["Tokenization", "LSTM Layers", "Seq2Seq Models"]
+                },
+                {
+                    "title": "Retail Demand Forecast", 
+                    "overview": "Time-series forecasting for inventory management.", 
+                    "tech_stack": "Prophet + Scikit-Learn", 
+                    "difficulty": "Medium", 
+                    "github_link": "https://github.com/project-hub/demand-predict",
+                    "resources": [
+                        {"platform": "Meta", "title": "Prophet Documentation", "url": "https://facebook.github.io/prophet/"}
+                    ],
+                    "objectives": ["Seasonality Analysis", "Hyperparameter Tuning", "Forecast Validation"]
+                },
+                {
+                    "title": "Healthcare Image Classifier", 
+                    "overview": "Detect diseases from X-ray images using CNNs.", 
+                    "tech_stack": "Keras + OpenCV", 
+                    "difficulty": "Expert", 
+                    "github_link": "https://github.com/project-hub/med-vision",
+                    "resources": [
+                        {"platform": "Coursera", "title": "AI for Medicine", "url": "https://www.coursera.org/specializations/ai-for-medicine"}
+                    ],
+                    "objectives": ["Image Processing", "CNN Architecture", "Precision/Recall Tuning"]
                 }
             ]
         },
@@ -594,6 +658,28 @@ class RoadmapEngine:
                         {"platform": "Tailwind", "title": "Component Library", "url": "https://tailwindcss.com/docs/installation"}
                     ],
                     "objectives": ["State Mgmt", "Hook Patterns", "UI Theming"]
+                },
+                {
+                    "title": "Real-time Auction Platform", 
+                    "overview": "Live bidding app with real-time updates.", 
+                    "tech_stack": "Socket.io + MongoDB", 
+                    "difficulty": "Hard", 
+                    "github_link": "https://github.com/project-hub/live-auction",
+                    "resources": [
+                        {"platform": "Socket.io", "title": "Realtime Guide", "url": "https://socket.io/docs/v4/"}
+                    ],
+                    "objectives": ["Concurrency", "Real-time Sync", "NoSQL Aggregation"]
+                },
+                {
+                    "title": "SaaS Platform Template", 
+                    "overview": "Multi-tenant architecture with Stripe billing.", 
+                    "tech_stack": "Next.js + Stripe", 
+                    "difficulty": "Expert", 
+                    "github_link": "https://github.com/project-hub/nextjs-saas",
+                    "resources": [
+                        {"platform": "Stripe", "title": "Stripe Billing Docs", "url": "https://stripe.com/docs/billing"}
+                    ],
+                    "objectives": ["Subscription Flow", "Server Actions", "RBAC Auth"]
                 }
             ]
         },
@@ -623,6 +709,28 @@ class RoadmapEngine:
                         {"platform": "Miro", "title": "Roadmap Templates", "url": "https://miro.com/templates/product-roadmap/"}
                     ],
                     "objectives": ["Stakeholder Mgmt", "Gantt Charts", "Risk Assessment"]
+                },
+                {
+                    "title": "User Feedback Analysis Tool", 
+                    "overview": "Automate categorization of user complaints.", 
+                    "tech_stack": "Python + NLP", 
+                    "difficulty": "Medium", 
+                    "github_link": "https://github.com/project-hub/sentiment-analysis",
+                    "resources": [
+                        {"platform": "ChatGPT", "title": "NLP for PMs", "url": "https://openai.com/blog/chatgpt"}
+                    ],
+                    "objectives": ["Sentiment Tracking", "Problem Prioritization", "Data Reporting"]
+                },
+                {
+                    "title": "Growth Hacking Experiment", 
+                    "overview": "Design and track an A/B test for onboarding.", 
+                    "tech_stack": "Mixpanel + Optimizely", 
+                    "difficulty": "Medium", 
+                    "github_link": "https://github.com/project-hub/growth-ab",
+                    "resources": [
+                        {"platform": "Mixpanel", "title": "Growth Guide", "url": "https://mixpanel.com/blog/growth-hacking/"}
+                    ],
+                    "objectives": ["Funnel Optimization", "Hypothesis Testing", "Retention Metrics"]
                 }
             ]
         },
@@ -651,6 +759,28 @@ class RoadmapEngine:
                         {"platform": "Snort", "title": "Snort Documentation", "url": "https://www.snort.org/documents"}
                     ],
                     "objectives": ["Packet Analysis", "Signature Writing", "Alert Tuning"]
+                },
+                {
+                    "title": "Malware Sandbox Lab", 
+                    "overview": "Safe environment for behavioral analysis.", 
+                    "tech_stack": "Cuckoo + VirtualBox", 
+                    "difficulty": "Expert", 
+                    "github_link": "https://github.com/project-hub/malware-lab",
+                    "resources": [
+                        {"platform": "SANS", "title": "Malware Analysis 101", "url": "https://www.sans.org/blog/malware-analysis-for-beginners/"}
+                    ],
+                    "objectives": ["Dynamic Analysis", "Network Isolation", "Reverse Engineering"]
+                },
+                {
+                    "title": "Threat Intel Dashboard", 
+                    "overview": "Aggregate and visualize dark web feeds.", 
+                    "tech_stack": "ELK Stack + Python", 
+                    "difficulty": "Hard", 
+                    "github_link": "https://github.com/project-hub/threat-intel",
+                    "resources": [
+                        {"platform": "Elastic", "title": "Elastic Security Guide", "url": "https://www.elastic.co/security"}
+                    ],
+                    "objectives": ["Log Ingestion", "Dashboard Visualization", "Alerting Logic"]
                 }
             ]
         },
@@ -842,7 +972,7 @@ class RoadmapEngine:
             "Phase 1 – Foundations": [
                 {"type": "course", "title": "CS50: Introduction to Computer Science", "url": "https://cs50.harvard.edu/x/", "platform": "Harvard", "duration": "12 weeks", "difficulty": "Beginner"},
                 {"type": "video", "title": "Programming Logic for Beginners", "url": "https://www.youtube.com/watch?v=zOjov-2OZ0E", "platform": "YouTube", "duration": "45 mins", "difficulty": "Beginner"},
-                {"type": "pdf", "title": "Clean Code: A Handbook of Agile Software Craftsmanship", "url": "https://www.investigatii.md/uploads/resurse/Clean_Code.pdf", "platform": "PDF", "duration": "Read", "difficulty": "Intermediate"},
+                {"type": "article", "title": "Clean Code Summary (Stable Gist)", "url": "https://gist.github.com/wojteklu/73c6914518bc2acc4ca0", "platform": "GitHub Gist", "duration": "20 mins", "difficulty": "Intermediate"},
                 {"type": "article", "title": "The Odin Project: Foundations", "url": "https://www.theodinproject.com/paths/foundations/courses/foundations", "platform": "Odin Project", "duration": "40 hours", "difficulty": "Beginner"}
             ],
             "Phase 2 – Core Skills": [
@@ -859,7 +989,7 @@ class RoadmapEngine:
             "Phase 4 – Career Preparation": [
                 {"type": "video", "title": "Cracking the Coding Interview: Tips", "url": "https://www.youtube.com/watch?v=uQ_Xit_C9pQ", "platform": "YouTube", "duration": "30 mins", "difficulty": "Hard"},
                 {"type": "article", "title": "Star Method for Behavioral Interviews", "url": "https://www.themuse.com/advice/star-interview-method", "platform": "The Muse", "duration": "15 mins", "difficulty": "Beginner"},
-                {"type": "pdf", "title": "Software Engineering Resume Template", "url": "https://www.careercup.com/resume", "platform": "CareerCup", "duration": "Template", "difficulty": "Beginner"}
+                {"type": "link", "title": "Professional Resume Template", "url": "https://www.careercup.com/resume", "platform": "CareerCup", "duration": "Template", "difficulty": "Beginner"}
             ]
         },
         "Data Scientist": {
@@ -918,7 +1048,7 @@ class RoadmapEngine:
             "Phase 3 – Projects": [
                 {"type": "video", "title": "Build a Home Hacking Lab", "url": "https://www.youtube.com/watch?v=Wp87I8K0rSw", "platform": "YouTube", "duration": "1 hour", "difficulty": "Intermediate"},
                 {"type": "tool", "title": "VulnHub: Vulnerable VMs for Practice", "url": "https://www.vulnhub.com/", "platform": "VulnHub", "duration": "Practice", "difficulty": "Advanced"},
-                {"type": "pdf", "title": "SIEM Implementation Guide (Elastic)", "url": "https://www.elastic.co/pdf/siem-guide.pdf", "platform": "Elastic", "duration": "1 hour", "difficulty": "Advanced"}
+                {"type": "pdf", "title": "SIEM Implementation Guide", "url": "https://www.elastic.co/guide/en/siem/guide/current/siem-guide.pdf", "platform": "Elastic", "duration": "1 hour", "difficulty": "Advanced"}
             ],
             "Phase 4 – Career Preparation": [
                 {"type": "course", "title": "CompTIA Security+ Study Guide", "url": "https://www.comptia.org/certifications/security", "platform": "CompTIA", "duration": "Study Plan", "difficulty": "Hard"},
@@ -958,132 +1088,156 @@ class RoadmapEngine:
         "Software Engineer": {
             "Phase 1 – Foundations": {
                 "focus": "Algorithmic Logic & Syntax",
-                "objectives": ["Master control flows & data types", "Set up IDE & Git", "Solve basic logic puzzles", "Understand memory basics"],
+                "objectives": ["Understand memory allocation basics", "Learn time complexity (Big O)", "Master recursion & iteration", "Implement basic search algorithms"],
+                "mastery_checklist": ["Solve 50+ basic logic puzzles", "Configure local dev environment", "Pass the syntax proficiency test", "Create a CLI tool from scratch"],
                 "expectations": ["Syntax proficiency", "Clean code habits", "Independent problem solving"]
             },
             "Phase 2 – Core Skills": {
                 "focus": "Backend & Database Architecture",
-                "objectives": ["Master SQL & NoSQL design", "Build RESTful APIs", "Understand HTTP protocols", "Optimize query performance"],
+                "objectives": ["Design relational database schemas", "Master SQL query optimization", "Build robust REST APIs", "Understand event-driven architecture"],
+                "mastery_checklist": ["Deploy 3 micro-services", "Optimize a slow SQL query", "Complete API authentication flow", "Implement caching with Redis"],
                 "expectations": ["System design awareness", "Robust API development", "Data persistence mastery"]
             },
             "Phase 3 – Projects": {
                 "focus": "Full Stack Mastery & Scaling",
-                "objectives": ["Deploy scalable web apps", "Implement Auth & Security", "Master CI/CD pipelines", "Containerize applications"],
+                "objectives": ["Architect scalable full-stack apps", "Master CI/CD pipeline automation", "Implement advanced security (OAuth2)", "Configure cloud infrastructure"],
+                "mastery_checklist": ["Launch a live production app", "Setup automated testing suite", "Dockerize a multi-node system", "Configure load balancer on AWS"],
                 "expectations": ["Deployable projects", "Infrastructure knowledge", "Team workflow proficiency"]
             },
             "Phase 4 – Career Preparation": {
                 "focus": "Technical Interviews & Portfolio",
-                "objectives": ["Optimize GitHub & Resume", "Master System Design cases", "Acing DSA rounds", "Mock interview practice"],
+                "objectives": ["Master system design interview patterns", "Solve hard-level DSA problems", "Optimize technical resume structure", "Build a high-performance portfolio site"],
+                "mastery_checklist": ["Complete 10 mock interviews", "Solve 200+ LeetCode problems", "Get 2 open-source PRs merged", "Network with 20+ professionals"],
                 "expectations": ["Interview confidence", "Professional network set", "Job market readiness"]
             }
         },
         "Data Scientist": {
             "Phase 1 – Foundations": {
                 "focus": "Statistical Thinking & Python",
-                "objectives": ["Master NumPy & Pandas", "Understand probability & stats", "Data cleaning workflows", "Basic visualization"],
+                "objectives": ["Master exploratory data analysis (EDA)", "Understand probability distributions", "Learn statistical hypothesis testing", "Proficiency in NumPy/Pandas pipelines"],
+                "mastery_checklist": ["Analyze 5 diverse datasets", "Create interactive data dashboards", "Clean 10,000+ rows of raw data", "Automate reports with Python"],
                 "expectations": ["Data manipulation skills", "Statistical intuition", "Clean notebook habits"]
             },
             "Phase 2 – Core Skills": {
                 "focus": "Machine Learning Algorithms",
-                "objectives": ["Supervised learning models", "Model evaluation metrics", "Feature engineering", "Advanced SQL for Data Science"],
+                "objectives": ["Learn regression & classification depth", "Implement model ensemble techniques", "Understand hyperparameter tuning", "Advanced SQL for data pipelining"],
+                "mastery_checklist": ["Win a bronze medal on Kaggle", "Build a customer churn model", "Optimize model inference speed", "Cross-validate 5 complex models"],
                 "expectations": ["Predictive modeling", "Metric selection", "Advanced data querying"]
             },
             "Phase 3 – Projects": {
                 "focus": "Deep Learning & Model Deployment",
-                "objectives": ["Build Neural Networks", "Deploy models via APIs", "Analyze big data sets", "Experiment tracking"],
+                "objectives": ["Master Neural Network architectures", "Deploy models via FastAPI/Flask", "Handle big data with Spark/Hadoop", "Implement experiment tracking (MLflow)"],
+                "mastery_checklist": ["Train a custom NLP transformer", "Serve a model using Docker", "Process a 1GB dataset in real-time", "Build an image recognition app"],
                 "expectations": ["DL implementation", "Model productionization", "Insightful storytelling"]
             },
             "Phase 4 – Career Preparation": {
                 "focus": "Business Impact & Portfolio",
-                "objectives": ["Build Kaggle portfolio", "Solve business case studies", "ML system design rounds", "Resume optimization"],
+                "objectives": ["Master ML system design interviews", "Solve real-world business case studies", "Curate a high-impact GitHub portfolio", "Build an online presence (TowardsDS)"],
+                "mastery_checklist": ["Publish 3 technical blog posts", "Get ranked top 10% in Kaggle", "Complete 5 end-to-end projects", "Engage with Data Science mentors"],
                 "expectations": ["Business-alignment", "Portfolio excellence", "Job-ready presence"]
             }
         },
         "Web Developer": {
             "Phase 1 – Foundations": {
                 "focus": "UI Fundamentals & JS Logic",
-                "objectives": ["HTML5/CSS3 Mastery", "Responsive Design Rules", "ES6+ JavaScript Logic", "DOM Manipulation"],
+                "objectives": ["Master CSS Grid & Flexbox layouts", "Understand JavaScript ES6+ internals", "Learn semantic HTML5 & Accessibility", "Build responsive interactive components"],
+                "mastery_checklist": ["Clone 5 pixel-perfect websites", "Solve 100 JS logic challenges", "Build a responsive landing page", "Implement custom CSS animations"],
                 "expectations": ["Layout precision", "Dynamic interaction", "Cross-browser awareness"]
             },
             "Phase 2 – Core Skills": {
                 "focus": "Frontend Frameworks & Backend basics",
-                "objectives": ["React Component Arch", "State Management (Redux/Zustand)", "Node.js API Basics", "Third-party Integrations"],
+                "objectives": ["Master React lifecycle & hooks", "Learn state management (Zustand/Redux)", "Build custom server-side Node.js APIs", "Integrate complex 3rd party services"],
+                "mastery_checklist": ["Build a multi-page web app", "Manage complex state in React", "Setup a full-stack CRUD API", "Implement dark mode & theming"],
                 "expectations": ["Framework proficiency", "Full-stack basics", "API consumption"]
             },
             "Phase 3 – Projects": {
                 "focus": "Enterprise Apps & Deployment",
-                "objectives": ["Design Systems", "E-commerce/SaaS Logic", "Vercel/AWS Deployment", "Performance Tuning"],
+                "objectives": ["Build reusable Design Systems", "Master complex E-commerce logic", "Optimize for speed and SEO (Next.js)", "Deploy scalable apps on Vercel/AWS"],
+                "mastery_checklist": ["Pass Lighthouse 90+ score", "Deploy 3 production-ready apps", "Build a component library", "Implement real-time features"],
                 "expectations": ["Production-ready apps", "Deployment knowledge", "UI polish mastery"]
             },
             "Phase 4 – Career Preparation": {
                 "focus": "Interview Readiness & Portfolio",
-                "objectives": ["ATS Friendly Resume", "Frontend Interview prep", "Portfolio site deployment", "LinkedIn networking"],
+                "objectives": ["Apply for frontend specific roles", "Practice technical whiteboard rounds", "Maintain a live project showcase", "Learn freelance & contract basics"],
+                "mastery_checklist": ["Build your personal portfolio", "Review 10 coworker PRs", "Optimize your LinkedIn profile", "Apply to 5 high-potential roles"],
                 "expectations": ["Interview confidence", "Live portfolio", "Job search strategy"]
             }
         },
         "UI/UX Designer": {
             "Phase 1 – Foundations": {
                 "focus": "Visual Design & Theory",
-                "objectives": ["Color Theory & Typography", "Gestalt Principles", "Figma Fundamentals", "Layout & Grids"],
+                "objectives": ["Understand visual hierarchy & rhythm", "Master professional typography rules", "Learn Figma component best practices", "Study universal design principles"],
+                "mastery_checklist": ["Design a full mobile app UI", "Perfect a 10-style font system", "Create an icon library", "Analyze 20 popular app UIs"],
                 "expectations": ["High visual quality", "Tool proficiency", "Consistency mastery"]
             },
             "Phase 2 – Core Skills": {
                 "focus": "Interaction & Research",
-                "objectives": ["User Interview methods", "Prototyping in Figma", "Usability Testing", "Information Architecture"],
+                "objectives": ["Master high-fidelity prototyping", "Conduct professional user research", "Build complex information architectures", "Learn usability testing methodologies"],
+                "mastery_checklist": ["Conduct 10 user interviews", "Build a clickable mockup", "Create a full user journey map", "Run 5 remote usability tests"],
                 "expectations": ["Research-backed design", "Interactive prototypes", "User-flow clarity"]
             },
             "Phase 3 – Projects": {
                 "focus": "Case Studies & Design Systems",
-                "objectives": ["Build 2 deep Case Studies", "Atomic Design systems", "Mobile-first experience", "Handoff workflows"],
+                "objectives": ["Analyze deep UX case study flows", "Build scalable design systems", "Master advanced Figma variables", "Optimize design-to-dev handoffs"],
+                "mastery_checklist": ["Complete 2 major case studies", "Construct a full design system", "Design a responsive SaaS app", "Pass the UX certification exam"],
                 "expectations": ["Strong portfolio pieces", "Systematic thinking", "Dev handoff skills"]
             },
             "Phase 4 – Career Preparation": {
                 "focus": "Career Branding & Presentation",
-                "objectives": ["Behance/Dribbble Polish", "Mock Design Critiques", "Visual Resume", "Freelancing basics"],
+                "objectives": ["Polish Behance/Dribbble portfolios", "Learn design critique articulation", "Build a custom visual resume", "Master client management basics"],
+                "mastery_checklist": ["Feature on Dribbble frontpage", "Present 3 design case studies", "Get 5 designer endorsements", "Apply for 10 design studios"],
                 "expectations": ["Professional brand", "Critique confidence", "Job market ready"]
             }
         },
         "Cybersecurity Analyst": {
             "Phase 1 – Foundations": {
                 "focus": "Networking & SysAdmin",
-                "objectives": ["Linux/Bash CLI", "TCP/IP & OSI Model", "Network Security basics", "Security mindset"],
+                "objectives": ["Understand the TCP/IP stack depth", "Learn Linux and Windows system admin", "Master basic network security rules", "Develop a security analysis mindset"],
+                "mastery_checklist": ["Pass a network essentials lab", "Automate tasks with Bash shell", "Identify 10 diverse port states", "Setup a local secure firewall"],
                 "expectations": ["Command line comfort", "Networking protocols", "Threat awareness"]
             },
             "Phase 2 – Core Skills": {
                 "focus": "Vulnerability & Tooling",
-                "objectives": ["Penetration Testing labs", "Nmap/Wireshark mastery", "OWASP Top 10", "Python for Security"],
+                "objectives": ["Master vulnerability scanning tools", "Learn ethical hacking methodologies", "Understand OWASP security protocols", "Write simple Python security scripts"],
+                "mastery_checklist": ["Exploit 5 lab machines", "Perform 10 vulnerability scans", "Script a malware scanner", "Intercept 10 network packets"],
                 "expectations": ["Scanner proficiency", "Exploit understanding", "Analytical thinking"]
             },
             "Phase 3 – Projects": {
                 "focus": "Defense & Monitoring",
-                "objectives": ["SIEM/IDS Config", "Incident Response drills", "Cloud Security", "Encryption implementations"],
+                "objectives": ["Configure SIEM monitoring alerts", "Learn deeper incident response flow", "Master cloud security (AWS Secrets)", "Implement advanced encryption tech"],
+                "mastery_checklist": ["Setup a live SIEM dashboard", "Resolve 5 simulated breaches", "Hardened 3 cloud servers", "Deploy an IDS/IPS on home net"],
                 "expectations": ["SOC readiness", "Defense implementation", "Compliance knowledge"]
             },
             "Phase 4 – Career Preparation": {
                 "focus": "Certs & Job Readiness",
-                "objectives": ["Security+ Prep", "Incident Report writing", "Mock Security interviews", "Resume sharpening"],
+                "objectives": ["Finalize Security+ certification", "Learn professional report writing", "Master technical security interviews", "Build a specialized security resume"],
+                "mastery_checklist": ["Get CompTIA Security+ certified", "Write 3 detailed audit reports", "Solve 5 technical walk-throughs", "Connect with SOC managers"],
                 "expectations": ["Certification path set", "Communication skill", "Pro tech presence"]
             }
         },
         "Product Manager": {
             "Phase 1 – Foundations": {
                 "focus": "Product Thinking & UX",
-                "objectives": ["Problem/Solution fit", "User Personas", "Product Management basics", "Agile Foundations"],
+                "objectives": ["Master product-market fit logic", "Learn user persona segmentation", "Understand PM fundamentals & roles", "Master Agile & Scrum basics"],
+                "mastery_checklist": ["Interview 10 potential users", "Craft 5 detailed user stories", "Build an MVP product roadmap", "Conduct a market teardown"],
                 "expectations": ["Strategic mindset", "Empathy foundation", "Iterative thinking"]
             },
             "Phase 2 – Core Skills": {
                 "focus": "Analytics & Tech Literacy",
-                "objectives": ["SQL for PMs", "Interpreting Analytics", "PRD Writing", "Prioritization Frameworks"],
+                "objectives": ["Learn SQL for PM data analysis", "Master product analytics (Amplitude)", "Write professional PRD documents", "Learn prioritization (ICE/Kano)"],
+                "mastery_checklist": ["Query a database for insights", "Write a 10-page PRD document", "Define 5 core product KPIs", "Present a data-backed plan"],
                 "expectations": ["Data-driven decisions", "Clear documentation", "Prioritization skill"]
             },
             "Phase 3 – Projects": {
                 "focus": "Strategy & Roadmap",
-                "objectives": ["Create Q3 Roadmap", "Stakeholder Mgmt Plan", "Feature Launch Strategy", "Competitive Analysis"],
+                "objectives": ["Build a quarterly feature roadmap", "Master cross-team stakeholder mgmt", "Develop a go-to-market strategy", "Analyze competitive landscape depth"],
+                "mastery_checklist": ["Lead a mock sprint planning", "Design a GTM launch plan", "Create a Miro strategy board", "Conduct a SWOT analysis"],
                 "expectations": ["Vision clarity", "Cross-team leadership", "Market understanding"]
             },
             "Phase 4 – Career Preparation": {
                 "focus": "PM Case Study & Networking",
-                "objectives": ["PM Case Round prep", "Interview Estimation", "Product Blog/Brand", "Job applications"],
+                "objectives": ["Master PM market sizing cases", "Learn product estimation logic", "Build a specialized PM network", "Finalize professional PM portfolio"],
+                "mastery_checklist": ["Solve 20 product case studies", "Estimate 5 market problems", "Attend 3 product conferences", "Apply for 5 associate PM roles"],
                 "expectations": ["Estimation confidence", "Strong PM brand", "Job funnel set"]
             }
         }
@@ -1113,6 +1267,18 @@ class RoadmapEngine:
         ],
         "machine learning": [
             {"type": "video", "title": "Machine Learning for Everyone", "url": "https://www.youtube.com/watch?v=IpGxLWOIZy4", "description": "A non-technical intro to ML."}
+        ],
+        "communication": [
+            {"type": "video", "title": "Effective Communication Skills", "url": "https://www.youtube.com/watch?v=HAnw168huqA", "description": "Master the art of conversation."},
+            {"type": "article", "title": "Top 10 Communication Skills", "url": "https://www.thebalancecareers.com/communication-skills-list-2063779", "description": "List of essential comms skills."}
+        ],
+        "problem solving": [
+            {"type": "video", "title": "How to Solve Any Problem", "url": "https://www.youtube.com/watch?v=8K0l9E4-oAc", "description": "Problem solving framework."},
+            {"type": "article", "title": "The Problem Solving Process", "url": "https://www.asq.org/quality-resources/problem-solving", "description": "Systematic approach to issues."}
+        ],
+        "leadership": [
+            {"type": "video", "title": "What Makes a Good Leader?", "url": "https://www.youtube.com/watch?v=fW8amMCVAJQ", "description": "Leadership traits and skills."},
+            {"type": "article", "title": "Leadership Skills Checklist", "url": "https://www.mindtools.com/pages/article/newLDR_41.htm", "description": "Develop your leadership potential."}
         ]
     }
 
@@ -1240,6 +1406,7 @@ class RoadmapEngine:
             "description": career_descriptions.get(phase_name, f"Mastering essential skills for {career}."),
             "focus": phase_obj.get("focus", "Building expertise"),
             "objectives": phase_obj.get("objectives", ["Master core skills", "Build practical experience"]),
+            "mastery_checklist": phase_obj.get("mastery_checklist", ["Complete all modules", "Achieve 85% score", "Pass phase assessment"]),
             "expectations": phase_obj.get("expectations", ["Ready for the next level"]),
             "improvement_areas": improvement_areas,
             "tools": tools_data,

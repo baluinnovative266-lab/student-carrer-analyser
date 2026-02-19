@@ -1,12 +1,24 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Search, MapPin, ChevronRight, Briefcase, FileText, TrendingUp, Award, Brain, Navigation } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Search, MapPin, ChevronRight, Briefcase, FileText, TrendingUp, Award, Brain, Navigation, X } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 
 const Home = () => {
     const navigate = useNavigate();
     const [locationName, setLocationName] = useState('Global Opportunities');
     const [isLocating, setIsLocating] = useState(false);
+    const [showLocationModal, setShowLocationModal] = useState(false);
+
+    useEffect(() => {
+        const handleBeforeUnload = (e) => {
+            // Standard browser prompt for leaving page
+            const message = "Thank you for using CareerSense AI. Visit again to continue your career journey.";
+            e.returnValue = message;
+            return message;
+        };
+        window.addEventListener('beforeunload', handleBeforeUnload);
+        return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+    }, []);
 
     const handleDetectLocation = () => {
         if (!navigator.geolocation) {
@@ -38,7 +50,7 @@ const Home = () => {
             },
             (error) => {
                 console.error("Home location error:", error);
-                alert("Location access denied. Please enable it to see local opportunities.");
+                setShowLocationModal(true);
                 setIsLocating(false);
             }
         );
@@ -142,6 +154,71 @@ const Home = () => {
                     </Link>
                 </div>
             </div>
+
+            {/* Geolocation Denial Modal */}
+            <AnimatePresence>
+                {showLocationModal && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-sm">
+                        <motion.div
+                            initial={{ scale: 0.9, opacity: 0, y: 20 }}
+                            animate={{ scale: 1, opacity: 1, y: 0 }}
+                            exit={{ scale: 0.9, opacity: 0, y: 20 }}
+                            className="bg-white rounded-[2.5rem] p-8 max-w-md w-full shadow-2xl relative overflow-hidden"
+                        >
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl -mr-16 -mt-16" />
+
+                            <button
+                                onClick={() => setShowLocationModal(false)}
+                                className="absolute top-6 right-6 p-2 rounded-xl hover:bg-gray-100 text-gray-400 hover:text-gray-900 transition-all"
+                            >
+                                <X size={20} />
+                            </button>
+
+                            <div className="flex items-center gap-4 mb-8">
+                                <div className="p-4 rounded-2xl bg-primary/10 text-primary">
+                                    <MapPin size={32} />
+                                </div>
+                                <div>
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">Permissions Required</p>
+                                    <h3 className="text-2xl font-black text-gray-900 tracking-tight">Location Access</h3>
+                                </div>
+                            </div>
+
+                            <div className="space-y-6 text-sm text-gray-600 font-medium leading-relaxed">
+                                <p>To provide personalized job opportunities and local career events, we need to know your city.</p>
+
+                                <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100">
+                                    <p className="text-gray-900 font-bold mb-3 flex items-center gap-2">
+                                        <Navigation size={16} className="text-primary" />
+                                        How to enable:
+                                    </p>
+                                    <ul className="space-y-3">
+                                        <li className="flex items-start gap-3">
+                                            <span className="w-5 h-5 rounded-full bg-white border border-gray-200 flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5">1</span>
+                                            <span>Click the <span className="font-bold">Lock icon</span> in your browser's address bar.</span>
+                                        </li>
+                                        <li className="flex items-start gap-3">
+                                            <span className="w-5 h-5 rounded-full bg-white border border-gray-200 flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5">2</span>
+                                            <span>Locate <span className="font-bold">Location</span> and toggle it to <span className="text-emerald-600 font-bold">Allow</span>.</span>
+                                        </li>
+                                        <li className="flex items-start gap-3">
+                                            <span className="w-5 h-5 rounded-full bg-white border border-gray-200 flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5">3</span>
+                                            <span>Refresh the page to apply changes.</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <button
+                                onClick={() => setShowLocationModal(false)}
+                                className="w-full mt-8 py-4 bg-primary text-white rounded-2xl font-bold hover:bg-red-600 transition-all shadow-lg shadow-red-200"
+                            >
+                                I understand
+                            </button>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
         </div>
     );
 };

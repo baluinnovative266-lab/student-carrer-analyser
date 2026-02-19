@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import ChatBot from './ChatBot';
 import { useTheme } from '../context/ThemeContext';
 import { Sun, Moon } from 'lucide-react';
+import Footer from './Footer';
 
 const Layout = ({ children }) => {
     const { theme, toggleTheme } = useTheme();
@@ -30,6 +31,7 @@ const Layout = ({ children }) => {
             </button>
 
             <ChatBot />
+            <Footer />
         </div>
     );
 };

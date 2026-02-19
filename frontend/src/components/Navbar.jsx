@@ -1,23 +1,29 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { LogOut, User, Menu, X, Settings, LayoutDashboard, ChevronDown } from 'lucide-react';
+import { LogOut, User, Menu, X, Settings, LayoutDashboard, ChevronDown, Users } from 'lucide-react';
 import { useState } from 'react';
 import Logo from './Logo';
 import { useAuth } from '../context/AuthContext';
+import VisitAgainModal from './VisitAgainModal';
 
 const Navbar = () => {
     const navigate = useNavigate();
     const { user, logout, token } = useAuth();
     const [isOpen, setIsOpen] = useState(false);
     const [isProfileOpen, setIsProfileOpen] = useState(false);
+    const [showLogoutModal, setShowLogoutModal] = useState(false);
 
     const handleLogout = () => {
-        logout();
-        localStorage.removeItem('career_stats');
-        localStorage.removeItem('current_roadmap');
-        localStorage.removeItem('predicted_career');
         setIsProfileOpen(false);
         setIsOpen(false);
+        setShowLogoutModal(true);
+        // Wait a bit before actual logout to show modal
+        setTimeout(() => {
+            logout();
+            localStorage.removeItem('career_stats');
+            localStorage.removeItem('current_roadmap');
+            localStorage.removeItem('predicted_career');
+        }, 3000);
     };
 
     const getInitials = () => {
@@ -106,6 +112,13 @@ const Navbar = () => {
 
                                                 <div className="border-t border-gray-50 mt-2 pt-2">
                                                     <button
+                                                        onClick={() => navigate('/login?switch=true')}
+                                                        className="w-full flex items-center gap-3 px-6 py-3 text-gray-600 hover:bg-gray-50 hover:text-primary transition-all font-medium"
+                                                    >
+                                                        <Users size={18} />
+                                                        <span>Switch Account</span>
+                                                    </button>
+                                                    <button
                                                         onClick={handleLogout}
                                                         className="w-full flex items-center gap-3 px-6 py-3 text-red-600 hover:bg-red-50 transition-all font-bold"
                                                     >
@@ -176,6 +189,7 @@ const Navbar = () => {
                     )}
                 </motion.div>
             )}
+            <VisitAgainModal isOpen={showLogoutModal} onClose={() => setShowLogoutModal(false)} />
         </nav>
     );
 };

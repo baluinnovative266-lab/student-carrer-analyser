@@ -25,7 +25,7 @@ const RoadmapOverview = () => {
                 // 2. Try to get from API (persistence)
                 const token = localStorage.getItem('token');
                 if (token) {
-                    const response = await fetch('http://localhost:8000/api/get-roadmap', {
+                    const response = await fetch('/api/get-roadmap', {
                         headers: { 'Authorization': `Bearer ${token}` }
                     });
                     if (response.ok) {

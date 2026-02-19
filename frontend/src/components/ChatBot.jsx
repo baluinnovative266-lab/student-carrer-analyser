@@ -16,6 +16,7 @@ const ChatBot = () => {
     const [isListening, setIsListening] = useState(false);
     const [isSpeaking, setIsSpeaking] = useState(false);
     const [isMuted, setIsMuted] = useState(false);
+    const [voiceGender, setVoiceGender] = useState('female');
     const [isTyping, setIsTyping] = useState(false);
     const messagesEndRef = useRef(null);
     const [suggestions] = useState([
@@ -74,18 +75,26 @@ const ChatBot = () => {
         window.speechSynthesis.cancel();
         const utterance = new SpeechSynthesisUtterance(text);
 
-        // Find professional female voice
+        // Find professional voice based on selected gender
         const voices = window.speechSynthesis.getVoices();
-        const preferredVoice = voices.find(v =>
-            v.name.includes('Google US English female') ||
-            v.name.includes('Samantha') ||
-            v.name.includes('Zira') ||
-            v.name.includes('Female')
-        );
+        const preferredVoice = voices.find(v => {
+            const name = v.name.toLowerCase();
+            if (voiceGender === 'female') {
+                return name.includes('google us english female') ||
+                    name.includes('samantha') ||
+                    name.includes('zira') ||
+                    name.includes('female');
+            } else {
+                return name.includes('google us english male') ||
+                    name.includes('daniel') ||
+                    name.includes('david') ||
+                    name.includes('male');
+            }
+        });
 
         if (preferredVoice) utterance.voice = preferredVoice;
-        utterance.rate = 1.0; // Professional speed
-        utterance.pitch = 1.0; // Natural pitch
+        utterance.rate = 1.0;
+        utterance.pitch = voiceGender === 'female' ? 1.0 : 0.9;
 
         utterance.onstart = () => setIsSpeaking(true);
         utterance.onend = () => setIsSpeaking(false);
@@ -97,6 +106,11 @@ const ChatBot = () => {
     const toggleMute = () => {
         setIsMuted(!isMuted);
         if (!isMuted) window.speechSynthesis.cancel();
+    };
+
+    const toggleVoiceGender = () => {
+        setVoiceGender(prev => prev === 'female' ? 'male' : 'female');
+        window.speechSynthesis.cancel();
     };
 
 
@@ -119,7 +133,7 @@ const ChatBot = () => {
 
         try {
             const token = localStorage.getItem('token');
-            const response = await axios.post('http://localhost:8000/api/chat', {
+            const response = await axios.post('/api/chat', {
                 message: query,
                 career: localStorage.getItem('predicted_career') || 'Software Engineer'
             }, {
@@ -163,11 +177,11 @@ const ChatBot = () => {
                         <div className="p-4 bg-gradient-to-r from-pink-600/20 to-rose-600/20 border-b border-white/5 flex justify-between items-center relative overflow-hidden">
                             <div className="absolute inset-0 bg-grid-white/[0.02] pointer-events-none" />
                             <div className="flex items-center gap-3 relative z-10">
-                                <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-pink-500 to-rose-600 flex items-center justify-center shadow-lg shadow-pink-500/20">
+                                <div className={`w-10 h-10 rounded-2xl flex items-center justify-center shadow-lg transition-all duration-500 ${voiceGender === 'female' ? 'bg-gradient-to-br from-pink-500 to-rose-600 shadow-pink-500/20' : 'bg-gradient-to-br from-indigo-500 to-blue-600 shadow-indigo-500/20'}`}>
                                     <Bot size={22} className="text-white" />
                                 </div>
                                 <div>
-                                    <h3 className="font-bold text-sm text-white tracking-tight">CareerSense AI</h3>
+                                    <h3 className="font-bold text-sm text-white tracking-tight">AI {voiceGender === 'female' ? 'Maya' : 'Max'}</h3>
                                     <div className="flex items-center gap-1.5 mt-0.5">
                                         <span className={`w-2 h-2 rounded-full ${isTyping || isSpeaking ? 'bg-pink-400 animate-pulse' : 'bg-green-400'}`}></span>
                                         <span className="text-[10px] font-bold text-white/40 uppercase tracking-widest">
@@ -177,6 +191,14 @@ const ChatBot = () => {
                                 </div>
                             </div>
                             <div className="flex items-center gap-1 relative z-10">
+                                <button
+                                    onClick={toggleVoiceGender}
+                                    className="p-2 rounded-xl text-white/40 hover:bg-white/10 hover:text-white transition-all flex items-center gap-1.5"
+                                    title={`Switch to ${voiceGender === 'female' ? 'Male' : 'Female'} voice`}
+                                >
+                                    <Headphones size={18} />
+                                    <span className="text-[10px] font-black uppercase">{voiceGender === 'female' ? 'F' : 'M'}</span>
+                                </button>
                                 <button
                                     onClick={toggleMute}
                                     className={`p-2 rounded-xl transition-all ${isMuted ? 'text-rose-400 bg-rose-400/10' : 'text-white/40 hover:bg-white/10 hover:text-white'}`}

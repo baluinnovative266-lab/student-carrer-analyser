@@ -15,7 +15,7 @@ import 'reactflow/dist/style.css';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     Info, Target, Zap, Book, ShieldCheck, X, Award,
-    Sparkles, ZoomIn, ZoomOut, Maximize2
+    Sparkles, ZoomIn, ZoomOut, Maximize2, Minimize2
 } from 'lucide-react';
 
 // Custom Node Component for a more "Figma/Miro" look
@@ -84,9 +84,9 @@ const ControlsOverlay = ({ toggleFullscreen, isFullscreen }) => {
                 <button
                     onClick={toggleFullscreen}
                     className="p-3 bg-white/10 backdrop-blur-md rounded-2xl border border-white/10 text-white/60 hover:text-white hover:bg-white/20 transition-all shadow-xl"
-                    title={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
+                    title={isFullscreen ? "Minimize" : "Maximize"}
                 >
-                    {isFullscreen ? <X size={18} /> : <Sparkles size={18} />}
+                    {isFullscreen ? <Minimize2 size={18} /> : <Maximize2 size={18} />}
                 </button>
             </div>
 
@@ -219,7 +219,7 @@ const MindMapContent = ({ phaseData, career }) => {
                 <div className="absolute top-6 left-6 z-10 flex flex-col gap-2">
                     <div className="bg-white/10 backdrop-blur-xl px-4 py-2 rounded-2xl border border-white/10 text-xs text-white/60 font-black uppercase tracking-widest shadow-2xl flex items-center gap-2">
                         <div className="w-2 h-2 rounded-full bg-pink-500 animate-pulse" />
-                        Career Path Visualization • {career}
+                        Interactive Roadmap MindMap • {career}
                     </div>
                 </div>
 

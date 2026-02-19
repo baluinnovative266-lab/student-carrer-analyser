@@ -23,13 +23,14 @@ def read_root():
     return {"message": "Welcome to CareerSense AI API"}
 
 from app.core.database import engine, Base
-from app.api import auth
+from app.api import auth, comments, community, jobs
 
 # Import ALL models so they register with Base before create_all
 from app.models.user import User
 from app.models.roadmap import Roadmap
 from app.models.comment import Comment
 from app.models.community_message import CommunityMessage
+from app.models.helpdesk import HelpDeskTicket
 
 # Create tables
 Base.metadata.create_all(bind=engine)
@@ -40,3 +41,6 @@ app.include_router(chat.router, prefix="/api", tags=["Chat"])
 app.include_router(comments.router, prefix="/api", tags=["Comments"])
 app.include_router(community.router, prefix="/api", tags=["Community"])
 app.include_router(jobs.router, prefix="/api/jobs", tags=["Jobs"])
+
+from app.api import helpdesk
+app.include_router(helpdesk.router, prefix="/api/helpdesk", tags=["Help Desk"])
